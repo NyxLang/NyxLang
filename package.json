@@ -10,5 +10,8 @@
   "license": "MIT",
   "devDependencies": {
     "prettier": "^2.2.1"
+  },
+  "dependencies": {
+    "decimal.js": "^10.2.1"
   }
 }
