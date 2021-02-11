@@ -12,6 +12,7 @@
     "prettier": "^2.2.1"
   },
   "dependencies": {
+    "chalk": "^4.1.0",
     "decimal.js": "^10.2.1"
   }
 }

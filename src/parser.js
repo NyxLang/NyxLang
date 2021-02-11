@@ -14,6 +14,10 @@ module.exports = function parse(input) {
     return input[current] || null;
   }
 
+  function lookahead() {
+    return input[current + 1] || null;
+  }
+
   function parseAtom() {
     let tok = peek();
     if (tok.type === "Number") {
