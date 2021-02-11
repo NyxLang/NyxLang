@@ -23,22 +23,24 @@ module.exports = function Lexer(input) {
 
   function readNext() {
     readWhile(isWhitespace);
-    if (input.eof()) return null;
+    if (input.eof()) {
+      return {
+        type: "EOF",
+        value: "EOF"
+      };
+    }
 
     let ch = input.peek();
     if (isDigit(ch)) {
       return readNumber();
     }
+
     input.croak("Cannot handle character");
   }
 
   while (!input.eof()) {
     tokens.push(readNext());
   }
-  tokens.push({
-    type: "EOF",
-    value: "EOF"
-  });
 
   return tokens;
 }
