@@ -28,8 +28,9 @@ function Lexer(input) {
   function readIdent() {
     const start = input.col;
     let id = readWhile(ch => isIdChar(ch));
+    const type = operators.includes(id) ? "Operator" : "Identifier";
     return {
-      type: operators.includes(id) ? "Operator" : "Identifier",
+      type,
       line: input.line,
       start,
       end: input.col,
