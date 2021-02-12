@@ -1,4 +1,4 @@
-const { isDigit, isWhitespace } = require("./helpers");
+const { isDigit, isWhitespace, isIdChar, operators } = require("./helpers");
 const stream = require("./input");
 
 function Lexer(input) {
@@ -20,8 +20,22 @@ function Lexer(input) {
       type: "Number",
       value: number,
       line: input.line,
-      col: start
+      start,
+      end: input.col
     };
+  }
+
+  function readIdent() {
+    const start = input.col;
+    let id = readWhile(ch => isIdChar(ch));
+    const tok = {
+      type: operators.includes(id) ? "Operator" : "Identifier",
+      line: input.line,
+      start,
+      end: input.col,
+      value: id
+    };
+    console.log(tok);
   }
 
   function readNext() {
@@ -38,6 +52,8 @@ function Lexer(input) {
     let ch = input.peek();
     if (isDigit(ch)) {
       return readNumber();
+    } else if (isIdChar(ch)) {
+      return readIdent();
     }
 
     input.croak("Cannot handle character");
