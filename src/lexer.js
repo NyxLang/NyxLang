@@ -1,4 +1,4 @@
-const { isDigit, isWhitespace, isIdChar, operators } = require("./helpers");
+const { isDigit, isWhitespace, isIdChar, operators, isPunc } = require("./helpers");
 const stream = require("./input");
 
 function Lexer(input) {
@@ -51,10 +51,19 @@ function Lexer(input) {
     }
 
     let ch = input.peek();
+
     if (isDigit(ch)) {
       return readNumber();
     } else if (isIdChar(ch)) {
       return readIdent();
+    } else if (isPunc(ch)) {
+      return {
+        type: "Punctuation",
+        value: ch,
+        line: input.line,
+        start: input.col,
+        end: input.col
+      };
     }
 
     input.croak("Cannot handle character");
