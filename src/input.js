@@ -14,7 +14,6 @@ function InputStream(input) {
     } else {
       col++;
     }
-    console.log(col);
     return ch;
   }
 
