@@ -1,8 +1,8 @@
 const NyxObject = require("./Object");
 
 class NyxPrimitive extends NyxObject {
-  constructor(value) {
-    super();
+  constructor(value, className, type) {
+    super(className, type);
     this.__value__ = value;
   }
 

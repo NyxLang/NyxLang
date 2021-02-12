@@ -1,7 +1,7 @@
 const Lexer = require("./lexer");
 const stream = require("./input");
 
-module.exports = function parse(input) {
+function parse(input) {
   let current = 0;
 
   return parseToplevel();
@@ -38,3 +38,5 @@ module.exports = function parse(input) {
     return parseAtom();
   }
 }
+
+module.exports = parse;

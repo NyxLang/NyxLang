@@ -1,7 +1,7 @@
 const { isDigit, isWhitespace } = require("./helpers");
 const stream = require("./input");
 
-module.exports = function Lexer(input) {
+function Lexer(input) {
   let current = null;
   let tokens = [];
 
@@ -14,10 +14,13 @@ module.exports = function Lexer(input) {
   }
 
   function readNumber() {
+    const start = input.col;
     let number = readWhile(ch => isDigit(ch));
     return {
       type: "Number",
-      value: number
+      value: number,
+      line: input.line,
+      col: start
     };
   }
 
@@ -26,7 +29,9 @@ module.exports = function Lexer(input) {
     if (input.eof()) {
       return {
         type: "EOF",
-        value: "EOF"
+        value: "EOF",
+        line: input.line,
+        col: input.col
       };
     }
 
@@ -44,3 +49,5 @@ module.exports = function Lexer(input) {
 
   return tokens;
 }
+
+module.exports = Lexer;

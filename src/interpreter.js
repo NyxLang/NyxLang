@@ -1,7 +1,7 @@
 const stream = require("./input");
 const lexer = require("./lexer");
 const parse = require("./parser");
-const NyxNumber = require("./types/Number");
+const NyxDecimal = require("./types/Decimal");
 
 function evaluate(exp) {
   switch (exp.type) {
@@ -13,7 +13,7 @@ function evaluate(exp) {
       return val;
 
     case "Number":
-      return new NyxNumber(exp.value);
+      return new NyxDecimal(exp.value);
   }
 }
 

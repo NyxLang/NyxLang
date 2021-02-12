@@ -1,24 +1,26 @@
 // See http://lisperator.net/pltut/parser/input-stream
 const { NyxInputError } = require("./errors");
 
-module.exports = function InputStream(input) {
+function InputStream(input) {
   let pos = 0;
-  let line = 0;
-  let col = 0;
+  let line = 1;
+  let col = 1;
 
   return {
     next,
     peek,
     lookahead,
     eof,
-    croak
+    croak,
+    line,
+    col
   };
 
   function next() {
     let ch = input.charAt(pos++);
     if (ch == "\n") {
       line++;
-      col = 0;
+      col = 1;
     } else {
       col++;
     }
@@ -41,3 +43,5 @@ module.exports = function InputStream(input) {
     throw new NyxInputError(`${msg} (at ${line}:${col})`);
   }
 }
+
+module.exports = InputStream;

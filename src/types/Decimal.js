@@ -1,10 +1,10 @@
 const { default: Decimal } = require("decimal.js");
 const NyxPrimitive = require("./Primitive");
 
-class NyxNumber extends NyxPrimitive {
+class NyxDecimal extends NyxPrimitive {
   constructor(value) {
-    super(new Decimal(value));
+    super(new Decimal(value), "Decimal", "decimal");
   }
 }
 
-module.exports = NyxNumber;
+module.exports = NyxDecimal;
