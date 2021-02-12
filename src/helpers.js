@@ -15,7 +15,7 @@ exports.isOpChar = function(char) {
 }
 
 exports.isPunc = function(char) {
-  return ";:()[]{}".indexOf(char) >= 0;
+  return ";:()[]{},".indexOf(char) >= 0;
 }
 
 exports.operators = ["+", "-", "*", "/", "%", "."];
