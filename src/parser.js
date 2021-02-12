@@ -1,5 +1,6 @@
 const Lexer = require("./lexer");
 const stream = require("./input");
+const { NyxInputError } = require("./errors");
 
 const PRECEDENCE  = {
   "+": 14, "-": 14,
@@ -38,12 +39,11 @@ function parse(input) {
     if (isPunc(ch)) {
       next();
     } else {
-      input.croak(`Expecting punctuation: ${ch}`);
+      throw new NyxInputError(`Expecting punctuation: ${ch}`);
     }
   }
 
   function maybeBinary(left, myPrec) {
-    next();
     let tok = isOperator();
     if (tok) {
       let hisPrec = PRECEDENCE[tok.value];
@@ -64,7 +64,16 @@ function parse(input) {
 
   function parseAtom() {
     let tok = peek();
+
+    if (isPunc("(")) {
+      next();
+      let exp = parseExpression();
+      skipPunc(")");
+      return exp;
+    }
+
     if (tok && tok.type === "Number") {
+      next();
       return tok;
     }
   }

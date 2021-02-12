@@ -20,8 +20,7 @@ function Lexer(input) {
       type: "Number",
       value: number,
       line: input.line,
-      start,
-      end: input.col
+      col: input.col
     };
   }
 
@@ -54,6 +53,7 @@ function Lexer(input) {
     } else if (isIdChar(ch)) {
       return readIdent();
     } else if (isPunc(ch)) {
+      input.next();
       return {
         type: "Punctuation",
         value: ch,
