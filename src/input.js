@@ -6,16 +6,6 @@ function InputStream(input) {
   let line = 1;
   let col = 1;
 
-  return {
-    next,
-    peek,
-    lookahead,
-    eof,
-    croak,
-    line,
-    col
-  };
-
   function next() {
     let ch = input.charAt(pos++);
     if (ch == "\n") {
@@ -24,6 +14,7 @@ function InputStream(input) {
     } else {
       col++;
     }
+    console.log(col);
     return ch;
   }
 
@@ -42,6 +33,16 @@ function InputStream(input) {
   function croak(msg) {
     throw new NyxInputError(`${msg} (at ${line}:${col})`);
   }
+
+    return {
+    next,
+    peek,
+    lookahead,
+    eof,
+    croak,
+    line,
+    col
+  };
 }
 
 module.exports = InputStream;

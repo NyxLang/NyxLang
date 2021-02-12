@@ -28,14 +28,13 @@ function Lexer(input) {
   function readIdent() {
     const start = input.col;
     let id = readWhile(ch => isIdChar(ch));
-    const tok = {
+    return {
       type: operators.includes(id) ? "Operator" : "Identifier",
       line: input.line,
       start,
       end: input.col,
       value: id
     };
-    console.log(tok);
   }
 
   function readNext() {
@@ -45,7 +44,8 @@ function Lexer(input) {
         type: "EOF",
         value: "EOF",
         line: input.line,
-        col: input.col
+        start: input.col,
+        end: input.col
       };
     }
 
