@@ -7,15 +7,11 @@ exports.isWhitespace = function(char) {
 }
 
 exports.isIdChar = function(char) {
-  return /[\a-zA-Z]/.test(char) || "+-/*%<>=?!_$@#^".indexOf(char) >= 0;
-}
-
-exports.isOpChar = function(char) {
-  return "+-/*%.<>!=&|~:^@#".indexOf(char) >= 0;
+  return /[\a-zA-Z]/.test(char) || "+-/*%<>=?!_$@#^&|~".indexOf(char) >= 0;
 }
 
 exports.isPunc = function(char) {
-  return ";:()[]{},".indexOf(char) >= 0;
+  return ";:()[]{},.".indexOf(char) >= 0;
 }
 
 exports.operators = ["+", "-", "*", "/", "%", "."];
