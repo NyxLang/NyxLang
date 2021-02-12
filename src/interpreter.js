@@ -12,9 +12,20 @@ function evaluate(exp) {
       });
       return val;
 
+    case "BinaryOperation":
+      return evaluateBinary(exp);
+
     case "Number":
       return new NyxDecimal(exp.value);
   }
+}
+
+function evaluateBinary(exp) {
+  return applyBinary(exp.operator, evaluate(exp.left), evaluate(exp.right));
+}
+
+function applyBinary(op, left, right) {
+  return left[op](right);
 }
 
 module.exports = evaluate;

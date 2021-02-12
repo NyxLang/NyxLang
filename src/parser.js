@@ -84,7 +84,6 @@ function parse(input) {
       program.push(parseExpression());
       next();
     }
-    console.log(program);
     return { type: "Block", block: program };
   }
 

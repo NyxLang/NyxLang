@@ -10,6 +10,13 @@ class NyxInputError extends NyxError {
   }
 }
 
+class NyxTypeError extends NyxError {
+  constructor(msg) {
+    super(`TypeError: ${msg}`);
+  }
+}
+
 module.exports = {
-  NyxInputError
+  NyxInputError,
+  NyxTypeError
 }
