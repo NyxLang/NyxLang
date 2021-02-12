@@ -22,8 +22,8 @@ function InputStream(input) {
     return input.charAt(pos);
   }
 
-  function lookahead() {
-    return input.charAt(pos + 1);
+  function lookahead(i=1) {
+    return input.charAt(pos + i);
   }
 
   function eof() {

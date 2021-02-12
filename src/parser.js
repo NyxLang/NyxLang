@@ -14,8 +14,8 @@ function parse(input) {
     return input[current] || null;
   }
 
-  function lookahead() {
-    return input[current + 1] || null;
+  function lookahead(i=1) {
+    return input[current + i] || null;
   }
 
   function parseAtom() {
