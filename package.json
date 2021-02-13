@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "decimal.js": "^10.2.1",
+    "math.js": "^1.1.46",
     "object-hash": "^2.1.1"
   }
 }

@@ -62,7 +62,7 @@ function Lexer(input) {
       };
     }
 
-    input.croak("Cannot handle character");
+    input.croak(`Cannot handle character ${ch}`);
   }
 
   while (!input.eof()) {
