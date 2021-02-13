@@ -2,7 +2,7 @@ const { Decimal } = require("decimal.js");
 const { NyxTypeError } = require("../errors");
 const NyxPrimitive = require("./Primitive");
 
-class NyxDecimal extends NyxPrimitive {
+class NyxDecimal extends NyxNumber {
   constructor(value) {
     super(new Decimal(value), "Decimal", "decimal");
   }
