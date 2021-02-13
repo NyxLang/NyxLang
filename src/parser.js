@@ -4,7 +4,8 @@ const { NyxInputError } = require("./errors");
 
 const PRECEDENCE  = {
   "+": 14, "-": 14,
-  "*": 15, "/": 15, "%": 15
+  "*": 15, "/": 15, "//": 15, "%": 15,
+  "**": 16
 }
 
 function parse(input) {

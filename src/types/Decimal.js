@@ -1,34 +1,25 @@
-const { Decimal } = require("decimal.js");
+const math = require("mathjs");
 const { NyxTypeError } = require("../errors");
-const NyxPrimitive = require("./Primitive");
+const NyxNumber = require("./Number");
 
 class NyxDecimal extends NyxNumber {
   constructor(value) {
-    super(new Decimal(value), "Decimal", "decimal");
+    super(new math.bignumber(value), "Decimal", "decimal");
   }
 
   "+"(other) {
-    if (other.__type__ == "decimal") {
-      let res = this.__value__.plus(other.__value__);
-      return new NyxDecimal(res.toString());
-    }
-    throw new NyxTypeError(`Cannot add decimal and ${other.__type__}`);
+    const res = super["+"](other);
+    return new NyxDecimal(res);
   }
 
   "-"(other) {
-    if (other.__type__ == "decimal") {
-      let res = this.__value__.minus(other.__value__);
-      return new NyxDecimal(res.toString());
-    }
-    throw new NyxTypeError(`Cannot subtract ${other.__type__} from decimal`);
+    const res = super["-"](other);
+    return new NyxDecimal(res);
   }
 
   "*"(other) {
-    if (other.__type__ == "decimal") {
-      let res = this.__value__.times(other.__value__);
-      return new NyxDecimal(res.toString());
-    }
-    throw new NyxTypeError(`Cannot multiply decimal and ${other.__type__}`);
+    const res = super["*"](other);
+    return new NyxDecimal(res);
   }
 
   "/"(other) {
@@ -36,19 +27,27 @@ class NyxDecimal extends NyxNumber {
       throw new NyxTypeError("Cannot divide by zero");
     }
 
-    if (other.__type__ == "decimal") {
-      let res = this.__value__.dividedBy(other.__value__);
-      return new NyxDecimal(res.toString());
+    const res = super["/"](other);
+    return new NyxDecimal(res);
+  }
+
+  "//"(other) {
+    if (other.__value__.toString() === "0") {
+      throw new NyxTypeError("Cannot divide by zero");
     }
-    throw new NyxTypeError(`Cannot divide decimal and ${other.__type__}`);
+
+    const res = super["//"](other);
+    return new NyxDecimal(res);
   }
 
   "%"(other) {
-    if (other.__type__ == "decimal") {
-      let res = this.__value__.modulo(other.__value__);
-      return new NyxDecimal(res.toString());
-    }
-    throw new NyxTypeError(`Cannot perform modulo operation on decimal and ${other.__type__}`);
+    const res = super["%"](other);
+    return new NyxDecimal(res);
+  }
+
+  "**"(other) {
+    const res = super["**"](other);
+    return new NyxDecimal(res);
   }
 }
 
