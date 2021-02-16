@@ -7,6 +7,11 @@ class NyxDecimal extends NyxNumber {
     super(new math.bignumber(value), "Decimal", "decimal");
   }
 
+  "-@"() {
+    const res = super["-@"](this);
+    return new NyxDecimal(res);
+  }
+
   "+"(other) {
     const res = super["+"](other);
     return new NyxDecimal(res);

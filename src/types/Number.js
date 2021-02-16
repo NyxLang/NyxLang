@@ -12,6 +12,10 @@ class NyxNumber extends NyxPrimitive {
     super(value, className, type);
   }
 
+  "-@"() {
+    return math.unaryMinus(this.__value__);
+  }
+
   "+"(x) {
     return math.add(this.__value__, x.__value__);
   }
