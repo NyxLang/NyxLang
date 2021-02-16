@@ -90,7 +90,7 @@ function parse(input) {
       return parseUnary();
     }
 
-    if (tok && tok.type === "Number") {
+    if (tok && tok.type === "Decimal") {
       next();
       return tok;
     }

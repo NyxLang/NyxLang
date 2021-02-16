@@ -18,7 +18,7 @@ function evaluate(exp) {
     case "UnaryOperation":
       return evaluateUnary(exp);
 
-    case "Number":
+    case "Decimal":
       return new NyxDecimal(exp.value);
   }
 }

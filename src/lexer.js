@@ -17,7 +17,7 @@ function Lexer(input) {
     const start = input.col;
     let number = readWhile(ch => isDigit(ch));
     return {
-      type: "Number",
+      type: "Decimal",
       value: number,
       line: input.line,
       col: input.col
