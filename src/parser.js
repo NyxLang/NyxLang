@@ -2,6 +2,7 @@ const Lexer = require("./lexer");
 const stream = require("./input");
 const { NyxInputError } = require("./errors");
 
+// Binary operator precedence table
 const PRECEDENCE  = {
   "+": 14, "-": 14,
   "*": 15, "/": 15, "//": 15, "%": 15,
@@ -63,6 +64,18 @@ function parse(input) {
     return left;
   }
 
+  function parseUnary() {
+    const tok = peek();
+    next();
+    return {
+      type: "UnaryOperation",
+      operator: tok.value,
+      operand: parseAtom(),
+      line: tok.line,
+      col: tok.col
+    }
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -71,6 +84,10 @@ function parse(input) {
       let exp = parseExpression();
       skipPunc(")");
       return exp;
+    }
+
+    if (isOperator(tok.value)) {
+      return parseUnary();
     }
 
     if (tok && tok.type === "Number") {
