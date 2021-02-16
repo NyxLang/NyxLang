@@ -14,4 +14,4 @@ exports.isPunc = function(char) {
   return ";:()[]{},.'".indexOf(char) >= 0;
 }
 
-exports.operators = ["+", "-", "*", "/", "//", "%", "**", "."];
+exports.operators = ["+", "-", "*", "/", "//", "%", "**"];
