@@ -20,10 +20,10 @@ class NyxObject {
   }
 }
 
-function setProperties(objectId, className, type) {
+function setProperties(objectId, className, type, parent) {
   Object.defineProperty(NyxObject.prototype,
     "__object_id__", {
-      writable: true,
+      writable: false,
       enumerable: false,
       value: objectId
     }
@@ -31,7 +31,7 @@ function setProperties(objectId, className, type) {
 
     Object.defineProperty(NyxObject.prototype,
     "__class__", {
-      writable: true,
+      writable: false,
       enumerable: false,
       value: className
     }
@@ -39,7 +39,7 @@ function setProperties(objectId, className, type) {
 
   Object.defineProperty(NyxObject.prototype,
     "__type__", {
-      writable: true,
+      writable: false,
       enumerable: false,
       value: type
     }
