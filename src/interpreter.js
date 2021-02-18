@@ -24,6 +24,9 @@ function evaluate(exp, env = globalEnv) {
     case "VariableDefinition":
       return defineVariable(exp, env);
 
+    case "ConstantDefinition":
+      return defineConstant(exp, env);
+
     case "Assignment":
       return evaluateVariableAssignment(exp, env);
 
@@ -48,9 +51,20 @@ function defineVariable(exp, env) {
   return null;
 }
 
-function evaluateVariableAssignment(exp, env) {
+function defineConstant(exp, env) {
+  env.def(exp.name, null);
+  evaluateVariableAssignment(exp.value, env, true);
+  return null
+}
+
+function evaluateVariableAssignment(exp, env, constant = false) {
   const name = exp.left.value;
   const value = evaluate(exp.right, env);
+  const oldValue = env.vars[name];
+
+  if (oldValue && oldValue.constant) {
+    throw new Error("Cannot assign new value to constant");
+  }
 
   Object.defineProperty(value, "__object_id__", {
     writable: false,
@@ -67,10 +81,17 @@ function evaluateVariableAssignment(exp, env) {
     enumerable: false
   });
 
+  Object.defineProperty(value, "__constant__", {
+    writable: false,
+    enumerable: false,
+    value: constant
+  })
+
   env.set(name, {
     id: value.__object_id__,
     type: value.__type__,
-    class: value.__class__
+    class: value.__class__,
+    constant
   });
 
   env.def(value.__object_id__, value);

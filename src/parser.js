@@ -87,6 +87,9 @@ function parse(input) {
     switch (tok.value) {
       case "let":
         return parseVariableDefinition();
+
+      case "const":
+        return parseConstantDefinition();
     }
   }
 
@@ -95,6 +98,17 @@ function parse(input) {
     return {
       type: "VariableDefinition",
       name: tok.value,
+      line: tok.line,
+      col: tok.col
+    }
+  }
+
+  function parseConstantDefinition() {
+    const tok = next();
+    return {
+      type: "ConstantDefinition",
+      name: tok.value,
+      value: parseExpression(),
       line: tok.line,
       col: tok.col
     }
