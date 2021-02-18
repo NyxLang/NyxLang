@@ -52,7 +52,7 @@ function parse(input) {
       if (hisPrec > myPrec) {
         next();
         return maybeBinary({
-          type: "BinaryOperation",
+          type: tok.value == "=" ? "Assignment" : "BinaryOperation",
           operator: tok.value,
           left,
           right: maybeBinary(parseAtom(), hisPrec),
