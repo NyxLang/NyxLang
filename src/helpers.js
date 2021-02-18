@@ -6,8 +6,12 @@ exports.isWhitespace = function(char) {
   return " \t\n".indexOf(char) >= 0;
 }
 
-exports.isIdChar = function(char) {
+exports.isIdStart = function(char) {
   return /[\a-zA-Z]/.test(char) || "+-/\\*%<>=?!_$@#^&|~".indexOf(char) >= 0;
+}
+
+exports.isIdChar = function(char) {
+  return /[\a-zA-Z0-9]/.test(char) || "+-/\\*%<>=?!_$@#^&|~".indexOf(char) >= 0;
 }
 
 exports.isPunc = function(char) {

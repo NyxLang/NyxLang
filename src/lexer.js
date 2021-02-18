@@ -1,4 +1,4 @@
-const { isDigit, isWhitespace, isIdChar, operators, isPunc } = require("./helpers");
+const { isDigit, isWhitespace, isIdStart, isIdChar, operators, isPunc } = require("./helpers");
 const stream = require("./input");
 
 function Lexer(input) {
@@ -50,7 +50,7 @@ function Lexer(input) {
 
     if (isDigit(ch)) {
       return readNumber();
-    } else if (isIdChar(ch)) {
+    } else if (isIdStart(ch)) {
       return readIdent();
     } else if (isPunc(ch)) {
       input.next();
