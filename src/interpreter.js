@@ -81,12 +81,6 @@ function evaluateVariableAssignment(exp, env, constant = false) {
     enumerable: false
   });
 
-  Object.defineProperty(value, "__constant__", {
-    writable: false,
-    enumerable: false,
-    value: constant
-  })
-
   env.set(name, {
     id: value.__object_id__,
     type: value.__type__,
