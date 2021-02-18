@@ -1,4 +1,4 @@
-const { isDigit, isWhitespace, isIdStart, isIdChar, operators, isPunc } = require("./helpers");
+const { isDigit, isWhitespace, isIdStart, isIdChar, operators, isPunc, keywords } = require("./helpers");
 const stream = require("./input");
 
 function Lexer(input) {
@@ -26,7 +26,11 @@ function Lexer(input) {
 
   function readIdent() {
     let id = readWhile(ch => isIdChar(ch));
-    const type = operators.includes(id) ? "Operator" : "Identifier";
+    const type = operators.includes(id)
+      ? "Operator"
+      : keywords.includes(id)
+      ? "Keyword"
+      : "Identifier";
     return {
       type,
       line: input.line,

@@ -16,10 +16,11 @@ function outputString(...args) {
       item ||
       item === 0 ||
       item === "" ||
-      item === false ||
-      item === null
+      item === false
     ) {
       temp.push(item.toString());
+    } else if (item == null) {
+      return "nil";
     }
   }
   return temp.join("");

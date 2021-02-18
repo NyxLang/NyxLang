@@ -1,8 +1,10 @@
-const hash = require("object-hash");
+const uuid = require("uuid");
 
 class NyxObject {
   constructor(className="Object", type="object") {
-    setProperties(hash.sha1(this), className, type);
+    this.__object_id__ = uuid.v4();
+    this.__class__ = className;
+    this.__type__ = type;
   }
 
   toString() {
@@ -19,32 +21,5 @@ class NyxObject {
     return str;
   }
 }
-
-function setProperties(objectId, className, type, parent) {
-  Object.defineProperty(NyxObject.prototype,
-    "__object_id__", {
-      writable: false,
-      enumerable: false,
-      value: objectId
-    }
-  );
-
-    Object.defineProperty(NyxObject.prototype,
-    "__class__", {
-      writable: false,
-      enumerable: false,
-      value: className
-    }
-  );
-
-  Object.defineProperty(NyxObject.prototype,
-    "__type__", {
-      writable: false,
-      enumerable: false,
-      value: type
-    }
-  );
-}
-
 
 module.exports = NyxObject;

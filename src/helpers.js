@@ -19,3 +19,5 @@ exports.isPunc = function(char) {
 }
 
 exports.operators = ["+", "-", "*", "/", "//", "%", "**", "="];
+
+exports.keywords = ["let"];

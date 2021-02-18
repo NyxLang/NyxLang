@@ -4,6 +4,7 @@ const { NyxInputError } = require("./errors");
 
 // Binary operator precedence table
 const PRECEDENCE  = {
+  "=": 3,
   "+": 14, "-": 14,
   "*": 15, "/": 15, "//": 15, "%": 15,
   "**": 16
@@ -35,6 +36,11 @@ function parse(input) {
   function isOperator(op) {
     let tok = peek();
     return tok && tok.type === "Operator" && (!op || tok.value === op) && tok;
+  }
+
+  function isKeyword(kw) {
+    let tok = peek();
+    return tok && tok.type == "Keyword" && (!kw || tok.value == kw) && tok;
   }
 
   function skipPunc(ch) {
@@ -76,6 +82,24 @@ function parse(input) {
     }
   }
 
+  function parseKeyword() {
+    const tok = peek();
+    switch (tok.value) {
+      case "let":
+        return parseVariableDefinition();
+    }
+  }
+
+  function parseVariableDefinition() {
+    const tok = lookahead();
+    return {
+      type: "VariableDefinition",
+      name: tok.value,
+      line: tok.line,
+      col: tok.col
+    }
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -90,7 +114,16 @@ function parse(input) {
       return parseUnary();
     }
 
+    if (isKeyword(tok.value)) {
+      return parseKeyword();
+    }
+
     if (tok && tok.type === "Decimal") {
+      next();
+      return tok;
+    }
+
+    if (tok && tok.type === "Identifier") {
       next();
       return tok;
     }
