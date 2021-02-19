@@ -51,9 +51,10 @@ function parse(input) {
     }
   }
 
-  function maybeBinary(left, myPrec) {
+  function maybeBinary(left, myPrec, sequence = null) {
+    console.log(left);
     let tok = isOperator();
-    if (tok) {
+    if (!sequence && tok) {
       let hisPrec = PRECEDENCE[tok.value];
       if (hisPrec > myPrec) {
         next();
@@ -61,7 +62,7 @@ function parse(input) {
           type: tok.value == "=" ? "Assignment" : "BinaryOperation",
           operator: tok.value,
           left,
-          right: maybeBinary(parseAtom(), hisPrec),
+          right: maybeBinary(parseExpression(), hisPrec),
           line: left.line,
           col: left.col,
         }, myPrec);
@@ -114,6 +115,25 @@ function parse(input) {
     }
   }
 
+  function parseSequenceExpression(first, sequence) {
+    let expressions = sequence || [];
+    let tok = peek();
+
+    expressions.push(first);
+
+    if (tok && tok.value == ",") {
+      skipPunc(",");
+      return parseExpression(expressions);
+    }
+    let seq = {
+      type: "SequenceExpression",
+      expressions,
+      line: expressions[0].line,
+      col: expressions[0].col
+    }
+    return maybeBinary(seq, 0);
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -152,8 +172,13 @@ function parse(input) {
     return { type: "Block", block: program };
   }
 
-  function parseExpression() {
-    return maybeBinary(parseAtom(), 0);
+  function parseExpression(sequence = null) {
+    const exp = maybeBinary(parseAtom(), 0, sequence);
+    let tok = peek();
+    if (sequence || tok && tok.value == ",") {
+      return parseSequenceExpression(exp, sequence);
+    }
+    return exp;
   }
 }
 

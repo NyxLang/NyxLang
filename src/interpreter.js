@@ -47,7 +47,7 @@ function evaluateUnary(exp, env) {
 }
 
 function defineVariable(exp, env) {
-  const e = env.def(exp.name, null);
+  env.def(exp.name, null);
   return null;
 }
 
@@ -59,6 +59,11 @@ function defineConstant(exp, env) {
 
 function evaluateVariableAssignment(exp, env, constant = false) {
   const name = exp.left.value;
+
+  if (name && name.type == "SequenceExpression") {
+    console.log("parallel assignment");
+  }
+
   const value = evaluate(exp.right, env);
   const oldValue = env.vars[name];
 
