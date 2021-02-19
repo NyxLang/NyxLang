@@ -198,10 +198,14 @@ function parse(input) {
   }
 
   function parseCall(func) {
+    let params = delimited("(", ")", ",", parseExpression);
+    if (params[0] && params[0].expressions) {
+      params = params[0].expressions;
+    }
     return {
       type: "CallExpression",
       func,
-      args: delimited("(", ")", ",", parseExpression)
+      args: params
     };
   }
 
