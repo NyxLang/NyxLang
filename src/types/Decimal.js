@@ -1,6 +1,12 @@
-const math = require("mathjs");
+const {create, all} = require("mathjs");
 const { NyxTypeError } = require("../errors");
 const NyxNumber = require("./Number");
+
+const math = create(all);
+math.config({
+  number: 'BigNumber',
+  precision: 64
+});
 
 class NyxDecimal extends NyxNumber {
   constructor(value) {
@@ -53,6 +59,30 @@ class NyxDecimal extends NyxNumber {
   "**"(other) {
     const res = super["**"](other);
     return new NyxDecimal(res);
+  }
+
+  "integer?"() {
+    return math.isInteger(this.__value__);
+  }
+
+  "NaN?"() {
+    return math.isNaN(this.__value__);
+  }
+
+  "negative?"() {
+    return math.isNegative(this.__value__);
+  }
+
+  "positive?"() {
+    return math.isPositive(this.__value__);
+  }
+
+  "prime?"() {
+    return math.isPrime(this.__value__);
+  }
+
+  "zero?"() {
+    return math.isZero(this.__value__);
   }
 }
 
