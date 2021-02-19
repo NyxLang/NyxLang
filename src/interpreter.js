@@ -151,13 +151,16 @@ function evaluateParallelAssignment(exp, env, constant) {
     return evaluate(value, env);
   });
   names.forEach((item, i) => {
-    val = evaluateVariableAssignment({name: item.name, value: evaluatedValues[i]}, env, constant);
+    val = evaluateVariableAssignment({ name: item.name, value: evaluatedValues[i] }, env, constant);
   });
   return val;
 }
 
 function evaluateCall(exp, env) {
   let func = evaluate(exp.func, env);
+  if (typeof func != "function") {
+    throw new Error(`${func} is not callable`);
+  }
   return func.apply(null, exp.args.map(arg => evaluate(arg, env)));
 }
 
