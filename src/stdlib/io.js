@@ -1,3 +1,5 @@
+const readlineSync = require("readline-sync");
+
 function outputString(...args) {
   let temp = [];
   for (let item of args) {
@@ -22,4 +24,8 @@ function print(...args) {
   return null;
 }
 
-module.exports = { "output-string": outputString, print };
+function input(msg) {
+  return readlineSync.question(msg);
+}
+
+module.exports = { "output-string": outputString, print, input };
