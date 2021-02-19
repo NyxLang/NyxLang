@@ -77,6 +77,11 @@ function Lexer(input) {
     return spaces.length || 0;
   }
 
+  function skipComment() {
+    readWhile(ch => ch != "\n");
+    input.next();
+  }
+
   function readNext() {
     readWhile(c => isWhitespace(c));
     if (input.eof()) {
@@ -89,6 +94,11 @@ function Lexer(input) {
     }
 
     let ch = input.peek();
+
+    if (ch == "#") {
+      skipComment();
+      return readNext();
+    }
 
     if (isDigit(ch)) {
       return readNumber();
