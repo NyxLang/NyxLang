@@ -16,6 +16,12 @@ function Lexer(input) {
   function readNumber() {
     const start = input.col;
     let number = readWhile(ch => isDigit(ch));
+    if (input.peek() == ".") {
+      if (isDigit(input.lookahead())) {
+        number += input.next();
+        number += readWhile(ch => isDigit(ch));
+      }
+    }
     return {
       type: "Decimal",
       value: number,
