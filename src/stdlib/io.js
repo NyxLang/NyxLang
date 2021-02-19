@@ -25,7 +25,7 @@ function print(...args) {
 }
 
 function input(msg) {
-  return readlineSync.question(msg);
+  return readlineSync.question(msg + "\n");
 }
 
 module.exports = { "output-string": outputString, print, input };
