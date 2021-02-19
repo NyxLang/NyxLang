@@ -253,7 +253,6 @@ function parse(input) {
 
   function parseBlock() {
     let tok = peek();
-    const indent = tok.value;
     tok = next();
     let exprs = [];
     while (tok && tok.type != "Dedent") {
@@ -261,7 +260,11 @@ function parse(input) {
         throw new NyxInputError("A block must be closed with an unindented newline");
       }
       exprs.push(parseExpression());
-      tok = peek();
+      if (isKeyword("let")) {
+        tok = next();
+      } else {
+        tok = peek();
+      }
     }
     next();
     return {
