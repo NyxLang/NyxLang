@@ -114,10 +114,8 @@ function Lexer(input) {
       };
     } else if (ch == "\n") {
       input.next();
-      console.log("newline");
       let newIndent = readIndent();
       if (newIndent < currentIndent) {
-        console.log("smaller");
         while (newIndent < currentIndent) {
           indentStack.pop();
           currentIndent = indentStack[indentStack.length - 1] || 0;
