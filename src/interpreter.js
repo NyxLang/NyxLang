@@ -13,8 +13,9 @@ function evaluate(exp, env = main) {
   switch (exp.type) {
     case "Block":
       let val = null;
+      const scope = env.extend();
       exp.block.forEach(ex => {
-        val = evaluate(ex, env);
+        val = evaluate(ex, scope);
       });
       return val;
 
