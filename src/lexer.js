@@ -1,6 +1,7 @@
 const { isDigit, isWhitespace, isIdStart, isIdChar, isOpChar, operators, isPunc, keywords } = require("./helpers");
 const stream = require("./input");
 const math = require("mathjs");
+const { NyxInputError } = require("./errors");
 
 function Lexer(input) {
   let current = null;
@@ -26,6 +27,15 @@ function Lexer(input) {
       if (isDigit(input.lookahead())) {
         number += input.next();
         number += readWhile(ch => isDigit(ch));
+      }
+    }
+    if (input.peek() == "e") {
+      number += input.next()
+      if (input.peek() == "+" || input.peek() == "-") {
+        number += input.next()
+        number += readWhile(ch => isDigit(ch));
+      } else {
+        throw new NyxInputError("Invalid numeric literal");
       }
     }
     return {
