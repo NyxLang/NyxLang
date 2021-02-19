@@ -1,11 +1,12 @@
 const { isDigit, isWhitespace, isIdStart, isIdChar, isOpChar, operators, isPunc, keywords } = require("./helpers");
 const stream = require("./input");
-const math = require("mathjs");
 const { NyxInputError } = require("./errors");
 
 function Lexer(input) {
   let current = null;
   let tokens = [];
+  let currentIndent = 0;
+  let indentStack = [];
 
   function readWhile(predicate) {
     let str = "";
@@ -71,8 +72,13 @@ function Lexer(input) {
     };
   }
 
+  function readIndent() {
+    let spaces = readWhile(ch => " ".indexOf(ch) >= 0);
+    return spaces.length || 0;
+  }
+
   function readNext() {
-    readWhile(isWhitespace);
+    readWhile(c => isWhitespace(c));
     if (input.eof()) {
       return {
         type: "EOF",
@@ -90,6 +96,40 @@ function Lexer(input) {
       return readOp();
     } else if (isIdStart(ch)) {
       return readIdent();
+    } else if (ch == ":" && input.lookahead() == "\n") {
+      input.next();
+      input.next();
+      let newIndent = readIndent();
+      if (currentIndent >= newIndent) {
+        throw new NyxInputError(`Indent should increase when defining block`);
+      } else {
+        currentIndent = newIndent;
+      }
+      indentStack.push(currentIndent);
+      return {
+        type: "Indent",
+        value: currentIndent,
+        line: input.line,
+        col: input.col
+      };
+    } else if (ch == "\n") {
+      input.next();
+      console.log("newline");
+      let newIndent = readIndent();
+      if (newIndent < currentIndent) {
+        console.log("smaller");
+        while (newIndent < currentIndent) {
+          indentStack.pop();
+          currentIndent = indentStack[indentStack.length - 1] || 0;
+          tokens.push({
+            type: "Dedent",
+            value: currentIndent,
+            line: input.line,
+            col: input.col
+          });
+        }
+        return;
+      }
     } else if (isPunc(ch)) {
       input.next();
       return {
@@ -98,13 +138,16 @@ function Lexer(input) {
         line: input.line,
         col: input.col,
       };
+    } else {
+      input.croak(`Cannot handle character ${ch}`);
     }
-
-    input.croak(`Cannot handle character ${ch}`);
   }
 
   while (!input.eof()) {
-    tokens.push(readNext());
+    let token = readNext();
+    if (token) {
+      tokens.push(token);
+    }
   }
 
   return tokens;

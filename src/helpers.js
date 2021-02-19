@@ -3,7 +3,7 @@ exports.isDigit = function(char) {
 }
 
 exports.isWhitespace = function(char) {
-  return " \t\n".indexOf(char) >= 0;
+  return " \t".indexOf(char) >= 0;
 }
 
 exports.isIdStart = function(char) {
@@ -24,4 +24,4 @@ exports.isPunc = function(char) {
 
 exports.operators = ["+", "-", "*", "/", "//", "%", "**", "="];
 
-exports.keywords = ["let", "const"];
+exports.keywords = ["let", "const", "do"];
