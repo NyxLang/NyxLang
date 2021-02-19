@@ -42,6 +42,9 @@ function evaluate(exp, env = main) {
     case "CallExpression":
       return evaluateCall(exp, env);
 
+    case "MemberExpression":
+      return evaluateMember(exp, env);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -157,11 +160,25 @@ function evaluateParallelAssignment(exp, env, constant) {
 }
 
 function evaluateCall(exp, env) {
-  let func = evaluate(exp.func, env);
-  if (typeof func != "function") {
-    throw new Error(`${func} is not callable`);
+  let obj = null;
+  if (exp.func.type == "MemberExpression") {
+    obj = evaluate(exp.func.object, env);
   }
-  return func.apply(null, exp.args.map(arg => evaluate(arg, env)));
+  let func = evaluate(exp.func, env);
+  let name = exp.func.name || `${exp.func.object.name}.${exp.func.property.name}`;
+  if (typeof func != "function") {
+    throw new Error(`${name} is not a callable value`);
+  }
+  return func.apply(obj, exp.args.map(arg => evaluate(arg, env)));
+}
+
+function evaluateMember(exp, env) {
+  const obj = evaluate(exp.object, env);
+  const prop = exp.property.name;
+  if (!obj[prop]) {
+    throw new Error(`Member ${prop} does not exist on object ${exp.object.name}`);
+  }
+  return obj[prop];
 }
 
 function applyBinary(op, left, right) {
