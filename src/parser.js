@@ -56,6 +56,14 @@ function parse(input) {
     }
   }
 
+  function skipKw(kw) {
+    if (isKeyword(kw)) {
+      next();
+    } else {
+      throw new NyxInputError(`Expecting keyword: ${kw}`);
+    }
+  }
+
   function delimited(start, stop, separator, parser) {
     let arr = [];
     let first = true;
@@ -122,6 +130,10 @@ function parse(input) {
 
       case "const":
         return parseConstantDefinition();
+
+      case "do":
+        skipKw("do");
+        return parseBlock();
     }
   }
 
@@ -199,7 +211,6 @@ function parse(input) {
 
   function parseCall(func) {
     let params = delimited("(", ")", ",", parseExpression);
-
     if (params[0] && params[0].expressions) {
       params = params[0].expressions;
     }
@@ -240,6 +251,27 @@ function parse(input) {
     return memberExpression;
   }
 
+  function parseBlock() {
+    let tok = peek();
+    const indent = tok.value;
+    tok = next();
+    let exprs = [];
+    while (tok && tok.type != "Dedent") {
+      if (tok && tok.type == "EOF") {
+        throw new NyxInputError("A block must be closed with an unindented newline");
+      }
+      exprs.push(parseExpression());
+      tok = peek();
+    }
+    next();
+    return {
+      type: "Block",
+      block: exprs,
+      line: exprs[0].line,
+      col: exprs[0].col
+    };
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -251,11 +283,11 @@ function parse(input) {
         return exp;
       }
 
-      if (isOperator(tok.value)) {
+      if (tok && isOperator(tok.value)) {
         return parseUnary();
       }
 
-      if (isKeyword(tok.value)) {
+      if (tok && isKeyword(tok.value)) {
         return parseKeyword();
       }
 
