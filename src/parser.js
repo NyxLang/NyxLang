@@ -24,8 +24,13 @@ function parse(input) {
     return input[current] || null;
   }
 
-  function lookahead(i=1) {
+  function lookahead(i = 1) {
     return input[current + i] || null;
+  }
+
+  function eof() {
+    const tok = peek();
+    return tok && tok.type == "EOF";
   }
 
   function isPunc(ch) {
@@ -49,6 +54,33 @@ function parse(input) {
     } else {
       throw new NyxInputError(`Expecting punctuation: ${ch}`);
     }
+  }
+
+  function delimited(start, stop, separator, parser) {
+    let arr = [];
+    let first = true;
+    skipPunc(start);
+    while (!eof()) {
+      if (isPunc(stop)) {
+        break;
+      }
+      if (first) {
+        first = false;
+      } else {
+        skipPunc(separator);
+      }
+      if (isPunc(stop)) {
+        break;
+      }
+      arr.push(parser());
+    }
+    skipPunc(stop);
+    return arr;
+  }
+
+  function maybeCall(expr) {
+    expr = expr();
+    return isPunc("(") ? parseCall(expr) : expr;
   }
 
   function maybeBinary(left, myPrec, sequence = null) {
@@ -165,38 +197,50 @@ function parse(input) {
     return maybeBinary(seq, 0);
   }
 
+  function parseCall(func) {
+    return {
+      type: "CallExpression",
+      func,
+      args: delimited("(", ")", ",", parseExpression)
+    };
+  }
+
   function parseAtom() {
     let tok = peek();
 
-    if (isPunc("(")) {
-      next();
-      let exp = parseExpression();
-      skipPunc(")");
-      return exp;
-    }
-
-    if (isOperator(tok.value)) {
-      return parseUnary();
-    }
-
-    if (isKeyword(tok.value)) {
-      return parseKeyword();
-    }
-
-    if (tok && tok.type === "Decimal") {
-      next();
-      return tok;
-    }
-
-    if (tok && tok.type === "Identifier") {
-      next();
-      return {
-        type: "Identifier",
-        name: tok.value,
-        line: tok.line,
-        col: tok.col
+    return maybeCall(function() {
+      if (isPunc("(")) {
+        next();
+        let exp = parseExpression();
+        skipPunc(")");
+        return exp;
       }
-    }
+
+      if (isOperator(tok.value)) {
+        return parseUnary();
+      }
+
+      if (isKeyword(tok.value)) {
+        return parseKeyword();
+      }
+
+      if (tok && tok.type === "Decimal") {
+        next();
+        return tok;
+      }
+
+      if (tok && tok.type === "Identifier") {
+        next();
+        return {
+          type: "Identifier",
+          name: tok.value,
+          line: tok.line,
+          col: tok.col
+        };
+      }
+      throw new Error(`Token of type ${tok.type} not recognized`);
+    });
+
   }
 
   function parseToplevel() {
@@ -209,7 +253,7 @@ function parse(input) {
   }
 
   function parseExpression(sequence = null) {
-    const exp = maybeBinary(parseAtom(), 0, sequence);
+    const exp = maybeCall(() => maybeBinary(parseAtom(), 0, sequence));
     let tok = peek();
     if (sequence || tok && tok.value == ",") {
       return parseSequenceExpression(exp, sequence);
