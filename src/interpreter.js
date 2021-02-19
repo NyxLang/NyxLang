@@ -39,6 +39,9 @@ function evaluate(exp, env = main) {
     case "ConstantParallelDefinition":
       return evaluateParallelDefinition(exp, env, true);
 
+    case "CallExpression":
+      return evaluateCall(exp, env);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -73,10 +76,12 @@ function defineConstant(exp, env) {
 
 function evaluateParallelDefinition(exp, env, constant = false) {
   let val;
-  const evaluatedValues = exp.values.map(value => {
+  const names = exp.names && exp.names.expressions || exp.names;
+  const values = exp.values && exp.values.expressions || exp.values;
+  const evaluatedValues = values.map(value => {
     return evaluate(value, exp);
   });
-  exp.names.forEach((item, i) => {
+  names.forEach((item, i) => {
     if (constant) {
       val = defineConstant({ name: item.name, value: { name: item.name, value: evaluatedValues[i] } }, env);
     } else {
@@ -149,6 +154,11 @@ function evaluateParallelAssignment(exp, env, constant) {
     val = evaluateVariableAssignment({name: item.name, value: evaluatedValues[i]}, env, constant);
   });
   return val;
+}
+
+function evaluateCall(exp, env) {
+  let func = evaluate(exp.func, env);
+  return func.apply(null, exp.args.map(arg => evaluate(arg, env)));
 }
 
 function applyBinary(op, left, right) {
