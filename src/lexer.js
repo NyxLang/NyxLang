@@ -1,5 +1,6 @@
 const { isDigit, isWhitespace, isIdStart, isIdChar, isOpChar, operators, isPunc, keywords } = require("./helpers");
 const stream = require("./input");
+const math = require("mathjs");
 
 function Lexer(input) {
   let current = null;
@@ -14,8 +15,13 @@ function Lexer(input) {
   }
 
   function readNumber() {
-    const start = input.col;
     let number = readWhile(ch => isDigit(ch));
+    let ch = input.peek();
+    if (ch.toLowerCase() == "x" || ch.toLowerCase() == "o" || ch.toLowerCase() == "b") {
+      number += ch;
+      input.next();
+      number += readWhile(ch => /[a-zA-Z0-9]/.test(ch));
+    }
     if (input.peek() == ".") {
       if (isDigit(input.lookahead())) {
         number += input.next();
