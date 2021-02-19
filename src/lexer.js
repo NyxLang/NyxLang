@@ -1,4 +1,4 @@
-const { isDigit, isWhitespace, isIdStart, isIdChar, operators, isPunc, keywords } = require("./helpers");
+const { isDigit, isWhitespace, isIdStart, isIdChar, isOpChar, operators, isPunc, keywords } = require("./helpers");
 const stream = require("./input");
 
 function Lexer(input) {
@@ -39,6 +39,16 @@ function Lexer(input) {
     };
   }
 
+  function readOp() {
+    let op = readWhile(ch => isOpChar(ch));
+    return {
+      type: "Operator",
+      value: op,
+      line: input.line,
+      col: input.col
+    };
+  }
+
   function readNext() {
     readWhile(isWhitespace);
     if (input.eof()) {
@@ -54,6 +64,8 @@ function Lexer(input) {
 
     if (isDigit(ch)) {
       return readNumber();
+    } else if (isOpChar(ch)) {
+      return readOp();
     } else if (isIdStart(ch)) {
       return readIdent();
     } else if (isPunc(ch)) {
