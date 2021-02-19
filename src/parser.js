@@ -199,6 +199,7 @@ function parse(input) {
 
   function parseCall(func) {
     let params = delimited("(", ")", ",", parseExpression);
+
     if (params[0] && params[0].expressions) {
       params = params[0].expressions;
     }
@@ -207,6 +208,36 @@ function parse(input) {
       func,
       args: params
     };
+  }
+
+  function parseMemberExpression(object) {
+    skipPunc(".");
+    let property = parseExpression();
+
+    if (property && property.type =="CallExpression") {
+      args = property.args
+      property = property.func;
+      const callExpression = {
+        type: "CallExpression",
+        func: {
+          type: "MemberExpression",
+          object,
+          property,
+          line: object.line,
+          col: object.col
+        },
+        args
+      };
+      return callExpression;
+    }
+    const memberExpression = {
+      type: "MemberExpression",
+      object,
+      property,
+      line: object.line,
+      col: object.col
+    };
+    return memberExpression;
   }
 
   function parseAtom() {
@@ -262,6 +293,11 @@ function parse(input) {
     if (sequence || tok && tok.value == ",") {
       return parseSequenceExpression(exp, sequence);
     }
+
+    if (tok && tok.value == ".") {
+      return parseMemberExpression(exp);
+    }
+
     return exp;
   }
 }
