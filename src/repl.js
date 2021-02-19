@@ -1,5 +1,6 @@
 const repl = require("repl");
-const { parseAndEvaluate, outputString } = require("./util");
+const { parseAndEvaluate } = require("./util");
+const outputString = require("./stdlib/io")["output-string"];
 
 function eval(cmd, context, fileName, callback) {
   callback(null, parseAndEvaluate(cmd));

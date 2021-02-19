@@ -3,10 +3,13 @@ const lexer = require("./lexer");
 const parse = require("./parser");
 const Environment = require("./environment");
 const NyxDecimal = require("./types/Decimal");
+const globals = require("./stdlib/globals");
 
 const globalEnv = new Environment();
+globalEnv.vars = { ...globals };
+const main = globalEnv.extend();
 
-function evaluate(exp, env = globalEnv) {
+function evaluate(exp, env = main) {
   switch (exp.type) {
     case "Block":
       let val = null;
@@ -96,7 +99,7 @@ function evaluateVariableAssignment(exp, env, constant = false) {
   const value = exp.right && evaluate(exp.right, env) || exp.value;
   const oldValue = env.vars[name];
 
-  if (oldValue && oldValue.constant) {
+  if (oldValue && oldValue.__constant__) {
     throw new Error("Cannot assign new value to constant");
   }
 
@@ -116,10 +119,10 @@ function evaluateVariableAssignment(exp, env, constant = false) {
   });
 
   env.set(name, {
-    id: value.__object_id__,
-    type: value.__type__,
-    class: value.__class__,
-    constant
+    __id__: value.__object_id__,
+    __type__: value.__type__,
+    __class__: value.__class__,
+    __constant__: constant
   });
 
   env.def(value.__object_id__, value);
@@ -129,7 +132,10 @@ function evaluateVariableAssignment(exp, env, constant = false) {
 
 function evaluateIdentifier(exp, env) {
   const pointer = env.get(exp.name);
-  return env.get(pointer.id)
+  if (pointer && pointer.__id__) {
+    return env.get(pointer.__id__)
+  }
+  return pointer;
 }
 
 function evaluateParallelAssignment(exp, env, constant) {
