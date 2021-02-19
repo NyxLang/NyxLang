@@ -52,7 +52,6 @@ function parse(input) {
   }
 
   function maybeBinary(left, myPrec, sequence = null) {
-    console.log(left);
     let tok = isOperator();
     if (!sequence && tok) {
       let hisPrec = PRECEDENCE[tok.value];
@@ -95,7 +94,28 @@ function parse(input) {
   }
 
   function parseVariableDefinition() {
-    const tok = lookahead();
+    let tok = lookahead();
+    let exp = null;
+    if (lookahead(2) && lookahead(2).value == ",") {
+      next();
+      exp = parseExpression();
+    }
+    if (exp && exp.left && exp.left.type == "SequenceExpression") {
+      return {
+        type: "VariableParallelDefinition",
+        names: exp.left,
+        values: exp.right || null,
+        line: exp.line,
+        col: exp.col
+      };
+    } else if (exp && exp.type == "SequenceExpression") {
+      return {
+        type: "VariableParallelDefinition",
+        names: exp.expressions,
+        line: exp.line,
+        col: exp.col
+      };
+    }
     return {
       type: "VariableDefinition",
       name: tok.value,
@@ -159,7 +179,12 @@ function parse(input) {
 
     if (tok && tok.type === "Identifier") {
       next();
-      return tok;
+      return {
+        type: "Identifier",
+        name: tok.value,
+        line: tok.line,
+        col: tok.col
+      }
     }
   }
 

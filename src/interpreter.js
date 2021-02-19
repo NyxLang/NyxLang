@@ -30,6 +30,9 @@ function evaluate(exp, env = globalEnv) {
     case "Assignment":
       return evaluateVariableAssignment(exp, env);
 
+    case "VariableParallelDefinition":
+      return evaluateParallelDefinition(exp, env)
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -47,24 +50,39 @@ function evaluateUnary(exp, env) {
 }
 
 function defineVariable(exp, env) {
-  env.def(exp.name, null);
+  const name = exp.name;
+  env.def(name, null);
   return null;
 }
 
 function defineConstant(exp, env) {
-  env.def(exp.name, null);
+  env.def(name, null);
   evaluateVariableAssignment(exp.value, env, true);
   return null
 }
 
-function evaluateVariableAssignment(exp, env, constant = false) {
-  const name = exp.left.value;
+function evaluateParallelDefinition(exp, env, constant = false) {
+  exp.names.expressions.forEach(item => {
+    if (constant) {
+      defineConstant(item, env);
+    } else {
+      defineVariable(item, env);
+    }
+  });
 
-  if (name && name.type == "SequenceExpression") {
-    console.log("parallel assignment");
+  if (exp.values) {
+    return evaluateParallelAssignment(exp, env);
+  }
+  return null;
+}
+
+function evaluateVariableAssignment(exp, env, constant = false) {
+  if (exp && exp.left && exp.left.type == "SequenceExpression") {
+    return evaluateParallelAssignment(exp, env, constant);
   }
 
-  const value = evaluate(exp.right, env);
+  const name = exp.left && exp.left.name || exp.name;
+  const value = exp.right && evaluate(exp.right, env) || exp.value;
   const oldValue = env.vars[name];
 
   if (oldValue && oldValue.constant) {
@@ -99,8 +117,21 @@ function evaluateVariableAssignment(exp, env, constant = false) {
 }
 
 function evaluateIdentifier(exp, env) {
-  const pointer = env.get(exp.value);
+  const pointer = env.get(exp.name);
   return env.get(pointer.id)
+}
+
+function evaluateParallelAssignment(exp, env, constant) {
+  let val;
+  const names = exp.left && exp.left.expressions || exp.names.expressions;
+  const values = exp.right && exp.right.expressions || exp.values.expressions;
+  const evaluatedValues = values.map(value => {
+    return evaluate(value, env);
+  });
+  names.forEach((item, i) => {
+    val = evaluateVariableAssignment({name: item.name, value: evaluatedValues[i]}, env, constant);
+  });
+  return val;
 }
 
 function applyBinary(op, left, right) {

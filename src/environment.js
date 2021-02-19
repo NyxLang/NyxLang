@@ -27,7 +27,10 @@ Environment.prototype = {
 
   set: function(name, value) {
     let scope = this.lookup(name);
-    return (scope || this).vars[name] = value;
+    if (scope) {
+      return (scope || this).vars[name] = value;
+    }
+    throw new Error(`Must define identifier ${name} before assigning a value`);
   },
 
   def: function(name, value) {
