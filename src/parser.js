@@ -126,10 +126,21 @@ function parse(input) {
 
   function parseConstantDefinition() {
     const tok = next();
+    const value = parseExpression();
+
+    if (value.left && value.left.type == "SequenceExpression") {
+      return {
+        type: "ConstantParallelDefinition",
+        names: value.left.expressions,
+        values: value.right.expressions,
+        line: value.line,
+        col: value.col
+      }
+    }
     return {
       type: "ConstantDefinition",
       name: tok.value,
-      value: parseExpression(),
+      value,
       line: tok.line,
       col: tok.col
     }

@@ -33,6 +33,9 @@ function evaluate(exp, env = globalEnv) {
     case "VariableParallelDefinition":
       return evaluateParallelDefinition(exp, env)
 
+    case "ConstantParallelDefinition":
+      return evaluateParallelDefinition(exp, env, true);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -50,30 +53,38 @@ function evaluateUnary(exp, env) {
 }
 
 function defineVariable(exp, env) {
-  const name = exp.name;
-  env.def(name, null);
+  if (env.lookup(exp.name)) {
+    throw new Error(`Cannot redeclare identifier ${exp.name}`);
+  }
+  env.def(exp.name, null);
   return null;
 }
 
 function defineConstant(exp, env) {
-  env.def(name, null);
-  evaluateVariableAssignment(exp.value, env, true);
-  return null
+  if (env.lookup(exp.name)) {
+    throw new Error(`Cannot redeclare identifier ${exp.name}`);
+  }
+  env.def(exp.name, null);
+  return evaluateVariableAssignment(exp.value, env, true);
 }
 
 function evaluateParallelDefinition(exp, env, constant = false) {
-  exp.names.expressions.forEach(item => {
+  let val;
+  const evaluatedValues = exp.values.map(value => {
+    return evaluate(value, exp);
+  });
+  exp.names.forEach((item, i) => {
     if (constant) {
-      defineConstant(item, env);
+      val = defineConstant({ name: item.name, value: { name: item.name, value: evaluatedValues[i] } }, env);
     } else {
-      defineVariable(item, env);
+      val = defineVariable(item, env);
     }
   });
 
-  if (exp.values) {
+  if (!constant && exp.values) {
     return evaluateParallelAssignment(exp, env);
   }
-  return null;
+  return val;
 }
 
 function evaluateVariableAssignment(exp, env, constant = false) {
