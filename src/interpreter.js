@@ -4,7 +4,6 @@ const parse = require("./parser");
 const Environment = require("./environment");
 const NyxDecimal = require("./types/Decimal");
 const globals = require("./stdlib/globals");
-const { NIL } = require("uuid");
 
 const globalEnv = new Environment();
 globalEnv.vars = { ...globals };
@@ -51,6 +50,9 @@ function evaluate(exp, env = main) {
 
     case "IfExpression":
       return evaluateIf(exp, env);
+
+    case "UnlessExpression":
+      return evaluateUnless(exp, env);
 
     case "Identifier":
       return evaluateIdentifier(exp, env);
@@ -224,6 +226,14 @@ function evaluateMember(exp, env) {
 function evaluateIf(exp, env) {
   const cond = evaluate(exp.cond, env);
   if (notFalsy(cond)) {
+    return evaluate(exp.then, env);
+  }
+  return exp.else ? evaluate(exp.else, env) : null;
+}
+
+function evaluateUnless(exp, env) {
+  const cond = evaluate(exp.cond, env);
+  if (!notFalsy(cond)) {
     return evaluate(exp.then, env);
   }
   return exp.else ? evaluate(exp.else, env) : null;

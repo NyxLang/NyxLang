@@ -170,6 +170,9 @@ function parse(input) {
 
       case "if":
         return parseIf();
+
+      case "unless":
+        return parseUnless();
     }
   }
 
@@ -332,6 +335,25 @@ function parse(input) {
     return expr;
   }
 
+  function parseUnless(exp = null) {
+    const tok = peek();
+    skipKw("unless");
+    const cond = parseExpression();
+    const then = exp || parseExpression();
+    let expr = {
+      type: "UnlessExpression",
+      cond,
+      then,
+      line: tok.line,
+      col: tok.col,
+    };
+    if (isKeyword("else")) {
+      skipKw("else");
+      expr.else = parseExpression();
+    }
+    return expr;
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -395,6 +417,10 @@ function parse(input) {
 
     if (tok && tok.value == "if") {
       return parseIf(exp);
+    }
+
+    if (tok && tok.value == "unless") {
+      return parseUnless(exp);
     }
 
     return exp;

@@ -41,4 +41,14 @@ exports.operators = [
   "not",
 ];
 
-exports.keywords = ["let", "const", "do", "if", "else", "true", "false", "nil"];
+exports.keywords = [
+  "let",
+  "const",
+  "do",
+  "if",
+  "else",
+  "true",
+  "false",
+  "nil",
+  "unless",
+];
