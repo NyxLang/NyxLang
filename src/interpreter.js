@@ -247,20 +247,20 @@ function evaluateUnless(exp, env) {
 function executeWhile(exp, env) {
   let cond = evaluate(exp.cond, env);
   while (notFalsy(cond)) {
-    console.log("in loop");
     let val = executeLoopBody(exp.body, env);
-    if (val == "break") break;
+    if (val == "break") return;
     cond = evaluate(exp.cond, env);
   }
 }
 
 function executeLoopBody(body, env) {
+  let val;
   for (let i = 0; i < body.block.length; i += 1) {
-    let val;
     val = evaluate(body.block[i], env);
     if (val == "break") return "break";
     else if (val == "continue") return "continue";
   }
+  return val;
 }
 
 function applyBinary(op, left, right) {
