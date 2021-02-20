@@ -52,6 +52,10 @@ class NyxNumber extends NyxPrimitive {
     return math.equal(this.__value__, x.__value__);
   }
 
+  "!="(x) {
+    return math.unequal(this.__value__, x.__value__);
+  }
+
   ">"(x) {
     return math.larger(this.__value__, x.__value__);
   }
