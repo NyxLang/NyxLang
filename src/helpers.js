@@ -53,4 +53,6 @@ exports.keywords = [
   "nil",
   "unless",
   "while",
+  "break",
+  "continue",
 ];

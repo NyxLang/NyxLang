@@ -178,6 +178,16 @@ function parse(input) {
 
       case "while":
         return parseWhile();
+
+      case "break":
+      case "continue":
+        skipKw(tok.value);
+        return {
+          type: "ControlStatement",
+          value: tok.value,
+          line: tok.line,
+          col: tok.line,
+        };
     }
   }
 
@@ -206,7 +216,7 @@ function parse(input) {
     }
     let value;
     if (lookahead(2) && lookahead(2).value == "=") {
-      next();
+      next(); // skip to identifier for binary assignment
       value = parseExpression();
     } else {
       value = null;
@@ -320,7 +330,6 @@ function parse(input) {
         tok = peek();
       }
     }
-    next();
     return {
       type: "Block",
       block: exprs,
@@ -333,7 +342,7 @@ function parse(input) {
     let tok = peek();
     skipKw("if");
     const cond = parseExpression();
-    const then = exp || parseExpression();
+    const then = parseExpression();
     let expr = {
       type: "IfExpression",
       cond,
@@ -345,6 +354,7 @@ function parse(input) {
       skipKw("else");
       expr.else = parseExpression();
     }
+    next();
     return expr;
   }
 
@@ -352,7 +362,7 @@ function parse(input) {
     const tok = peek();
     skipKw("unless");
     const cond = parseExpression();
-    const then = exp || parseExpression();
+    const then = parseExpression();
     let expr = {
       type: "UnlessExpression",
       cond,
@@ -364,6 +374,7 @@ function parse(input) {
       skipKw("else");
       expr.else = parseExpression();
     }
+    next();
     return expr;
   }
 
@@ -419,6 +430,7 @@ function parse(input) {
       if (tok && tok.type === "Indent") {
         return parseBlock();
       }
+
       throw new Error(`Token of type ${tok.type} not recognized`);
     });
   }
@@ -436,6 +448,7 @@ function parse(input) {
   function parseExpression(sequence = null) {
     const exp = maybeCall(() => maybeBinary(parseAtom(), 0, sequence));
     let tok = peek();
+
     if (sequence || (tok && tok.value == ",")) {
       return parseSequenceExpression(exp, sequence);
     }
@@ -444,13 +457,13 @@ function parse(input) {
       return parseMemberExpression(exp);
     }
 
-    if (tok && tok.value == "if") {
-      return parseIf(exp);
-    }
+    // if (tok && tok.value == "if") {
+    //   return parseIf(exp);
+    // }
 
-    if (tok && tok.value == "unless") {
-      return parseUnless(exp);
-    }
+    // if (tok && tok.value == "unless") {
+    //   return parseUnless(exp);
+    // }
 
     return exp;
   }

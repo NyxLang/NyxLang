@@ -66,6 +66,9 @@ function evaluate(exp, env = main) {
     case "Boolean":
     case "Nil":
       return exp.value;
+
+    case "ControlStatement":
+      return exp.value;
   }
 }
 
@@ -244,10 +247,20 @@ function evaluateUnless(exp, env) {
 function executeWhile(exp, env) {
   let cond = evaluate(exp.cond, env);
   while (notFalsy(cond)) {
-    evaluate(exp.body);
+    console.log("in loop");
+    let val = executeLoopBody(exp.body, env);
+    if (val == "break") break;
     cond = evaluate(exp.cond, env);
   }
-  return null;
+}
+
+function executeLoopBody(body, env) {
+  for (let i = 0; i < body.block.length; i += 1) {
+    let val;
+    val = evaluate(body.block[i], env);
+    if (val == "break") return "break";
+    else if (val == "continue") return "continue";
+  }
 }
 
 function applyBinary(op, left, right) {
