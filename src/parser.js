@@ -315,9 +315,13 @@ function parse(input) {
 
   function parseBlock() {
     let tok = peek();
-    tok = next();
+    const indentLevel = tok.value;
     let exprs = [];
-    while (tok && tok.type != "Dedent") {
+    tok = next();
+    while (
+      (tok && tok.type != "Dedent") ||
+      (tok.type == "Dedent" && tok.value >= indentLevel)
+    ) {
       if (tok && tok.type == "EOF") {
         throw new NyxInputError(
           "A block must be closed with an unindented newline"
@@ -330,12 +334,19 @@ function parse(input) {
         tok = peek();
       }
     }
-    return {
+    let exp = {
       type: "Block",
       block: exprs,
       line: exprs[0].line,
       col: exprs[0].col,
     };
+    console.log(exp);
+
+    if (tok && tok.type == "Dedent") {
+      next();
+    }
+
+    return exp;
   }
 
   function parseIf(exp = null) {
@@ -354,7 +365,6 @@ function parse(input) {
       skipKw("else");
       expr.else = parseExpression();
     }
-    next();
     return expr;
   }
 
