@@ -36,6 +36,9 @@ exports.operators = [
   ">",
   ">=",
   "<=",
+  "and",
+  "or",
+  "not"
 ];
 
 exports.keywords = ["let", "const", "do", "if", "else"];

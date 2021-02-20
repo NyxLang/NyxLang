@@ -43,6 +43,26 @@ class NyxNumber extends NyxPrimitive {
   "**"(x) {
     return math.pow(this.__value__, x.__value__);
   }
+
+  "=="(x) {
+    return math.equal(this.__value__, x.__value__);
+  }
+
+  ">"(x) {
+    return math.larger(this.__value__, x.__value__);
+  }
+
+  "<"(x) {
+    return math.smaller(this.__value__, x.__value__);
+  }
+
+  ">="(x) {
+    return math.largerEq(this.__value__, x.__value__);
+  }
+
+  "<="(x) {
+    return math.smallerEq(this.__value__, x.__value__);
+  }
 }
 
 module.exports = NyxNumber;

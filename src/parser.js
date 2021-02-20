@@ -5,6 +5,8 @@ const { NyxInputError } = require("./errors");
 // Binary operator precedence table
 const PRECEDENCE = {
   "=": 3,
+  or: 6,
+  and: 7,
   "==": 11,
   "<": 11,
   ">": 11,
@@ -17,6 +19,7 @@ const PRECEDENCE = {
   "//": 15,
   "%": 15,
   "**": 16,
+  not: 17,
 };
 
 function parse(input) {
