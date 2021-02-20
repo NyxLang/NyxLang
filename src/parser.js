@@ -143,6 +143,7 @@ function parse(input) {
     switch (tok.value) {
       case "true":
       case "false":
+        next();
         return {
           type: "Boolean",
           value: tok.value,
@@ -151,6 +152,7 @@ function parse(input) {
         };
 
       case "nil":
+        next();
         return {
           type: "Nil",
           value: null,
@@ -249,14 +251,13 @@ function parse(input) {
   }
 
   function parseCall(func) {
-    let params = delimited("(", ")", ",", parseExpression);
-    if (params[0] && params[0].expressions) {
-      params = params[0].expressions;
-    }
+    skipPunc("(");
+    let args = parseExpression();
+    args = args.type == "SequenceExpression" ? args.expressions : [args];
     return {
       type: "CallExpression",
       func,
-      args: params,
+      args,
     };
   }
 
