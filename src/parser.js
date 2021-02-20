@@ -3,15 +3,26 @@ const stream = require("./input");
 const { NyxInputError } = require("./errors");
 
 // Binary operator precedence table
-const PRECEDENCE  = {
+const PRECEDENCE = {
   "=": 3,
-  "+": 14, "-": 14,
-  "*": 15, "/": 15, "//": 15, "%": 15,
-  "**": 16
-}
+  "==": 11,
+  "<": 11,
+  ">": 11,
+  "<=": 11,
+  ">=": 11,
+  "+": 14,
+  "-": 14,
+  "*": 15,
+  "/": 15,
+  "//": 15,
+  "%": 15,
+  "**": 16,
+};
 
 function parse(input) {
   let current = 0;
+
+  console.log(input);
 
   return parseToplevel();
 
@@ -97,14 +108,17 @@ function parse(input) {
       let hisPrec = PRECEDENCE[tok.value];
       if (hisPrec > myPrec) {
         next();
-        return maybeBinary({
-          type: tok.value == "=" ? "Assignment" : "BinaryOperation",
-          operator: tok.value,
-          left,
-          right: maybeBinary(parseExpression(), hisPrec),
-          line: left.line,
-          col: left.col,
-        }, myPrec);
+        return maybeBinary(
+          {
+            type: tok.value == "=" ? "Assignment" : "BinaryOperation",
+            operator: tok.value,
+            left,
+            right: maybeBinary(parseExpression(), hisPrec),
+            line: left.line,
+            col: left.col,
+          },
+          myPrec
+        );
       }
     }
     return left;
@@ -118,8 +132,8 @@ function parse(input) {
       operator: tok.value,
       operand: parseAtom(),
       line: tok.line,
-      col: tok.col
-    }
+      col: tok.col,
+    };
   }
 
   function parseKeyword() {
@@ -150,22 +164,22 @@ function parse(input) {
         names: exp.left,
         values: exp.right || null,
         line: exp.line,
-        col: exp.col
+        col: exp.col,
       };
     } else if (exp && exp.type == "SequenceExpression") {
       return {
         type: "VariableParallelDefinition",
         names: exp.expressions,
         line: exp.line,
-        col: exp.col
+        col: exp.col,
       };
     }
     return {
       type: "VariableDefinition",
       name: tok.value,
       line: tok.line,
-      col: tok.col
-    }
+      col: tok.col,
+    };
   }
 
   function parseConstantDefinition() {
@@ -178,16 +192,16 @@ function parse(input) {
         names: value.left.expressions,
         values: value.right.expressions,
         line: value.line,
-        col: value.col
-      }
+        col: value.col,
+      };
     }
     return {
       type: "ConstantDefinition",
       name: tok.value,
       value,
       line: tok.line,
-      col: tok.col
-    }
+      col: tok.col,
+    };
   }
 
   function parseSequenceExpression(first, sequence) {
@@ -204,8 +218,8 @@ function parse(input) {
       type: "SequenceExpression",
       expressions,
       line: expressions[0].line,
-      col: expressions[0].col
-    }
+      col: expressions[0].col,
+    };
     return maybeBinary(seq, 0);
   }
 
@@ -217,7 +231,7 @@ function parse(input) {
     return {
       type: "CallExpression",
       func,
-      args: params
+      args: params,
     };
   }
 
@@ -225,8 +239,8 @@ function parse(input) {
     skipPunc(".");
     let property = parseExpression();
 
-    if (property && property.type =="CallExpression") {
-      args = property.args
+    if (property && property.type == "CallExpression") {
+      args = property.args;
       property = property.func;
       const callExpression = {
         type: "CallExpression",
@@ -235,9 +249,9 @@ function parse(input) {
           object,
           property,
           line: object.line,
-          col: object.col
+          col: object.col,
         },
-        args
+        args,
       };
       return callExpression;
     }
@@ -246,7 +260,7 @@ function parse(input) {
       object,
       property,
       line: object.line,
-      col: object.col
+      col: object.col,
     };
     return memberExpression;
   }
@@ -257,7 +271,9 @@ function parse(input) {
     let exprs = [];
     while (tok && tok.type != "Dedent") {
       if (tok && tok.type == "EOF") {
-        throw new NyxInputError("A block must be closed with an unindented newline");
+        throw new NyxInputError(
+          "A block must be closed with an unindented newline"
+        );
       }
       exprs.push(parseExpression());
       if (isKeyword("let")) {
@@ -271,14 +287,14 @@ function parse(input) {
       type: "Block",
       block: exprs,
       line: exprs[0].line,
-      col: exprs[0].col
+      col: exprs[0].col,
     };
   }
 
   function parseAtom() {
     let tok = peek();
 
-    return maybeCall(function() {
+    return maybeCall(function () {
       if (isPunc("(")) {
         next();
         let exp = parseExpression();
@@ -305,12 +321,11 @@ function parse(input) {
           type: "Identifier",
           name: tok.value,
           line: tok.line,
-          col: tok.col
+          col: tok.col,
         };
       }
       throw new Error(`Token of type ${tok.type} not recognized`);
     });
-
   }
 
   function parseToplevel() {
@@ -325,7 +340,7 @@ function parse(input) {
   function parseExpression(sequence = null) {
     const exp = maybeCall(() => maybeBinary(parseAtom(), 0, sequence));
     let tok = peek();
-    if (sequence || tok && tok.value == ",") {
+    if (sequence || (tok && tok.value == ",")) {
       return parseSequenceExpression(exp, sequence);
     }
 

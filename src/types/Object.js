@@ -1,7 +1,7 @@
 const uuid = require("uuid");
 
 class NyxObject {
-  constructor(className="Object", type="object") {
+  constructor(className = "Object", type = "object") {
     this.__object_id__ = uuid.v4();
     this.__class__ = className;
     this.__type__ = type;

@@ -1,11 +1,11 @@
-const {create, all} = require("mathjs");
+const { create, all } = require("mathjs");
 const { NyxTypeError } = require("../errors");
 const NyxNumber = require("./Number");
 
 const math = create(all);
 math.config({
-  number: 'BigNumber',
-  precision: 64
+  number: "BigNumber",
+  precision: 64,
 });
 
 class NyxDecimal extends NyxNumber {

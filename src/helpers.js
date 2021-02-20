@@ -1,27 +1,41 @@
-exports.isDigit = function(char) {
+exports.isDigit = function (char) {
   return /[0-9]/.test(char);
-}
+};
 
-exports.isWhitespace = function(char) {
+exports.isWhitespace = function (char) {
   return " \t".indexOf(char) >= 0;
-}
+};
 
-exports.isIdStart = function(char) {
+exports.isIdStart = function (char) {
   return /[a-zA-Z]/.test(char) || "_$".indexOf(char) >= 0;
-}
+};
 
-exports.isIdChar = function(char) {
+exports.isIdChar = function (char) {
   return /[a-zA-Z0-9]/.test(char) || "+-/\\*%<>=?!_$@^&|~".indexOf(char) >= 0;
-}
+};
 
-exports.isOpChar = function(char) {
+exports.isOpChar = function (char) {
   return "+-*/%=<>^&|~".indexOf(char) >= 0;
-}
+};
 
-exports.isPunc = function(char) {
+exports.isPunc = function (char) {
   return ";:()[]{},.'".indexOf(char) >= 0;
-}
+};
 
-exports.operators = ["+", "-", "*", "/", "//", "%", "**", "="];
+exports.operators = [
+  "+",
+  "-",
+  "*",
+  "/",
+  "//",
+  "%",
+  "**",
+  "=",
+  "==",
+  "<",
+  ">",
+  ">=",
+  "<=",
+];
 
-exports.keywords = ["let", "const", "do"];
+exports.keywords = ["let", "const", "do", "if", "else"];

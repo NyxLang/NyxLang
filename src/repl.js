@@ -12,5 +12,5 @@ repl.start({
   output: process.stdout,
   eval,
   ignoreUndefined: true,
-  writer: outputString
+  writer: outputString,
 });

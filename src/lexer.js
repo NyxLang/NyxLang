@@ -1,4 +1,13 @@
-const { isDigit, isWhitespace, isIdStart, isIdChar, isOpChar, operators, isPunc, keywords } = require("./helpers");
+const {
+  isDigit,
+  isWhitespace,
+  isIdStart,
+  isIdChar,
+  isOpChar,
+  operators,
+  isPunc,
+  keywords,
+} = require("./helpers");
 const stream = require("./input");
 const { NyxInputError } = require("./errors");
 
@@ -17,24 +26,28 @@ function Lexer(input) {
   }
 
   function readNumber() {
-    let number = readWhile(ch => isDigit(ch));
+    let number = readWhile((ch) => isDigit(ch));
     let ch = input.peek();
-    if (ch.toLowerCase() == "x" || ch.toLowerCase() == "o" || ch.toLowerCase() == "b") {
+    if (
+      ch.toLowerCase() == "x" ||
+      ch.toLowerCase() == "o" ||
+      ch.toLowerCase() == "b"
+    ) {
       number += ch;
       input.next();
-      number += readWhile(ch => /[a-zA-Z0-9]/.test(ch));
+      number += readWhile((ch) => /[a-zA-Z0-9]/.test(ch));
     }
     if (input.peek() == ".") {
       if (isDigit(input.lookahead())) {
         number += input.next();
-        number += readWhile(ch => isDigit(ch));
+        number += readWhile((ch) => isDigit(ch));
       }
     }
     if (input.peek() == "e") {
-      number += input.next()
+      number += input.next();
       if (input.peek() == "+" || input.peek() == "-") {
-        number += input.next()
-        number += readWhile(ch => isDigit(ch));
+        number += input.next();
+        number += readWhile((ch) => isDigit(ch));
       } else {
         throw new NyxInputError("Invalid numeric literal");
       }
@@ -43,12 +56,12 @@ function Lexer(input) {
       type: "Decimal",
       value: number,
       line: input.line,
-      col: input.col
+      col: input.col,
     };
   }
 
   function readIdent() {
-    let id = readWhile(ch => isIdChar(ch));
+    let id = readWhile((ch) => isIdChar(ch));
     const type = operators.includes(id)
       ? "Operator"
       : keywords.includes(id)
@@ -58,32 +71,32 @@ function Lexer(input) {
       type,
       line: input.line,
       col: input.col,
-      value: id
+      value: id,
     };
   }
 
   function readOp() {
-    let op = readWhile(ch => isOpChar(ch));
+    let op = readWhile((ch) => isOpChar(ch));
     return {
       type: "Operator",
       value: op,
       line: input.line,
-      col: input.col
+      col: input.col,
     };
   }
 
   function readIndent() {
-    let spaces = readWhile(ch => " ".indexOf(ch) >= 0);
+    let spaces = readWhile((ch) => " ".indexOf(ch) >= 0);
     return spaces.length || 0;
   }
 
   function skipComment() {
-    readWhile(ch => ch != "\n");
+    readWhile((ch) => ch != "\n");
     input.next();
   }
 
   function readNext() {
-    readWhile(c => isWhitespace(c));
+    readWhile((c) => isWhitespace(c));
     if (input.eof()) {
       return {
         type: "EOF",
@@ -120,7 +133,7 @@ function Lexer(input) {
         type: "Indent",
         value: currentIndent,
         line: input.line,
-        col: input.col
+        col: input.col,
       };
     } else if (ch == "\n") {
       input.next();
@@ -133,7 +146,7 @@ function Lexer(input) {
             type: "Dedent",
             value: currentIndent,
             line: input.line,
-            col: input.col
+            col: input.col,
           });
         }
         return;

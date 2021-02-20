@@ -21,7 +21,7 @@ function InputStream(input) {
     return input.charAt(pos);
   }
 
-  function lookahead(i=1) {
+  function lookahead(i = 1) {
     return input.charAt(pos + i);
   }
 
@@ -33,14 +33,14 @@ function InputStream(input) {
     throw new NyxInputError(`${msg} (at ${line}:${col})`);
   }
 
-    return {
+  return {
     next,
     peek,
     lookahead,
     eof,
     croak,
     line,
-    col
+    col,
   };
 }
 

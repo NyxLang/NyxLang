@@ -3,12 +3,7 @@ const readlineSync = require("readline-sync");
 function outputString(...args) {
   let temp = [];
   for (let item of args) {
-    if (
-      item ||
-      item === 0 ||
-      item === "" ||
-      item === false
-    ) {
+    if (item || item === 0 || item === "" || item === false) {
       temp.push(item.toString());
     } else if (item == null) {
       return "nil";

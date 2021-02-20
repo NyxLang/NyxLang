@@ -3,8 +3,8 @@ const NyxPrimitive = require("./Primitive");
 
 const math = create(all);
 math.config({
-  number: 'BigNumber',
-  precision: 64
+  number: "BigNumber",
+  precision: 64,
 });
 
 class NyxNumber extends NyxPrimitive {

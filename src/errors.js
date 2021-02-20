@@ -18,5 +18,5 @@ class NyxTypeError extends NyxError {
 
 module.exports = {
   NyxInputError,
-  NyxTypeError
-}
+  NyxTypeError,
+};

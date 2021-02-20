@@ -14,7 +14,7 @@ function evaluate(exp, env = main) {
     case "Block":
       let val = null;
       const scope = env.extend();
-      exp.block.forEach(ex => {
+      exp.block.forEach((ex) => {
         val = evaluate(ex, scope);
       });
       return val;
@@ -35,7 +35,7 @@ function evaluate(exp, env = main) {
       return evaluateVariableAssignment(exp, env);
 
     case "VariableParallelDefinition":
-      return evaluateParallelDefinition(exp, env)
+      return evaluateParallelDefinition(exp, env);
 
     case "ConstantParallelDefinition":
       return evaluateParallelDefinition(exp, env, true);
@@ -55,7 +55,11 @@ function evaluate(exp, env = main) {
 }
 
 function evaluateBinary(exp, env) {
-  return applyBinary(exp.operator, evaluate(exp.left, env), evaluate(exp.right, env));
+  return applyBinary(
+    exp.operator,
+    evaluate(exp.left, env),
+    evaluate(exp.right, env)
+  );
 }
 
 function evaluateUnary(exp, env) {
@@ -80,14 +84,20 @@ function defineConstant(exp, env) {
 
 function evaluateParallelDefinition(exp, env, constant = false) {
   let val;
-  const names = exp.names && exp.names.expressions || exp.names;
-  const values = exp.values && exp.values.expressions || exp.values;
-  const evaluatedValues = values.map(value => {
+  const names = (exp.names && exp.names.expressions) || exp.names;
+  const values = (exp.values && exp.values.expressions) || exp.values;
+  const evaluatedValues = values.map((value) => {
     return evaluate(value, exp);
   });
   names.forEach((item, i) => {
     if (constant) {
-      val = defineConstant({ name: item.name, value: { name: item.name, value: evaluatedValues[i] } }, env);
+      val = defineConstant(
+        {
+          name: item.name,
+          value: { name: item.name, value: evaluatedValues[i] },
+        },
+        env
+      );
     } else {
       val = defineVariable(item, env);
     }
@@ -104,8 +114,8 @@ function evaluateVariableAssignment(exp, env, constant = false) {
     return evaluateParallelAssignment(exp, env, constant);
   }
 
-  const name = exp.left && exp.left.name || exp.name;
-  const value = exp.right && evaluate(exp.right, env) || exp.value;
+  const name = (exp.left && exp.left.name) || exp.name;
+  const value = (exp.right && evaluate(exp.right, env)) || exp.value;
   const oldValue = env.vars[name];
 
   if (oldValue && oldValue.__constant__) {
@@ -114,24 +124,24 @@ function evaluateVariableAssignment(exp, env, constant = false) {
 
   Object.defineProperty(value, "__object_id__", {
     writable: false,
-    enumerable: false
+    enumerable: false,
   });
 
-    Object.defineProperty(value, "__type__", {
+  Object.defineProperty(value, "__type__", {
     writable: false,
-    enumerable: false
+    enumerable: false,
   });
 
-    Object.defineProperty(value, "__class__", {
+  Object.defineProperty(value, "__class__", {
     writable: false,
-    enumerable: false
+    enumerable: false,
   });
 
   env.set(name, {
     __id__: value.__object_id__,
     __type__: value.__type__,
     __class__: value.__class__,
-    __constant__: constant
+    __constant__: constant,
   });
 
   env.def(value.__object_id__, value);
@@ -142,20 +152,24 @@ function evaluateVariableAssignment(exp, env, constant = false) {
 function evaluateIdentifier(exp, env) {
   const pointer = env.get(exp.name);
   if (pointer && pointer.__id__) {
-    return env.get(pointer.__id__)
+    return env.get(pointer.__id__);
   }
   return pointer;
 }
 
 function evaluateParallelAssignment(exp, env, constant) {
   let val;
-  const names = exp.left && exp.left.expressions || exp.names.expressions;
-  const values = exp.right && exp.right.expressions || exp.values.expressions;
-  const evaluatedValues = values.map(value => {
+  const names = (exp.left && exp.left.expressions) || exp.names.expressions;
+  const values = (exp.right && exp.right.expressions) || exp.values.expressions;
+  const evaluatedValues = values.map((value) => {
     return evaluate(value, env);
   });
   names.forEach((item, i) => {
-    val = evaluateVariableAssignment({ name: item.name, value: evaluatedValues[i] }, env, constant);
+    val = evaluateVariableAssignment(
+      { name: item.name, value: evaluatedValues[i] },
+      env,
+      constant
+    );
   });
   return val;
 }
@@ -166,18 +180,24 @@ function evaluateCall(exp, env) {
     obj = evaluate(exp.func.object, env);
   }
   let func = evaluate(exp.func, env);
-  let name = exp.func.name || `${exp.func.object.name}.${exp.func.property.name}`;
+  let name =
+    exp.func.name || `${exp.func.object.name}.${exp.func.property.name}`;
   if (typeof func != "function") {
     throw new Error(`${name} is not a callable value`);
   }
-  return func.apply(obj, exp.args.map(arg => evaluate(arg, env)));
+  return func.apply(
+    obj,
+    exp.args.map((arg) => evaluate(arg, env))
+  );
 }
 
 function evaluateMember(exp, env) {
   const obj = evaluate(exp.object, env);
   const prop = exp.property.name;
   if (!obj[prop]) {
-    throw new Error(`Member ${prop} does not exist on object ${exp.object.name}`);
+    throw new Error(
+      `Member ${prop} does not exist on object ${exp.object.name}`
+    );
   }
   return obj[prop];
 }
