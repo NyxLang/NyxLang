@@ -143,29 +143,33 @@ function evaluateVariableAssignment(exp, env, constant = false) {
     throw new Error("Cannot assign new value to constant");
   }
 
-  Object.defineProperty(value, "__object_id__", {
-    writable: false,
-    enumerable: false,
-  });
+  if (typeof value == "object") {
+    Object.defineProperty(value, "__object_id__", {
+      writable: false,
+      enumerable: false,
+    });
 
-  Object.defineProperty(value, "__type__", {
-    writable: false,
-    enumerable: false,
-  });
+    Object.defineProperty(value, "__type__", {
+      writable: false,
+      enumerable: false,
+    });
 
-  Object.defineProperty(value, "__class__", {
-    writable: false,
-    enumerable: false,
-  });
+    Object.defineProperty(value, "__class__", {
+      writable: false,
+      enumerable: false,
+    });
 
-  env.set(name, {
-    __id__: value.__object_id__,
-    __type__: value.__type__,
-    __class__: value.__class__,
-    __constant__: constant,
-  });
+    env.set(name, {
+      __id__: value.__object_id__,
+      __type__: value.__type__,
+      __class__: value.__class__,
+      __constant__: constant,
+    });
 
-  env.def(value.__object_id__, value);
+    env.def(value.__object_id__, value);
+  } else {
+    env.set(name, value);
+  }
 
   return value;
 }

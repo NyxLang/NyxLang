@@ -317,7 +317,7 @@ function parse(input) {
   }
 
   function parseIf(exp = null) {
-    const tok = peek();
+    let tok = peek();
     skipKw("if");
     const cond = parseExpression();
     const then = exp || parseExpression();

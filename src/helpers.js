@@ -47,6 +47,7 @@ exports.keywords = [
   "do",
   "if",
   "else",
+  "elseif",
   "true",
   "false",
   "nil",
