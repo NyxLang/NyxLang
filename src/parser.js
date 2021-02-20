@@ -179,6 +179,9 @@ function parse(input) {
       case "while":
         return parseWhile();
 
+      case "until":
+        return parseUntil();
+
       case "break":
       case "continue":
         skipKw(tok.value);
@@ -340,7 +343,6 @@ function parse(input) {
       line: exprs[0].line,
       col: exprs[0].col,
     };
-    console.log(exp);
 
     if (tok && tok.type == "Dedent") {
       next();
@@ -384,7 +386,6 @@ function parse(input) {
       skipKw("else");
       expr.else = parseExpression();
     }
-    next();
     return expr;
   }
 
@@ -395,6 +396,21 @@ function parse(input) {
     const body = parseExpression();
     let expr = {
       type: "WhileStatement",
+      cond,
+      body,
+      line: tok.line,
+      col: tok.col,
+    };
+    return expr;
+  }
+
+  function parseUntil() {
+    const tok = peek();
+    skipKw("until");
+    const cond = parseExpression();
+    const body = parseExpression();
+    let expr = {
+      type: "UntilStatement",
       cond,
       body,
       line: tok.line,

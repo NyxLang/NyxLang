@@ -55,4 +55,5 @@ exports.keywords = [
   "while",
   "break",
   "continue",
+  "until",
 ];

@@ -57,6 +57,9 @@ function evaluate(exp, env = main) {
     case "WhileStatement":
       return executeWhile(exp, env);
 
+    case "UntilStatement":
+      return executeUntil(exp, env);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -247,6 +250,15 @@ function evaluateUnless(exp, env) {
 function executeWhile(exp, env) {
   let cond = evaluate(exp.cond, env);
   while (notFalsy(cond)) {
+    let val = executeLoopBody(exp.body, env);
+    if (val == "break") return;
+    cond = evaluate(exp.cond, env);
+  }
+}
+
+function executeUntil(exp, env) {
+  let cond = evaluate(exp.cond, env);
+  while (!notFalsy(cond)) {
     let val = executeLoopBody(exp.body, env);
     if (val == "break") return;
     cond = evaluate(exp.cond, env);
