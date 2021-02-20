@@ -19,7 +19,6 @@ const PRECEDENCE = {
   "//": 15,
   "%": 15,
   "**": 16,
-  not: 17,
 };
 
 function parse(input) {

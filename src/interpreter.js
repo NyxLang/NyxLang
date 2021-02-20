@@ -207,11 +207,25 @@ function evaluateMember(exp, env) {
 }
 
 function applyBinary(op, left, right) {
+  switch (op) {
+    case "and":
+      return notFalsy(left) && right;
+    case "or":
+      return notFalsy(left) ? left : right;
+  }
   return left[op](right);
 }
 
 function applyUnary(operator, operand) {
+  switch (operator) {
+    case "not":
+      return !operand;
+  }
   return operand[operator + "@"]();
+}
+
+function notFalsy(val) {
+  return val !== false && val !== null;
 }
 
 module.exports = evaluate;
