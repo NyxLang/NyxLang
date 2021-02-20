@@ -329,7 +329,6 @@ function parse(input) {
       skipKw("else");
       expr.else = parseExpression();
     }
-    console.log(expr);
     return expr;
   }
 
@@ -380,7 +379,7 @@ function parse(input) {
       program.push(parseExpression());
       next();
     }
-    return { type: "Block", block: program };
+    return { type: "Program", program };
   }
 
   function parseExpression(sequence = null) {

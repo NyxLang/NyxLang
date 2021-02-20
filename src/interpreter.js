@@ -11,11 +11,10 @@ const main = globalEnv.extend();
 
 function evaluate(exp, env = main) {
   switch (exp.type) {
-    case "Block":
+    case "Program":
       let val = null;
-      const scope = env.extend();
-      exp.block.forEach((ex) => {
-        val = evaluate(ex, scope);
+      exp.program.forEach((ex) => {
+        val = evaluate(ex, env);
       });
       return val;
 
@@ -46,6 +45,9 @@ function evaluate(exp, env = main) {
     case "MemberExpression":
       return evaluateMember(exp, env);
 
+    case "Block":
+      return evaluateBlock(exp, env);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -56,6 +58,15 @@ function evaluate(exp, env = main) {
     case "Nil":
       return exp.value;
   }
+}
+
+function evaluateBlock(exp, env) {
+  let val = null;
+  const scope = env.extend();
+  exp.block.forEach((ex) => {
+    val = evaluate(ex, scope);
+  });
+  return val;
 }
 
 function evaluateBinary(exp, env) {
