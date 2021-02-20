@@ -236,6 +236,13 @@ function evaluateIf(exp, env) {
   if (notFalsy(cond)) {
     return evaluate(exp.then, env);
   }
+  if (exp.elseifs) {
+    for (let elseif of exp.elseifs) {
+      if (notFalsy(evaluate(elseif.cond, env))) {
+        return evaluate(elseif.then, env);
+      }
+    }
+  }
   return exp.else ? evaluate(exp.else, env) : null;
 }
 

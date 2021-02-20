@@ -363,6 +363,17 @@ function parse(input) {
       line: tok.line,
       col: tok.col,
     };
+    if (isKeyword("elseif")) {
+      let elseifs = [];
+      while (isKeyword("elseif")) {
+        skipKw("elseif");
+        elseifs.push({
+          cond: parseExpression(),
+          then: parseExpression(),
+        });
+      }
+      expr.elseifs = elseifs;
+    }
     if (isKeyword("else")) {
       skipKw("else");
       expr.else = parseExpression();
