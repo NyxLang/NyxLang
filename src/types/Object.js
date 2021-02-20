@@ -1,4 +1,5 @@
 const uuid = require("uuid");
+const equal = require("fast-deep-equal/es6");
 
 class NyxObject {
   constructor(className = "Object", type = "object") {
@@ -7,7 +8,19 @@ class NyxObject {
     this.__type__ = type;
   }
 
-  toString() {
+  "=="(other) {
+    return equal(this, other);
+  }
+
+  is(other) {
+    return Object.is(this, other);
+  }
+
+  "!="(other) {
+    return !equal(this, other);
+  }
+
+  "to-string"() {
     this.toString();
   }
 
