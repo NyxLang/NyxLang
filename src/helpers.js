@@ -15,7 +15,7 @@ exports.isIdChar = function (char) {
 };
 
 exports.isOpChar = function (char) {
-  return "+-*/%=<>^&|~".indexOf(char) >= 0;
+  return "+-*/%=<>^&|~!".indexOf(char) >= 0;
 };
 
 exports.isPunc = function (char) {
