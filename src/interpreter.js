@@ -257,7 +257,8 @@ function evaluateUnless(exp, env) {
 function executeWhile(exp, env) {
   let cond = evaluate(exp.cond, env);
   while (notFalsy(cond)) {
-    let val = executeLoopBody(exp.body, env);
+    let scope = env.extend();
+    let val = executeLoopBody(exp.body, scope);
     if (val == "break") return;
     cond = evaluate(exp.cond, env);
   }
@@ -266,7 +267,8 @@ function executeWhile(exp, env) {
 function executeUntil(exp, env) {
   let cond = evaluate(exp.cond, env);
   while (!notFalsy(cond)) {
-    let val = executeLoopBody(exp.body, env);
+    let scope = env.extend();
+    let val = executeLoopBody(exp.body, scope);
     if (val == "break") return;
     cond = evaluate(exp.cond, env);
   }
