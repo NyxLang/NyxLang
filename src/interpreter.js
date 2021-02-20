@@ -54,6 +54,9 @@ function evaluate(exp, env = main) {
     case "UnlessExpression":
       return evaluateUnless(exp, env);
 
+    case "WhileStatement":
+      return executeWhile(exp, env);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -92,7 +95,7 @@ function defineVariable(exp, env) {
     throw new Error(`Cannot redeclare identifier ${exp.name}`);
   }
   env.def(exp.name, null);
-  return null;
+  return exp.value ? evaluateVariableAssignment(exp.value, env) : null;
 }
 
 function defineConstant(exp, env) {
@@ -107,9 +110,14 @@ function evaluateParallelDefinition(exp, env, constant = false) {
   let val;
   const names = (exp.names && exp.names.expressions) || exp.names;
   const values = (exp.values && exp.values.expressions) || exp.values;
-  const evaluatedValues = values.map((value) => {
-    return evaluate(value, exp);
-  });
+  let evaluatedValues;
+  if (values) {
+    evaluatedValues = values.map((value) => {
+      return evaluate(value, exp);
+    });
+  } else {
+    evaluatedValues = names.map((value) => null);
+  }
   names.forEach((item, i) => {
     if (constant) {
       val = defineConstant(
@@ -158,28 +166,18 @@ function evaluateVariableAssignment(exp, env, constant = false) {
       writable: false,
       enumerable: false,
     });
-
-    env.set(name, {
-      __id__: value.__object_id__,
-      __type__: value.__type__,
-      __class__: value.__class__,
-      __constant__: constant,
-    });
-
-    env.def(value.__object_id__, value);
-  } else {
-    env.set(name, value);
   }
+  env.set(name, {
+    __constant__: constant,
+    __value__: value,
+  });
 
   return value;
 }
 
 function evaluateIdentifier(exp, env) {
-  const pointer = env.get(exp.name);
-  if (pointer && pointer.__id__) {
-    return env.get(pointer.__id__);
-  }
-  return pointer;
+  const val = env.get(exp.name);
+  return val && val.__value__ ? val.__value__ : val;
 }
 
 function evaluateParallelAssignment(exp, env, constant) {
@@ -241,6 +239,15 @@ function evaluateUnless(exp, env) {
     return evaluate(exp.then, env);
   }
   return exp.else ? evaluate(exp.else, env) : null;
+}
+
+function executeWhile(exp, env) {
+  let cond = evaluate(exp.cond, env);
+  while (notFalsy(cond)) {
+    evaluate(exp.body);
+    cond = evaluate(exp.cond, env);
+  }
+  return null;
 }
 
 function applyBinary(op, left, right) {

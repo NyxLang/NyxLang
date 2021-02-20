@@ -175,6 +175,9 @@ function parse(input) {
 
       case "unless":
         return parseUnless();
+
+      case "while":
+        return parseWhile();
     }
   }
 
@@ -201,9 +204,17 @@ function parse(input) {
         col: exp.col,
       };
     }
+    let value;
+    if (lookahead(2) && lookahead(2).value == "=") {
+      next();
+      value = parseExpression();
+    } else {
+      value = null;
+    }
     return {
       type: "VariableDefinition",
       name: tok.value,
+      value,
       line: tok.line,
       col: tok.col,
     };
@@ -254,6 +265,7 @@ function parse(input) {
     skipPunc("(");
     let args = parseExpression();
     args = args.type == "SequenceExpression" ? args.expressions : [args];
+    skipPunc(")");
     return {
       type: "CallExpression",
       func,
@@ -355,6 +367,21 @@ function parse(input) {
     return expr;
   }
 
+  function parseWhile() {
+    const tok = peek();
+    skipKw("while");
+    const cond = parseExpression();
+    const body = parseExpression();
+    let expr = {
+      type: "WhileStatement",
+      cond,
+      body,
+      line: tok.line,
+      col: tok.col,
+    };
+    return expr;
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -398,9 +425,10 @@ function parse(input) {
 
   function parseToplevel() {
     let program = [];
-    while (peek() && peek().type !== "EOF") {
+    let tok = peek();
+    while (tok && tok.type !== "EOF") {
       program.push(parseExpression());
-      next();
+      tok = peek();
     }
     return { type: "Program", program };
   }

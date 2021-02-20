@@ -52,4 +52,5 @@ exports.keywords = [
   "false",
   "nil",
   "unless",
+  "while",
 ];
