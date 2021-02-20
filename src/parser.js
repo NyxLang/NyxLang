@@ -313,11 +313,11 @@ function parse(input) {
     };
   }
 
-  function parseIf() {
+  function parseIf(exp = null) {
     const tok = peek();
     skipKw("if");
     const cond = parseExpression();
-    const then = parseExpression();
+    const then = exp || parseExpression();
     let expr = {
       type: "IfExpression",
       cond,
@@ -391,6 +391,10 @@ function parse(input) {
 
     if (tok && tok.value == ".") {
       return parseMemberExpression(exp);
+    }
+
+    if (tok && tok.value == "if") {
+      return parseIf(exp);
     }
 
     return exp;
