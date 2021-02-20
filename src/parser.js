@@ -167,6 +167,9 @@ function parse(input) {
       case "do":
         skipKw("do");
         return parseBlock();
+
+      case "if":
+        return parseIf();
     }
   }
 
@@ -310,6 +313,26 @@ function parse(input) {
     };
   }
 
+  function parseIf() {
+    const tok = peek();
+    skipKw("if");
+    const cond = parseExpression();
+    const then = parseExpression();
+    let expr = {
+      type: "IfExpression",
+      cond,
+      then,
+      line: tok.line,
+      col: tok.col,
+    };
+    if (isKeyword("else")) {
+      skipKw("else");
+      expr.else = parseExpression();
+    }
+    console.log(expr);
+    return expr;
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -342,6 +365,10 @@ function parse(input) {
           line: tok.line,
           col: tok.col,
         };
+      }
+
+      if (tok && tok.type === "Indent") {
+        return parseBlock();
       }
       throw new Error(`Token of type ${tok.type} not recognized`);
     });
