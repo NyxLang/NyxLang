@@ -51,6 +51,10 @@ function evaluate(exp, env = main) {
 
     case "Decimal":
       return new NyxDecimal(exp.value);
+
+    case "Boolean":
+    case "Nil":
+      return exp.value;
   }
 }
 

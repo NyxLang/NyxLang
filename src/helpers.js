@@ -38,7 +38,7 @@ exports.operators = [
   "<=",
   "and",
   "or",
-  "not"
+  "not",
 ];
 
-exports.keywords = ["let", "const", "do", "if", "else"];
+exports.keywords = ["let", "const", "do", "if", "else", "true", "false", "nil"];

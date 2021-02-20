@@ -25,8 +25,6 @@ const PRECEDENCE = {
 function parse(input) {
   let current = 0;
 
-  console.log(input);
-
   return parseToplevel();
 
   function next() {
@@ -142,6 +140,23 @@ function parse(input) {
   function parseKeyword() {
     const tok = peek();
     switch (tok.value) {
+      case "true":
+      case "false":
+        return {
+          type: "Boolean",
+          value: tok.value,
+          line: tok.line,
+          col: tok.col,
+        };
+
+      case "nil":
+        return {
+          type: "Nil",
+          value: null,
+          line: tok.line,
+          col: tok.col,
+        };
+
       case "let":
         return parseVariableDefinition();
 
