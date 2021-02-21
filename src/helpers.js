@@ -59,4 +59,5 @@ exports.keywords = [
   "for",
   "in",
   "def",
+  "lambda",
 ];

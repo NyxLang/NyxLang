@@ -188,6 +188,9 @@ function parse(input) {
       case "def":
         return parseFunctionDefinition();
 
+      case "lambda":
+        return parseLambda();
+
       case "break":
       case "continue":
         skipKw(tok.value);
@@ -474,6 +477,29 @@ function parse(input) {
     if (body.type != "Block") {
       throw new Error("Function body must be a block");
     }
+    expr.body = body;
+    return expr;
+  }
+
+  function parseLambda() {
+    let tok = peek();
+    skipKw("lambda");
+    skipPunc("(");
+    let expr = {
+      type: "LambdaExpression",
+      line: tok.line,
+      col: tok.col,
+    };
+    tok = peek();
+    let args = tok && tok.type != "Punctuation" ? parseExpression() : [];
+    if (args && args.type == "SequenceExpression") {
+      args = args.expressions;
+    } else if (args && args.type == "Identifier") {
+      args = [args];
+    }
+    skipPunc(")");
+    let body = parseExpression();
+    expr.args = args;
     expr.body = body;
     return expr;
   }
