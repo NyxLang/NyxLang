@@ -294,7 +294,7 @@ function executeFor(exp, env) {
       );
     } else {
       console.log(val);
-      let n = defineVariable(
+      defineVariable(
         {
           name: exp.vars.name,
           value: {

@@ -185,6 +185,9 @@ function parse(input) {
       case "for":
         return parseFor();
 
+      case "def":
+        return parseFunctionDefinition();
+
       case "break":
       case "continue":
         skipKw(tok.value);
@@ -454,6 +457,25 @@ function parse(input) {
       col: tok.col,
     };
     return parsed;
+  }
+
+  function parseFunctionDefinition() {
+    const tok = peek();
+    skipKw("def");
+    const name = parseAtom();
+    let expr = {
+      type: "FunctionDefinition",
+      name: name.func.name,
+      params: name.args,
+      line: tok.line,
+      col: tok.col,
+    };
+    const body = parseExpression();
+    if (body.type != "Block") {
+      throw new Error("Function body must be a block");
+    }
+    expr.body = body;
+    return expr;
   }
 
   function parseAtom() {

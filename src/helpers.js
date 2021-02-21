@@ -58,4 +58,5 @@ exports.keywords = [
   "until",
   "for",
   "in",
+  "def",
 ];
