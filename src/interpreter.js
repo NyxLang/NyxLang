@@ -66,6 +66,9 @@ function evaluate(exp, env = main) {
     case "FunctionDefinition":
       return evaluateFunctionDefinition(exp, env);
 
+    case "LambdaExpression":
+      return makeLambda(exp, env);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 

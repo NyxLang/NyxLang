@@ -499,7 +499,7 @@ function parse(input) {
     }
     skipPunc(")");
     let body = parseExpression();
-    expr.args = args;
+    expr.params = args;
     expr.body = body;
     return expr;
   }
