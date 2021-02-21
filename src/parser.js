@@ -279,8 +279,13 @@ function parse(input) {
 
   function parseCall(func) {
     skipPunc("(");
-    let args = parseExpression();
-    args = args.type == "SequenceExpression" ? args.expressions : [args];
+    let args;
+    if (!isPunc(")")) {
+      args = parseExpression();
+      args = args.type == "SequenceExpression" ? args.expressions : [args];
+    } else {
+      args = [];
+    }
     skipPunc(")");
     return {
       type: "CallExpression",
