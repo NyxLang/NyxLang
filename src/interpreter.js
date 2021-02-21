@@ -63,6 +63,9 @@ function evaluate(exp, env = main) {
     case "ForStatement":
       return executeFor(exp, env);
 
+    case "FunctionDefinition":
+      return evaluateFunctionDefinition(exp, env);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -308,6 +311,32 @@ function executeFor(exp, env) {
     let v = executeLoopBody(exp.body, scope);
     if (v == "break") return;
   }
+}
+
+function evaluateFunctionDefinition(exp, env) {
+  const name = exp.name;
+  const value = makeLambda(exp, env);
+  env.def(name, value);
+  return;
+}
+
+function makeLambda(exp, env) {
+  const lambda = (...args) => {
+    let scope = env.extend();
+    let defaults = {};
+    let names = exp.params.map((param) => {
+      if (param.type == "Assignment") {
+        defaults[param.left.name] = evaluate(param.right, scope);
+        return param.left.name;
+      }
+      return param.name;
+    });
+    names.forEach((name, i) => {
+      scope.def(name, args[i] || defaults[name]);
+    });
+    return evaluate(exp.body, scope);
+  };
+  return lambda;
 }
 
 function executeLoopBody(body, env) {
