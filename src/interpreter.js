@@ -60,6 +60,9 @@ function evaluate(exp, env = main) {
     case "UntilStatement":
       return executeUntil(exp, env);
 
+    case "ForStatement":
+      return executeFor(exp, env);
+
     case "Identifier":
       return evaluateIdentifier(exp, env);
 
@@ -271,6 +274,39 @@ function executeUntil(exp, env) {
     let val = executeLoopBody(exp.body, scope);
     if (val == "break") return;
     cond = evaluate(exp.cond, env);
+  }
+}
+
+function executeFor(exp, env) {
+  const seq = evaluate(exp.seq, env);
+  for (let val of seq.__data__) {
+    let scope = env.extend();
+    if (typeof val == "number") {
+      defineVariable(
+        {
+          name: exp.vars.name,
+          value: {
+            name: exp.vars.name,
+            value: evaluate({ type: "Decimal", value: val }, scope),
+          },
+        },
+        scope
+      );
+    } else {
+      console.log(val);
+      let n = defineVariable(
+        {
+          name: exp.vars.name,
+          value: {
+            name: exp.vars.name,
+            value: val,
+          },
+        },
+        scope
+      );
+    }
+    let v = executeLoopBody(exp.body, scope);
+    if (v == "break") return;
   }
 }
 

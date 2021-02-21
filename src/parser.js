@@ -182,6 +182,9 @@ function parse(input) {
       case "until":
         return parseUntil();
 
+      case "for":
+        return parseFor();
+
       case "break":
       case "continue":
         skipKw(tok.value);
@@ -428,6 +431,24 @@ function parse(input) {
       col: tok.col,
     };
     return expr;
+  }
+
+  function parseFor() {
+    const tok = peek();
+    skipKw("for");
+    const vars = parseExpression();
+    skipKw("in");
+    const seq = parseExpression();
+    const body = parseExpression();
+    const parsed = {
+      type: "ForStatement",
+      vars,
+      seq,
+      body,
+      line: tok.line,
+      col: tok.col,
+    };
+    return parsed;
   }
 
   function parseAtom() {

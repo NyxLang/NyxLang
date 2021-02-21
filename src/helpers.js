@@ -56,4 +56,6 @@ exports.keywords = [
   "break",
   "continue",
   "until",
+  "for",
+  "in",
 ];
