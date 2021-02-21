@@ -222,7 +222,10 @@ function evaluateCall(exp, env) {
   }
   return func.apply(
     obj,
-    exp.args.map((arg) => evaluate(arg, env))
+    exp.args.map((arg) => {
+      let val = evaluate(arg, env);
+      return val;
+    })
   );
 }
 
@@ -332,7 +335,10 @@ function makeLambda(exp, env) {
       return param.name;
     });
     names.forEach((name, i) => {
-      scope.def(name, args[i] || defaults[name]);
+      scope.def(
+        name,
+        { __constant__: false, __value__: args[i] } || defaults[name]
+      );
     });
     return evaluate(exp.body, scope);
   };
