@@ -14,6 +14,7 @@ const PRECEDENCE = {
   ">": 12,
   "<=": 12,
   ">=": 12,
+  in: 12,
   "+": 14,
   "-": 14,
   "*": 15,
@@ -448,13 +449,10 @@ function parse(input) {
     const tok = peek();
     skipKw("for");
     const vars = parseExpression();
-    skipKw("in");
-    const seq = parseExpression();
     const body = parseExpression();
     const parsed = {
       type: "ForStatement",
       vars,
-      seq,
       body,
       line: tok.line,
       col: tok.col,

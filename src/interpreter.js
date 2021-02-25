@@ -82,6 +82,10 @@ function evaluate(exp, env = main) {
     case "ControlStatement":
       return exp.value;
   }
+
+  if (typeof exp == "number") {
+    return new NyxDecimal(exp);
+  }
 }
 
 function evaluateBlock(exp, env) {
@@ -287,33 +291,22 @@ function executeUntil(exp, env) {
 }
 
 function executeFor(exp, env) {
-  const seq = evaluate(exp.seq, env);
+  const seq = evaluate(exp.vars.right, env);
   for (let val of seq.__data__) {
     let scope = env.extend();
-    if (typeof val == "number") {
+    if (exp.vars.left.type == "Identifier") {
       defineVariable(
         {
-          name: exp.vars.name,
+          name: exp.vars.left.name,
           value: {
-            name: exp.vars.name,
-            value: evaluate({ type: "Decimal", value: val }, scope),
-          },
-        },
-        scope
-      );
-    } else {
-      console.log(val);
-      defineVariable(
-        {
-          name: exp.vars.name,
-          value: {
-            name: exp.vars.name,
-            value: val,
+            name: exp.vars.left.name,
+            value: evaluate(val, scope),
           },
         },
         scope
       );
     }
+
     let v = executeLoopBody(exp.body, scope);
     if (v == "break") return;
   }

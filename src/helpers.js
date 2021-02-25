@@ -39,6 +39,7 @@ exports.operators = [
   "and",
   "or",
   "not",
+  "in",
 ];
 
 exports.keywords = [
@@ -57,7 +58,6 @@ exports.keywords = [
   "continue",
   "until",
   "for",
-  "in",
   "def",
   "lambda",
 ];
