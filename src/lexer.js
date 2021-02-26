@@ -97,14 +97,6 @@ function Lexer(input) {
 
   function readNext() {
     readWhile((c) => isWhitespace(c));
-    if (input.eof()) {
-      return {
-        type: "EOF",
-        value: "EOF",
-        line: input.line,
-        col: input.col,
-      };
-    }
 
     let ch = input.peek();
 
@@ -150,6 +142,13 @@ function Lexer(input) {
           });
         }
         return;
+      } else {
+        return {
+          type: "Newline",
+          value: "\n",
+          line: input.line,
+          col: input.col,
+        };
       }
     } else if (isPunc(ch)) {
       input.next();
@@ -170,6 +169,13 @@ function Lexer(input) {
       tokens.push(token);
     }
   }
+
+  tokens.push({
+    type: "EOF",
+    value: "EOF",
+    line: input.line,
+    col: input.col,
+  });
 
   return tokens;
 }

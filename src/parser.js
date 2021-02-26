@@ -26,6 +26,7 @@ const PRECEDENCE = {
 
 function parse(input) {
   let current = 0;
+  let saved = 0;
 
   return parseToplevel();
 
@@ -75,6 +76,14 @@ function parse(input) {
       next();
     } else {
       throw new NyxInputError(`Expecting keyword: ${kw}`);
+    }
+  }
+
+  function skipNewline(ch) {
+    if (ch == "\n") {
+      next();
+    } else {
+      throw new NyxInputError(`Expecting newline character`);
     }
   }
 
@@ -340,7 +349,7 @@ function parse(input) {
       (tok && tok.type != "Dedent") ||
       (tok.type == "Dedent" && tok.value >= indentLevel)
     ) {
-      if (tok && tok.type == "EOF") {
+      if (eof()) {
         throw new NyxInputError(
           "A block must be closed with an unindented newline"
         );
@@ -370,7 +379,7 @@ function parse(input) {
     let tok = peek();
     skipKw("if");
     const cond = parseExpression();
-    const then = parseExpression();
+    const then = exp || parseExpression();
     let expr = {
       type: "IfExpression",
       cond,
@@ -400,7 +409,7 @@ function parse(input) {
     const tok = peek();
     skipKw("unless");
     const cond = parseExpression();
-    const then = parseExpression();
+    const then = exp || parseExpression();
     let expr = {
       type: "UnlessExpression",
       cond,
@@ -547,9 +556,12 @@ function parse(input) {
   function parseToplevel() {
     let program = [];
     let tok = peek();
-    while (tok && tok.type !== "EOF") {
+    while (!eof()) {
       program.push(parseExpression());
       tok = peek();
+      if (!eof()) {
+        skipNewline(tok.value);
+      }
     }
     return { type: "Program", program };
   }
@@ -566,13 +578,43 @@ function parse(input) {
       return parseMemberExpression(exp);
     }
 
-    // if (tok && tok.value == "if") {
-    //   return parseIf(exp);
-    // }
+    if (tok && tok.value == "if") {
+      saved = current;
+      skipKw("if");
+      parseExpression();
+      if (peek() && peek().value == "\n") {
+        current = saved;
+        return parseIf(exp);
+      } else if (isKeyword("else")) {
+        skipKw("else");
+        parseExpression();
+        if (peek() && peek().value == "\n") {
+          current = saved;
+          return parseIf(exp);
+        }
+      } else {
+        current = saved;
+      }
+    }
 
-    // if (tok && tok.value == "unless") {
-    //   return parseUnless(exp);
-    // }
+    if (tok && tok.value == "unless") {
+      saved = current;
+      skipKw("unless");
+      parseExpression();
+      if (peek() && peek().value == "\n") {
+        current = saved;
+        return parseUnless(exp);
+      } else if (isKeyword("else")) {
+        skipKw("else");
+        parseExpression();
+        if (peek() && peek().value == "\n") {
+          current = saved;
+          return parseUnless(exp);
+        }
+      } else {
+        current = saved;
+      }
+    }
 
     return exp;
   }
