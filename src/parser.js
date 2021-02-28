@@ -210,6 +210,9 @@ function parse(input) {
           line: tok.line,
           col: tok.line,
         };
+
+      case "return":
+        return parseReturn();
     }
   }
 
@@ -354,6 +357,10 @@ function parse(input) {
           "A block must be closed with an unindented newline"
         );
       }
+      if (tok.value == "\n") {
+        skipNewline("\n");
+        tok = peek();
+      }
       exprs.push(parseExpression());
       if (isKeyword("let")) {
         tok = next();
@@ -424,11 +431,11 @@ function parse(input) {
     return expr;
   }
 
-  function parseWhile() {
+  function parseWhile(exp = null) {
     const tok = peek();
     skipKw("while");
     const cond = parseExpression();
-    const body = parseExpression();
+    const body = exp || parseExpression();
     let expr = {
       type: "WhileStatement",
       cond,
@@ -511,6 +518,18 @@ function parse(input) {
     return expr;
   }
 
+  function parseReturn() {
+    let tok = peek();
+    skipKw("return");
+    let expr = {
+      type: "ReturnStatement",
+      value: parseExpression(),
+      line: tok.line,
+      col: tok.col,
+    };
+    return expr;
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -549,6 +568,11 @@ function parse(input) {
         return parseBlock();
       }
 
+      if (tok && tok.type === "Newline") {
+        skipNewline(tok.value);
+        return;
+      }
+
       throw new Error(`Token of type ${tok.type} not recognized`);
     });
   }
@@ -557,7 +581,13 @@ function parse(input) {
     let program = [];
     let tok = peek();
     while (!eof()) {
-      program.push(parseExpression());
+      if (tok && tok.type == "EOF") {
+        break;
+      }
+      let exp = parseExpression();
+      if (exp) {
+        program.push(exp);
+      }
       tok = peek();
       if (!eof()) {
         skipNewline(tok.value);

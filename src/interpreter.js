@@ -81,6 +81,9 @@ function evaluate(exp, env = main) {
 
     case "ControlStatement":
       return exp.value;
+
+    case "ReturnStatement":
+      return executeReturn(exp, env);
   }
 
   if (typeof exp == "number") {
@@ -91,9 +94,9 @@ function evaluate(exp, env = main) {
 function evaluateBlock(exp, env) {
   let val = null;
   const scope = env.extend();
-  exp.block.forEach((ex) => {
+  for (let ex of exp.block) {
     val = evaluate(ex, scope);
-  });
+  }
   return val;
 }
 
@@ -336,17 +339,43 @@ function makeLambda(exp, env) {
         { __constant__: false, __value__: args[i] } || defaults[name]
       );
     });
-    return evaluate(exp.body, scope);
+    return executeFunctionBody(exp.body, scope);
   };
   return lambda;
 }
 
+function executeReturn(exp, env) {
+  return {
+    __type__: "ReturnStatement",
+    value: evaluate(exp.value, env),
+  };
+}
+
+function executeFunctionBody(body, env) {
+  let val;
+  if (body.block) {
+    for (let exp of body.block) {
+      val = evaluate(exp, env);
+      if (val && val.__type__ == "ReturnStatement") {
+        return val.value;
+      }
+    }
+  } else {
+    val = evaluate(body, env);
+  }
+  return val;
+}
+
 function executeLoopBody(body, env) {
   let val;
-  for (let i = 0; i < body.block.length; i += 1) {
-    val = evaluate(body.block[i], env);
-    if (val == "break") return "break";
-    else if (val == "continue") return "continue";
+  if (body.block) {
+    for (let i = 0; i < body.block.length; i += 1) {
+      val = evaluate(body.block[i], env);
+      if (val == "break") return "break";
+      else if (val == "continue") return "continue";
+    }
+  } else {
+    val = evaluate(body, env);
   }
   return val;
 }

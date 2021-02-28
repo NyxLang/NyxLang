@@ -60,4 +60,5 @@ exports.keywords = [
   "for",
   "def",
   "lambda",
+  "return"
 ];
