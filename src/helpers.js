@@ -40,6 +40,7 @@ exports.operators = [
   "or",
   "not",
   "in",
+  "->",
 ];
 
 exports.keywords = [
@@ -60,5 +61,5 @@ exports.keywords = [
   "for",
   "def",
   "lambda",
-  "return"
+  "return",
 ];

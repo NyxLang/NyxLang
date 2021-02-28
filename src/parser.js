@@ -22,6 +22,7 @@ const PRECEDENCE = {
   "//": 15,
   "%": 15,
   "**": 16,
+  "->": 17,
 };
 
 function parse(input) {
@@ -117,6 +118,9 @@ function parse(input) {
   function maybeBinary(left, myPrec, sequence = null) {
     let tok = isOperator();
     if (!sequence && tok) {
+      if (tok.value == "->") {
+        return parseShorthandLambda(left);
+      }
       let hisPrec = PRECEDENCE[tok.value];
       if (hisPrec > myPrec) {
         next();
@@ -530,12 +534,45 @@ function parse(input) {
     return expr;
   }
 
+  function parseShorthandLambda(left) {
+    let params;
+    let expr = {
+      type: "LambdaExpression",
+      line: left.line,
+      col: left.col,
+    };
+    if (left && left.type == "SequenceExpression") {
+      params = left.expressions;
+    } else if (left && left.type == "Nil") {
+      params = [];
+    } else {
+      // has a single param, not a sequence
+      params = [left];
+    }
+    next(); // skip current -> operator
+    let body = parseExpression();
+    expr.params = params;
+    expr.body = body;
+    console.log(expr);
+    return expr;
+  }
+
   function parseAtom() {
     let tok = peek();
 
     return maybeCall(function () {
       if (isPunc("(")) {
-        next();
+        tok = next();
+        if (tok && tok.value == ")") {
+          // empty parentheses, should be shorthand lambda with no params
+          skipPunc(")");
+          return {
+            type: "Nil",
+            value: null,
+            line: tok.line,
+            col: tok.col,
+          };
+        }
         let exp = parseExpression();
         skipPunc(")");
         return exp;
