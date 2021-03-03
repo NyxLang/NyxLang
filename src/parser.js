@@ -115,7 +115,7 @@ function parse(input) {
     return isPunc("(") ? parseCall(expr) : expr;
   }
 
-  function maybeBinary(left, myPrec, sequence = null) {
+  function maybeBinary(left, myPrec, sequence = null, notSeq = null) {
     let tok = isOperator();
     if (!sequence && tok) {
       if (tok.value == "->") {
@@ -129,7 +129,12 @@ function parse(input) {
             type: tok.value == "=" ? "Assignment" : "BinaryOperation",
             operator: tok.value,
             left,
-            right: maybeBinary(parseExpression(), hisPrec),
+            right: maybeBinary(
+              parseExpression(sequence, notSeq),
+              hisPrec,
+              sequence,
+              notSeq
+            ),
             line: left.line,
             col: left.col,
           },
@@ -301,15 +306,7 @@ function parse(input) {
   }
 
   function parseCall(func) {
-    skipPunc("(");
-    let args;
-    if (!isPunc(")")) {
-      args = parseExpression();
-      args = args.type == "SequenceExpression" ? args.expressions : [args];
-    } else {
-      args = [];
-    }
-    skipPunc(")");
+    let args = delimited("(", ")", ",", () => parseExpression(null, true));
     return {
       type: "CallExpression",
       func,
@@ -516,7 +513,7 @@ function parse(input) {
       args = [args];
     }
     skipPunc(")");
-    let body = parseExpression();
+    let body = parseExpression(null, true);
     expr.params = args;
     expr.body = body;
     return expr;
@@ -550,10 +547,9 @@ function parse(input) {
       params = [left];
     }
     next(); // skip current -> operator
-    let body = parseExpression();
+    let body = parseExpression(null, true);
     expr.params = params;
     expr.body = body;
-    console.log(expr);
     return expr;
   }
 
@@ -633,11 +629,11 @@ function parse(input) {
     return { type: "Program", program };
   }
 
-  function parseExpression(sequence = null) {
-    const exp = maybeCall(() => maybeBinary(parseAtom(), 0, sequence));
+  function parseExpression(sequence = null, notSeq = null) {
+    const exp = maybeCall(() => maybeBinary(parseAtom(), 0, sequence, notSeq));
     let tok = peek();
 
-    if (sequence || (tok && tok.value == ",")) {
+    if (sequence || (tok && tok.value == "," && !notSeq)) {
       return parseSequenceExpression(exp, sequence);
     }
 
