@@ -1,3 +1,4 @@
+const uuid = require("uuid");
 const stream = require("./input");
 const lexer = require("./lexer");
 const parse = require("./parser");
@@ -341,6 +342,25 @@ function makeLambda(exp, env) {
     });
     return executeFunctionBody(exp.body, scope);
   };
+
+  Object.defineProperty(lambda, "__object_id__", {
+    writable: false,
+    enumerable: false,
+    value: uuid.v4(),
+  });
+
+  Object.defineProperty(lambda, "__type__", {
+    writable: false,
+    enumerable: false,
+    value: "function",
+  });
+
+  Object.defineProperty(lambda, "__class__", {
+    writable: false,
+    enumerable: false,
+    value: "Function",
+  });
+
   return lambda;
 }
 
