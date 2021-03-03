@@ -8,45 +8,73 @@ const {
   isPunc,
   keywords,
 } = require("./helpers");
-const stream = require("./input");
 const { NyxInputError } = require("./errors");
 
 function Lexer(input) {
-  let current = null;
+  let pos = 0;
+  let line = 1;
+  let col = 1;
   let tokens = [];
   let currentIndent = 0;
   let indentStack = [];
 
+  function next() {
+    let ch = input.charAt(pos++);
+    if (ch == "\n") {
+      line++;
+      col = 1;
+    } else {
+      col++;
+    }
+    return ch;
+  }
+
+  function peek() {
+    return input.charAt(pos);
+  }
+
+  function lookahead(i = 1) {
+    return input.charAt(pos + i);
+  }
+
+  function eof() {
+    return peek() == "";
+  }
+
+  function croak(msg) {
+    throw new NyxInputError(`${msg} (at ${line}:${col})`);
+  }
+
   function readWhile(predicate) {
     let str = "";
-    while (!input.eof() && predicate(input.peek())) {
-      str += input.next();
+    while (!eof() && predicate(peek())) {
+      str += next();
     }
     return str;
   }
 
   function readNumber() {
     let number = readWhile((ch) => isDigit(ch));
-    let ch = input.peek();
+    let ch = peek();
     if (
       ch.toLowerCase() == "x" ||
       ch.toLowerCase() == "o" ||
       ch.toLowerCase() == "b"
     ) {
       number += ch;
-      input.next();
+      next();
       number += readWhile((ch) => /[a-zA-Z0-9]/.test(ch));
     }
-    if (input.peek() == ".") {
-      if (isDigit(input.lookahead())) {
-        number += input.next();
+    if (peek() == ".") {
+      if (isDigit(lookahead())) {
+        number += next();
         number += readWhile((ch) => isDigit(ch));
       }
     }
-    if (input.peek() == "e") {
-      number += input.next();
-      if (input.peek() == "+" || input.peek() == "-") {
-        number += input.next();
+    if (peek() == "e") {
+      number += next();
+      if (peek() == "+" || peek() == "-") {
+        number += next();
         number += readWhile((ch) => isDigit(ch));
       } else {
         throw new NyxInputError("Invalid numeric literal");
@@ -55,8 +83,8 @@ function Lexer(input) {
     return {
       type: "Decimal",
       value: number,
-      line: input.line,
-      col: input.col,
+      line: line,
+      col: col,
     };
   }
 
@@ -69,8 +97,8 @@ function Lexer(input) {
       : "Identifier";
     return {
       type,
-      line: input.line,
-      col: input.col,
+      line: line,
+      col: col,
       value: id,
     };
   }
@@ -80,8 +108,8 @@ function Lexer(input) {
     return {
       type: "Operator",
       value: op,
-      line: input.line,
-      col: input.col,
+      line: line,
+      col: col,
     };
   }
 
@@ -92,13 +120,13 @@ function Lexer(input) {
 
   function skipComment() {
     readWhile((ch) => ch != "\n");
-    input.next();
+    next();
   }
 
   function readNext() {
     readWhile((c) => isWhitespace(c));
 
-    let ch = input.peek();
+    let ch = peek();
 
     if (ch == "#") {
       skipComment();
@@ -111,9 +139,9 @@ function Lexer(input) {
       return readOp();
     } else if (isIdStart(ch)) {
       return readIdent();
-    } else if (ch == ":" && input.lookahead() == "\n") {
-      input.next();
-      input.next();
+    } else if (ch == ":" && lookahead() == "\n") {
+      next();
+      next();
       let newIndent = readIndent();
       if (currentIndent >= newIndent) {
         throw new NyxInputError(`Indent should increase when defining block`);
@@ -124,11 +152,11 @@ function Lexer(input) {
       return {
         type: "Indent",
         value: currentIndent,
-        line: input.line,
-        col: input.col,
+        line: line,
+        col: col,
       };
     } else if (ch == "\n") {
-      input.next();
+      next();
       let newIndent = readIndent();
       if (newIndent < currentIndent) {
         while (newIndent < currentIndent) {
@@ -137,8 +165,8 @@ function Lexer(input) {
           tokens.push({
             type: "Dedent",
             value: currentIndent,
-            line: input.line,
-            col: input.col,
+            line: line,
+            col: col,
           });
         }
         return;
@@ -146,24 +174,24 @@ function Lexer(input) {
         return {
           type: "Newline",
           value: "\n",
-          line: input.line,
-          col: input.col,
+          line: line,
+          col: col,
         };
       }
     } else if (isPunc(ch)) {
-      input.next();
+      next();
       return {
         type: "Punctuation",
         value: ch,
-        line: input.line,
-        col: input.col,
+        line: line,
+        col: col,
       };
     } else {
-      input.croak(`Cannot handle character ${ch}`);
+      croak(`Cannot handle character ${ch}`);
     }
   }
 
-  while (!input.eof()) {
+  while (!eof()) {
     let token = readNext();
     if (token) {
       tokens.push(token);
@@ -173,8 +201,8 @@ function Lexer(input) {
   tokens.push({
     type: "EOF",
     value: "EOF",
-    line: input.line,
-    col: input.col,
+    line: line,
+    col: col,
   });
 
   return tokens;
