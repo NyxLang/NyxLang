@@ -133,7 +133,13 @@ function parse(input) {
         return maybeBinary(
           {
             type:
-              tok.value == "=" || "+=" || "-=" || "*=" || "/=" || "//=" || "%="
+              tok.value == "=" ||
+              tok.value == "+=" ||
+              tok.value == "-=" ||
+              tok.value == "*=" ||
+              tok.value == "/=" ||
+              tok.value == "//=" ||
+              tok.value == "%="
                 ? "Assignment"
                 : "BinaryOperation",
             operator: tok.value,
