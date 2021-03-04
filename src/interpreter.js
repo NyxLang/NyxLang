@@ -4,6 +4,7 @@ const lexer = require("./lexer");
 const parse = require("./parser");
 const Environment = require("./environment");
 const NyxDecimal = require("./types/Decimal");
+const NyxString = require("./types/String");
 const globals = require("./stdlib/globals");
 
 const globalEnv = new Environment();
@@ -79,6 +80,9 @@ function evaluate(exp, env = main) {
     case "Boolean":
     case "Nil":
       return exp.value;
+
+    case "String":
+      return new NyxString(exp.value);
 
     case "ControlStatement":
       return exp.value;

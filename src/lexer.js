@@ -88,6 +88,35 @@ function Lexer(input) {
     };
   }
 
+  function readEscaped(end) {
+    let escaped = false;
+    let str = "";
+    next();
+    while (!eof()) {
+      let ch = next();
+      if (escaped) {
+        str += ch;
+        escaped = false;
+      } else if (ch == "\\") {
+        escaped = true;
+      } else if (ch == end) {
+        break;
+      } else {
+        str += ch;
+      }
+    }
+    return str;
+  }
+
+  function readString() {
+    return {
+      type: "String",
+      value: readEscaped('"'),
+      line,
+      col,
+    };
+  }
+
   function readIdent() {
     let id = readWhile((ch) => isIdChar(ch));
     const type = operators.includes(id)
@@ -135,6 +164,8 @@ function Lexer(input) {
 
     if (isDigit(ch)) {
       return readNumber();
+    } else if (ch == '"') {
+      return readString();
     } else if (isOpChar(ch)) {
       return readOp();
     } else if (isIdStart(ch)) {
