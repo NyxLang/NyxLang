@@ -1,4 +1,4 @@
-const { create, all } = require("mathjs");
+const { create, all, bitXor } = require("mathjs");
 const NyxPrimitive = require("./Primitive");
 
 const math = create(all);
@@ -18,6 +18,10 @@ class NyxNumber extends NyxPrimitive {
 
   "+@"() {
     return math.unaryPlus(this.__value__);
+  }
+
+  "~@"() {
+    return math.bitNot(this.__value__);
   }
 
   "+"(x) {
@@ -70,6 +74,30 @@ class NyxNumber extends NyxPrimitive {
 
   "<="(x) {
     return math.smallerEq(this.__value__, x.__value__);
+  }
+
+  "&"(x) {
+    return math.bitAnd(this.__value__, x.__value__);
+  }
+
+  "|"(x) {
+    return math.bitOr(this.__value__, x.__value__);
+  }
+
+  "^"(x) {
+    return math.bitXor(this.__value__, x.__value__);
+  }
+
+  "<<"(x) {
+    return math.leftShift(this.__value__, x.__value__);
+  }
+
+  ">>"(x) {
+    return math.rightArithShift(this.__value__, x.__value__);
+  }
+
+  ">>>"(x) {
+    return math.rightLogShift(this.__value__, x.__value__);
   }
 
   abs() {

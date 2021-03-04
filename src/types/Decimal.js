@@ -14,7 +14,17 @@ class NyxDecimal extends NyxNumber {
   }
 
   "-@"() {
-    const res = super["-@"](this);
+    const res = super["-@"]();
+    return new NyxDecimal(res);
+  }
+
+  "+@"() {
+    const res = super["+@"]();
+    return new NyxDecimal(res);
+  }
+
+  "~@"() {
+    const res = super["~@"]();
     return new NyxDecimal(res);
   }
 
@@ -58,6 +68,36 @@ class NyxDecimal extends NyxNumber {
 
   "**"(other) {
     const res = super["**"](other);
+    return new NyxDecimal(res);
+  }
+
+  "&"(other) {
+    const res = super["&"](other);
+    return new NyxDecimal(res);
+  }
+
+  "|"(other) {
+    const res = super["|"](other);
+    return new NyxDecimal(res);
+  }
+
+  "^"(other) {
+    const res = super["^"](other);
+    return new NyxDecimal(res);
+  }
+
+  "<<"(other) {
+    const res = super["<<"](other);
+    return new NyxDecimal(res);
+  }
+
+  ">>"(other) {
+    const res = super[">>"](other);
+    return new NyxDecimal(res);
+  }
+
+  ">>>"(other) {
+    const res = super[">>>"](other);
     return new NyxDecimal(res);
   }
 
@@ -144,5 +184,9 @@ class NyxDecimal extends NyxNumber {
     return new NyxDecimal(res);
   }
 }
+
+NyxDecimal.INFINITY = new NyxDecimal(Infinity);
+NyxDecimal.NEGATIVE_INFINITY = new NyxDecimal(-Infinity);
+NyxDecimal.NaN = new NyxDecimal(NaN);
 
 module.exports = NyxDecimal;

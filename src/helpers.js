@@ -47,6 +47,13 @@ exports.operators = [
   "not",
   "in",
   "->",
+  "&",
+  "|",
+  "~",
+  "^",
+  ">>",
+  "<<",
+  ">>>",
 ];
 
 exports.keywords = [
