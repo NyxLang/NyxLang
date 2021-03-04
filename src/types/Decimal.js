@@ -96,11 +96,6 @@ class NyxDecimal extends NyxNumber {
     return new NyxDecimal(res);
   }
 
-  ">>>"(other) {
-    const res = super[">>>"](other);
-    return new NyxDecimal(res);
-  }
-
   "integer?"() {
     return math.isInteger(this.__value__);
   }
