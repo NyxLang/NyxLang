@@ -89,6 +89,60 @@ class NyxDecimal extends NyxNumber {
     const res = super.abs();
     return new NyxDecimal(res);
   }
+
+  ceil() {
+    const res = super.ceil();
+    return new NyxDecimal(res);
+  }
+
+  denominator() {
+    return new NyxDecimal(math.bignumber(1));
+  }
+
+  floor() {
+    const res = super.floor();
+    return new NyxDecimal(res);
+  }
+
+  gcd(other) {
+    const res = super.gcd(other);
+    return new NyxDecimal(res);
+  }
+
+  lcm(other) {
+    const res = super.lcm(other);
+    return new NyxDecimal(res);
+  }
+
+  log10() {
+    const res = super.log10();
+    return new NyxDecimal(res);
+  }
+
+  log2() {
+    const res = super.log2();
+    return new NyxDecimal(res);
+  }
+
+  norm() {
+    const res = super.norm();
+    return new NyxDecimal(res);
+  }
+
+  round() {
+    const res = super.round();
+    return new NyxDecimal(res);
+  }
+
+  sqrt() {
+    const res = super.sqrt();
+    return new NyxDecimal(res);
+  }
+
+  square() {
+    const res = super.square();
+    return new NyxDecimal(res);
+  }
 }
 
 module.exports = NyxDecimal;
