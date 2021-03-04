@@ -62,6 +62,10 @@ class NyxDecimal extends NyxNumber {
   }
 
   "%"(other) {
+    if (other.__value__.toString() === "0") {
+      throw new NyxTypeError("Cannot divide by zero");
+    }
+
     const res = super["%"](other);
     return new NyxDecimal(res);
   }
