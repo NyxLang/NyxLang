@@ -5,6 +5,12 @@ const { NyxInputError } = require("./errors");
 // Binary operator precedence table
 const PRECEDENCE = {
   "=": 3,
+  "+=": 3,
+  "-=": 3,
+  "*=": 3,
+  "/=": 3,
+  "//=": 3,
+  "%=": 3,
   or: 6,
   and: 7,
   "==": 11,
@@ -126,7 +132,10 @@ function parse(input) {
         next();
         return maybeBinary(
           {
-            type: tok.value == "=" ? "Assignment" : "BinaryOperation",
+            type:
+              tok.value == "=" || "+=" || "-=" || "*=" || "/=" || "//=" || "%="
+                ? "Assignment"
+                : "BinaryOperation",
             operator: tok.value,
             left,
             right: maybeBinary(

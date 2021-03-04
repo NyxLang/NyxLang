@@ -167,11 +167,25 @@ function evaluateVariableAssignment(exp, env, constant = false) {
   }
 
   const name = (exp.left && exp.left.name) || exp.name;
-  const value = (exp.right && evaluate(exp.right, env)) || exp.value;
+  let value = (exp.right && evaluate(exp.right, env)) || exp.value;
   const oldValue = env.vars[name];
 
   if (oldValue && oldValue.__constant__) {
     throw new Error("Cannot assign new value to constant");
+  }
+
+  if (exp.operator == "+=") {
+    value = applyBinary("+", env.get(name).__value__, value);
+  } else if (exp.operator == "-=") {
+    value = applyBinary("-", env.get(name).__value__, value);
+  } else if (exp.operator == "*=") {
+    value = applyBinary("*", env.get(name).__value__, value);
+  } else if (exp.operator == "/=") {
+    value = applyBinary("/", env.get(name).__value__, value);
+  } else if (exp.operator == "//=") {
+    value = applyBinary("//", env.get(name).__value__, value);
+  } else if (exp.operator == "%=") {
+    value = applyBinary("%", env.get(name).__value__, value);
   }
 
   if (typeof value == "object") {
