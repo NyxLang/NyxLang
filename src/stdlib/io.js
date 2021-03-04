@@ -5,7 +5,7 @@ function outputString(...args) {
   for (let item of args) {
     if (item || item === 0 || item === "" || item === false) {
       if (typeof item == "function") {
-        temp.push(`<Function ${item.__object_id__}>`);
+        temp.push(`<Function ${item.__object_id__ || item.name}>`);
       } else {
         temp.push(item.toString());
       }

@@ -84,6 +84,11 @@ class NyxDecimal extends NyxNumber {
   "zero?"() {
     return math.isZero(this.__value__);
   }
+
+  abs() {
+    const res = super.abs();
+    return new NyxDecimal(res);
+  }
 }
 
 module.exports = NyxDecimal;

@@ -71,6 +71,10 @@ class NyxNumber extends NyxPrimitive {
   "<="(x) {
     return math.smallerEq(this.__value__, x.__value__);
   }
+
+  abs() {
+    return math.abs(this.__value__);
+  }
 }
 
 module.exports = NyxNumber;
