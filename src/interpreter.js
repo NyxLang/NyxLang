@@ -89,10 +89,9 @@ function evaluate(exp, env = main) {
 
     case "ReturnStatement":
       return executeReturn(exp, env);
-  }
 
-  if (typeof exp == "number") {
-    return new NyxDecimal(exp);
+    default:
+      return exp;
   }
 }
 
@@ -314,7 +313,7 @@ function executeUntil(exp, env) {
 
 function executeFor(exp, env) {
   const seq = evaluate(exp.vars.right, env);
-  for (let val of seq.__data__) {
+  for (let val of seq) {
     let scope = env.extend();
     if (exp.vars.left.type == "Identifier") {
       defineVariable(
