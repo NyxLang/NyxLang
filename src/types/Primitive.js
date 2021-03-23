@@ -1,3 +1,4 @@
+const hash = require("object-hash");
 const NyxObject = require("./Object");
 
 class NyxPrimitive extends NyxObject {
@@ -12,6 +13,10 @@ class NyxPrimitive extends NyxObject {
 
   valueOf() {
     return this.__value__.valueOf();
+  }
+
+  __hash__() {
+    return hash(this.toString());
   }
 }
 

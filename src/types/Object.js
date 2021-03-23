@@ -23,8 +23,8 @@ class NyxObject {
     this.toString();
   }
 
-  __dump__() {
-    let str = `<class:${this.__class__}, id:${this.__object_id__}>\n`;
+  toString() {
+    let str = `<class:${this.__class__}>\n`;
     str += "{\n";
     for (let key of Object.keys(this)) {
       str += `\t${key}: ${this[key]}\n`;
@@ -33,8 +33,12 @@ class NyxObject {
     return str;
   }
 
+  __dump__() {
+    return this.toString();
+  }
+
   __hash__() {
-    return hash(this);
+    return hash(this.toString());
   }
 }
 
