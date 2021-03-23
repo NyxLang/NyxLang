@@ -574,6 +574,16 @@ function parse(input) {
     return expr;
   }
 
+  function parseList() {
+    let tok = peek();
+    return {
+      type: "List",
+      value: delimited("[", "]", ",", () => parseExpression(null, true)),
+      line: tok.line,
+      col: tok.col,
+    };
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -601,6 +611,10 @@ function parse(input) {
 
       if (tok && isKeyword(tok.value)) {
         return parseKeyword();
+      }
+
+      if (tok && tok.value == "[") {
+        return parseList();
       }
 
       if (tok && tok.type === "Decimal") {
