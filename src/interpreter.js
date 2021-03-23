@@ -192,11 +192,6 @@ function evaluateVariableAssignment(exp, env, constant = false) {
   }
 
   if (typeof value == "object") {
-    Object.defineProperty(value, "__object_id__", {
-      writable: false,
-      enumerable: false,
-    });
-
     Object.defineProperty(value, "__type__", {
       writable: false,
       enumerable: false,

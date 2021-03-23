@@ -1,9 +1,8 @@
-const uuid = require("uuid");
+const hash = require("object-hash");
 const equal = require("fast-deep-equal/es6");
 
 class NyxObject {
   constructor(className = "Object", type = "object") {
-    this.__object_id__ = uuid.v4();
     this.__class__ = className;
     this.__type__ = type;
   }
@@ -32,6 +31,10 @@ class NyxObject {
     }
     str += "}";
     return str;
+  }
+
+  __hash__() {
+    return hash(this);
   }
 }
 

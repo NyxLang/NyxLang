@@ -14,9 +14,14 @@ function dump(obj) {
   return obj.__dump__();
 }
 
+function hash(obj) {
+  return obj.__hash__();
+}
+
 module.exports = {
   type,
   "class-name": className,
   id,
   dump,
+  hash,
 };
