@@ -7,7 +7,7 @@ function eval(cmd, context, fileName, callback) {
 }
 
 repl.start({
-  prompt: "nyx> ",
+  prompt: "chipmunk> ",
   input: process.stdin,
   output: process.stdout,
   eval,
