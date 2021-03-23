@@ -1,19 +1,21 @@
 const NyxDecimal = require("../types/Decimal");
-const NyxRange = require("../types/Range");
+const Range = require("../types/Range");
 
 function range(start, end, step = 1) {
-  if (arguments.length == 1) {
-    end = start.__value__.toNumber();
-    start = 0;
-  } else if (arguments.length == 2) {
-    start = start.__value__.toNumber();
-    end = end.__value__.toNumber();
-  } else {
-    start = start.__value__.toNumber();
-    end = end.__value__.toNumber();
-    step = step.__value__.toNumber();
+  try {
+    if (arguments.length == 1) {
+      end = start;
+      start = new NyxDecimal(0);
+    }
+
+    if (step == 1) {
+      step = new NyxDecimal(1);
+    }
+
+    return new Range(start, end, step);
+  } catch (e) {
+    throw new Error("Argument(s) to range must be integers");
   }
-  return new NyxRange(start, end, step);
 }
 
 module.exports = { range };
