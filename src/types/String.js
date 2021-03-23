@@ -8,6 +8,10 @@ class NyxString extends NyxPrimitive {
     this.length = this.__data__.length;
   }
 
+  ["=="](other) {
+    return this.__value__ == other.__value__;
+  }
+
   [Symbol.iterator]() {
     this.current = 0;
     return this;

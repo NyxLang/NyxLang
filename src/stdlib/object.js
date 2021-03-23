@@ -1,3 +1,5 @@
+const NyxString = require("../types/String");
+
 function type(obj) {
   return obj.__type__;
 }
@@ -15,7 +17,11 @@ function dump(obj) {
 }
 
 function hash(obj) {
-  return obj.__hash__();
+  return new NyxString(obj.__hash__());
+}
+
+function string(obj) {
+  return new NyxString(obj.toString());
 }
 
 module.exports = {
@@ -24,4 +30,5 @@ module.exports = {
   id,
   dump,
   hash,
+  string,
 };

@@ -195,7 +195,7 @@ function evaluateVariableAssignment(exp, env, constant = false) {
     Object.defineProperty(value, "__object_id__", {
       writable: false,
       enumerable: false,
-      value: globals.hash(value),
+      value: value.__hash__(),
     });
 
     Object.defineProperty(value, "__type__", {
