@@ -1,4 +1,5 @@
 const readlineSync = require("readline-sync");
+const v = require("voca");
 
 function outputString(...args) {
   let temp = [];
@@ -23,8 +24,22 @@ function print(...args) {
   return null;
 }
 
+function sprintf(...args) {
+  return v.sprintf(...args);
+}
+
+function printf(...args) {
+  print(sprintf(...args));
+}
+
 function input(msg) {
   return readlineSync.question(msg + "\n");
 }
 
-module.exports = { "output-string": outputString, print, input };
+module.exports = {
+  "output-string": outputString,
+  print,
+  sprintf,
+  printf,
+  input,
+};
