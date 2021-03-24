@@ -140,7 +140,6 @@ function defineConstant(exp, env) {
 }
 
 function evaluateParallelDefinition(exp, env, constant = false) {
-  let val;
   const names = (exp.names && exp.names.expressions) || exp.names;
   const values = (exp.values && exp.values.expressions) || exp.values;
   let evaluatedValues;
@@ -153,7 +152,7 @@ function evaluateParallelDefinition(exp, env, constant = false) {
   }
   names.forEach((item, i) => {
     if (constant) {
-      val = defineConstant(
+      defineConstant(
         {
           name: item.name,
           value: { name: item.name, value: evaluatedValues[i] },
@@ -161,14 +160,14 @@ function evaluateParallelDefinition(exp, env, constant = false) {
         env
       );
     } else {
-      val = defineVariable(item, env);
+      defineVariable(item, env);
     }
   });
 
   if (!constant && exp.values) {
-    return evaluateParallelAssignment(exp, env);
+    evaluateParallelAssignment(exp, env);
   }
-  return val;
+  return null;
 }
 
 function evaluateVariableAssignment(exp, env, constant = false) {
@@ -222,7 +221,7 @@ function evaluateVariableAssignment(exp, env, constant = false) {
     __value__: value,
   });
 
-  return value;
+  return null;
 }
 
 function evaluateIdentifier(exp, env) {
