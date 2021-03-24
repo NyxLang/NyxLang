@@ -17,7 +17,7 @@
     "mathjs": "^9.2.0",
     "object-hash": "^2.1.1",
     "readline-sync": "^1.4.10",
-    "slice.js": "^1.1.1",
+    "slice": "^1.0.0",
     "uuid": "^8.3.2",
     "voca": "^1.4.0"
   }
