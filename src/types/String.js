@@ -5,7 +5,7 @@ class NyxString extends NyxPrimitive {
   constructor(value) {
     super(value, "String", "string");
     this.__data__ = v.graphemes(value);
-    this.length = this.__data__.length;
+    this.__length__ = this.__data__.length;
   }
 
   ["=="](other) {

@@ -18,4 +18,8 @@ function range(start, end, step = 1) {
   }
 }
 
-module.exports = { range };
+function length(sequence) {
+  return new NyxDecimal(sequence.__length__);
+}
+
+module.exports = { range, length };

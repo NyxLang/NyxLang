@@ -12,6 +12,7 @@ class List extends NyxObject {
       this.__data__.set(hash(i.toString()), item);
       i += 1n;
     }
+    this.__length__ = this.__data__.size;
   }
 
   toString() {
@@ -55,6 +56,7 @@ class List extends NyxObject {
   "[]="(index, value) {
     const h = index.__hash__();
     this.__data__.set(h, value);
+    this.__length__ = this.__data__.size;
     return value;
   }
 
