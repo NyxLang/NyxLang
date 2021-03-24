@@ -12,6 +12,20 @@ class NyxString extends NyxPrimitive {
     return this.__value__ == other.__value__;
   }
 
+  ["[]"](index) {
+    const val = this.__data__[index.toString()];
+    if (val) {
+      return val;
+    }
+    throw new Error(
+      `Index ${index.toString()} not found in string ${this.__value__}`
+    );
+  }
+
+  ["[]="]() {
+    throw new Error("Assignment to string index not allowed");
+  }
+
   [Symbol.iterator]() {
     this.current = 0;
     return this;
