@@ -24,12 +24,11 @@ class List extends NyxObject {
   }
 
   [Symbol.iterator]() {
-    const values = [...this.__data__.values()];
     const data = this.__data__;
     let i = 0;
     return {
       next() {
-        if (i < values.length) {
+        if (i < data.size) {
           const val = {
             value: data.get(hash(i.toString())),
             done: false,
@@ -51,6 +50,12 @@ class List extends NyxObject {
     }
 
     return val;
+  }
+
+  "[]="(index, value) {
+    const h = index.__hash__();
+    this.__data__.set(h, value);
+    return value;
   }
 
   each(fn) {

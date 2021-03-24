@@ -734,7 +734,7 @@ function parse(input) {
     }
 
     if (tok && tok.value == "[") {
-      return parseSlice(exp);
+      return maybeBinary(parseSlice(exp), 0);
     }
 
     return exp;

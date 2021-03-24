@@ -174,6 +174,8 @@ function evaluateParallelDefinition(exp, env, constant = false) {
 function evaluateVariableAssignment(exp, env, constant = false) {
   if (exp && exp.left && exp.left.type == "SequenceExpression") {
     return evaluateParallelAssignment(exp, env, constant);
+  } else if (exp && exp.left && exp.left.type == "SliceExpression") {
+    return evaluateIndexedAssignment(exp, env);
   }
 
   const name = (exp.left && exp.left.name) || exp.name;
@@ -243,6 +245,17 @@ function evaluateParallelAssignment(exp, env, constant) {
     );
   });
   return val;
+}
+
+function evaluateIndexedAssignment(exp, env) {
+  const object = evaluate(exp.left.object, env);
+  const index = evaluate(exp.left.index, env);
+  if (["[]="] in object) {
+    return object["[]="](index, evaluate(exp.right, env));
+  }
+  throw new Error(
+    `Object of type ${object.__type__} does not support indexed assignment`
+  );
 }
 
 function evaluateCall(exp, env) {
