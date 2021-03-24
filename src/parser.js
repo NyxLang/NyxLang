@@ -1,7 +1,7 @@
 const Lexer = require("./lexer");
 const stream = require("./input");
 const { NyxInputError } = require("./errors");
-const { exp } = require("mathjs");
+const { exp, to } = require("mathjs");
 
 // Binary operator precedence table
 const PRECEDENCE = {
@@ -358,6 +358,10 @@ function parse(input) {
         last.func,
       ]);
       exp.args = last.args;
+    } else if (last.type == "SliceExpression") {
+      exp.type = "SliceExpression";
+      exp.object = parseMemberExpression(exprs.slice(0, exprs.length - 1));
+      exp.index = last.index;
     }
     exp.line = last.line;
     exp.col = last.col;
@@ -676,7 +680,6 @@ function parse(input) {
         program.push(exp);
       }
       tok = peek();
-
       if (!eof()) {
         skipNewline(tok.value);
       }
@@ -688,15 +691,25 @@ function parse(input) {
     const exp = maybeCall(() => maybeBinary(parseAtom(), 0, sequence, notSeq));
     let tok = peek();
 
-    if (sequence || (tok && tok.value == "," && !notSeq)) {
+    if ((sequence && !notSeq) || (tok && tok.value == "," && !notSeq)) {
       return parseSequenceExpression(exp, sequence);
     }
 
-    if (tok && tok.value == ".") {
-      let memberExprs = [exp];
-      while (tok.value == ".") {
-        skipPunc(".");
-        memberExprs.push(parseAtom());
+    if (tok && (tok.value == "." || tok.value == "[")) {
+      let memberExprs = [];
+      if (tok.value == ".") {
+        memberExprs.push(exp);
+      } else if (tok.value == "[") {
+        memberExprs.push(parseSlice(exp));
+        tok = peek();
+      }
+      while (tok.value == "." || tok.value == "[") {
+        if (tok.value == ".") {
+          skipPunc(".");
+          memberExprs.push(parseAtom());
+        } else if (tok.value == "[") {
+          memberExprs.push(parseSlice(memberExprs[memberExprs.length - 1]));
+        }
         tok = peek();
       }
       return maybeBinary(parseMemberExpression(memberExprs), 0);
@@ -738,10 +751,6 @@ function parse(input) {
       } else {
         current = saved;
       }
-    }
-
-    if (tok && tok.value == "[") {
-      return maybeBinary(parseSlice(exp), 0);
     }
 
     return exp;
