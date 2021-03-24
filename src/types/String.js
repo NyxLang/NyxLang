@@ -1,4 +1,5 @@
 const v = require("voca");
+const NyxDecimal = require("./Decimal");
 const NyxPrimitive = require("./Primitive");
 
 class NyxString extends NyxPrimitive {
@@ -14,6 +15,11 @@ class NyxString extends NyxPrimitive {
   }
 
   ["[]"](index) {
+    const i = BigInt(index.toString());
+    if (i < 0n) {
+      const l = BigInt(this.__length__.toString());
+      index = l + i;
+    }
     const val = this.__data__[index.toString()];
     if (val) {
       return val;

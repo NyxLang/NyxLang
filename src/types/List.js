@@ -43,6 +43,11 @@ class List extends NyxObject {
   }
 
   "[]"(index) {
+    const i = BigInt(index.toString());
+    if (i < 0n) {
+      const l = BigInt(this.__length__.toString());
+      index = new NyxDecimal((l + i).toString());
+    }
     const h = index.__hash__();
     const val = this.__data__.get(h);
 
