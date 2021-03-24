@@ -86,6 +86,14 @@ class List extends NyxObject {
     }
   }
 
+  map(fn) {
+    let mapped = new List([]);
+    for (let item of this) {
+      mapped.push(fn(item));
+    }
+    return mapped;
+  }
+
   push(item) {
     this["[]="](new NyxDecimal(this.__length__.toString()), item);
     this.__length__ = this.__data__.size;
