@@ -5,6 +5,7 @@ const parse = require("./parser");
 const Environment = require("./environment");
 const NyxDecimal = require("./types/Decimal");
 const NyxString = require("./types/String");
+const List = require("./types/List");
 const globals = require("./stdlib/globals");
 
 const globalEnv = new Environment();
@@ -89,6 +90,9 @@ function evaluate(exp, env = main) {
 
     case "ReturnStatement":
       return executeReturn(exp, env);
+
+    case "List":
+      return evaluateList(exp, env);
 
     default:
       return exp;
@@ -290,6 +294,11 @@ function evaluateUnless(exp, env) {
     return evaluate(exp.then, env);
   }
   return exp.else ? evaluate(exp.else, env) : null;
+}
+
+function evaluateList(exp, env) {
+  const list = exp.value.map((item) => evaluate(item, env));
+  return new List(list);
 }
 
 function executeWhile(exp, env) {
