@@ -64,6 +64,10 @@ class List extends NyxObject {
     return value;
   }
 
+  "<<"(item) {
+    return this.push(item);
+  }
+
   append(item) {
     return this.push(item);
   }
