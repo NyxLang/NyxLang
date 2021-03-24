@@ -53,6 +53,10 @@ class NyxString extends NyxPrimitive {
   upcase() {
     return new NyxString(v.upperCase(this.__value__));
   }
+
+  downcase() {
+    return new NyxString(v.lowerCase(this.__value__));
+  }
 }
 
 module.exports = NyxString;
