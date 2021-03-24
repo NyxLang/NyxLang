@@ -335,34 +335,8 @@ function parse(input) {
     };
   }
 
-  function parseMemberExpression(object) {
-    skipPunc(".");
-    let property = parseExpression();
-
-    if (property && property.type == "CallExpression") {
-      args = property.args;
-      property = property.func;
-      const callExpression = {
-        type: "CallExpression",
-        func: {
-          type: "MemberExpression",
-          object,
-          property,
-          line: object.line,
-          col: object.col,
-        },
-        args,
-      };
-      return callExpression;
-    }
-    const memberExpression = {
-      type: "MemberExpression",
-      object,
-      property,
-      line: object.line,
-      col: object.col,
-    };
-    return memberExpression;
+  function parseMemberExpression(exprs) {
+    console.log(exprs);
   }
 
   function parseBlock() {
@@ -692,7 +666,13 @@ function parse(input) {
     }
 
     if (tok && tok.value == ".") {
-      return parseMemberExpression(exp);
+      let memberExprs = [exp];
+      while (tok.value == ".") {
+        skipPunc(".");
+        memberExprs.push(parseAtom());
+        tok = peek();
+      }
+      return parseMemberExpression(memberExprs);
     }
 
     if (tok && tok.value == "if") {
