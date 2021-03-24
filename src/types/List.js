@@ -1,4 +1,5 @@
 const hash = require("object-hash");
+const { SliceArray } = require("slice");
 const NyxObject = require("./Object");
 const NyxDecimal = require("./Decimal");
 const { handleNegativeIndex } = require("../helpers");
@@ -75,6 +76,28 @@ class List extends NyxObject {
       fn(item, new NyxDecimal(i.toString()));
       i++;
     }
+  }
+
+  slice(start, stop, step = 1) {
+    if (arguments.length == 1) {
+      stop = parseInt(start.toString());
+      start = 0;
+    } else {
+      start = parseInt(start.toString());
+      stop = parseInt(stop.toString());
+      step = parseInt(step.toString());
+    }
+    let reversed = false;
+    if (step < 0) {
+      step = -step;
+      reversed = true;
+    }
+    const arr = SliceArray.from([...this]);
+    const sliced = arr[[start, stop, step]];
+    if (reversed) {
+      sliced.reverse();
+    }
+    return new List([...sliced]);
   }
 }
 
