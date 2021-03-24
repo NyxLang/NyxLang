@@ -25,14 +25,17 @@ class List extends NyxObject {
 
   [Symbol.iterator]() {
     const values = [...this.__data__.values()];
+    const data = this.__data__;
     let i = 0;
     return {
       next() {
         if (i < values.length) {
-          return {
-            value: values[i++],
+          const val = {
+            value: data.get(hash(i.toString())),
             done: false,
           };
+          i++;
+          return val;
         }
         return { done: true };
       },
