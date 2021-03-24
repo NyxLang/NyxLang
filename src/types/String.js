@@ -28,8 +28,11 @@ class NyxString extends NyxPrimitive {
   }
 
   "+"(other) {
-    const str = this.__value__ + other.__value__;
-    return new NyxString(str);
+    if (other.__type__ == "string") {
+      const str = this.__value__ + other.__value__;
+      return new NyxString(str);
+    }
+    throw new Error(`Cannot concatenate string with ${other.__type__}`);
   }
 
   [Symbol.iterator]() {
