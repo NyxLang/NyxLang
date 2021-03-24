@@ -18,7 +18,7 @@ class NyxString extends NyxPrimitive {
     index = handleNegativeIndex(index, this);
     const val = this.__data__[index.toString()];
     if (val) {
-      return val;
+      return new NyxString(val);
     }
     throw new Error(`Index not found in string ${this.__value__}`);
   }
