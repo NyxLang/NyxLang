@@ -56,6 +56,7 @@ class List extends NyxObject {
   }
 
   "[]="(index, value) {
+    index = handleNegativeIndex(index, this);
     const h = index.__hash__();
     this.__data__.set(h, value);
     this.__length__ = this.__data__.size;
