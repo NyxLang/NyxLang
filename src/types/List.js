@@ -22,6 +22,22 @@ class List extends NyxObject {
     str = str.substring(0, str.length - 2) + "]";
     return str;
   }
+
+  [Symbol.iterator]() {
+    const values = [...this.__data__.values()];
+    let i = 0;
+    return {
+      next() {
+        if (i < values.length) {
+          return {
+            value: values[i++],
+            done: false,
+          };
+        }
+        return { done: true };
+      },
+    };
+  }
 }
 
 module.exports = List;
