@@ -5,6 +5,7 @@ class NyxString extends NyxPrimitive {
   constructor(value) {
     super(value, "String", "string");
     this.__data__ = v.graphemes(value);
+    Object.freeze(this.__data__);
     this.__length__ = this.__data__.length;
   }
 
