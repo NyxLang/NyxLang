@@ -94,6 +94,9 @@ function evaluate(exp, env = main) {
     case "List":
       return evaluateList(exp, env);
 
+    case "SliceExpression":
+      return evaluateSlice(exp, env);
+
     default:
       return exp;
   }
@@ -299,6 +302,12 @@ function evaluateUnless(exp, env) {
 function evaluateList(exp, env) {
   const list = exp.value.map((item) => evaluate(item, env));
   return new List(list);
+}
+
+function evaluateSlice(exp, env) {
+  const object = evaluate(exp.object, env);
+  const index = evaluate(exp.index, env);
+  return object["[]"](index);
 }
 
 function executeWhile(exp, env) {

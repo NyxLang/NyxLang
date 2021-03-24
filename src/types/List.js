@@ -39,6 +39,17 @@ class List extends NyxObject {
     };
   }
 
+  "[]"(index) {
+    const h = index.__hash__();
+    const val = this.__data__.get(h);
+
+    if (!val) {
+      throw new Error(`Index "${index.toString()}" not found in object`);
+    }
+
+    return val;
+  }
+
   each(fn) {
     for (let item of this) {
       fn(item);
