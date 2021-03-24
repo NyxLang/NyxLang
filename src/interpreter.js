@@ -278,9 +278,17 @@ function evaluateCall(exp, env) {
   );
 }
 
-function evaluateMember(exp, env) {
-  const obj = evaluate(exp.object, env);
-  const prop = exp.property.name;
+function evaluateMember(exp, env, object = null) {
+  console.log(exp);
+  const obj = object ? object[exp.object.name] : evaluate(exp.object, env);
+  let prop;
+
+  if (exp.property.type == "Identifier") {
+    prop = exp.property.name;
+  } else if (exp.property.type == "MemberExpression") {
+    return evaluateMember(exp.property, env, obj);
+  }
+
   if (!obj[prop]) {
     throw new Error(
       `Member ${prop} does not exist on object ${exp.object.name}`
