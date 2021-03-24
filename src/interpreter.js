@@ -269,25 +269,19 @@ function evaluateCall(exp, env) {
   if (typeof func != "function") {
     throw new Error(`${name} is not a callable value`);
   }
-  return func.apply(
+  let v = func.apply(
     obj,
     exp.args.map((arg) => {
       let val = evaluate(arg, env);
       return val;
     })
   );
+  return v;
 }
 
-function evaluateMember(exp, env, object = null) {
-  console.log(exp);
-  const obj = object ? object[exp.object.name] : evaluate(exp.object, env);
-  let prop;
-
-  if (exp.property.type == "Identifier") {
-    prop = exp.property.name;
-  } else if (exp.property.type == "MemberExpression") {
-    return evaluateMember(exp.property, env, obj);
-  }
+function evaluateMember(exp, env) {
+  let obj = evaluate(exp.object, env);
+  let prop = exp.property.name;
 
   if (!obj[prop]) {
     throw new Error(

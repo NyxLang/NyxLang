@@ -1,6 +1,7 @@
 const Lexer = require("./lexer");
 const stream = require("./input");
 const { NyxInputError } = require("./errors");
+const { exp } = require("mathjs");
 
 // Binary operator precedence table
 const PRECEDENCE = {
@@ -336,7 +337,23 @@ function parse(input) {
   }
 
   function parseMemberExpression(exprs) {
-    console.log(exprs);
+    const last = exprs[exprs.length - 1];
+
+    if (exprs.length == 1) {
+      return last;
+    }
+
+    let exp = {};
+
+    if (last.type == "Identifier") {
+      exp.type = "MemberExpression";
+      exp.object = parseMemberExpression(exprs.slice(0, exprs.length - 1));
+      exp.property = last;
+    }
+    exp.line = last.line;
+    exp.col = last.col;
+
+    return exp;
   }
 
   function parseBlock() {
