@@ -1,4 +1,5 @@
 const v = require("voca");
+const { SliceArray } = require("slice");
 const { handleNegativeIndex } = require("../helpers");
 const NyxPrimitive = require("./Primitive");
 
@@ -81,6 +82,28 @@ class NyxString extends NyxPrimitive {
     let start = this.__data__.length - len;
     let chars = this.__data__.slice(start);
     return new NyxString(chars.join(""));
+  }
+
+  slice(start, stop, step = 1) {
+    if (arguments.length == 1) {
+      stop = parseInt(start.toString());
+      start = 0;
+    } else {
+      start = parseInt(start.toString());
+      stop = parseInt(stop.toString());
+      step = parseInt(step.toString());
+    }
+    let reversed = false;
+    if (step < 0) {
+      step = -step;
+      reversed = true;
+    }
+    const chars = SliceArray.from(this.__data__);
+    const sliced = chars[[start, stop, step]];
+    if (reversed) {
+      sliced.reverse();
+    }
+    return new NyxString(sliced.join(""));
   }
 
   "snake-case"() {
