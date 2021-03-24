@@ -458,7 +458,18 @@ function applyBinary(op, left, right) {
     case "or":
       return notFalsy(left) ? left : right;
   }
-  return left[op](right);
+
+  if (typeof left == "boolean" || left == null) {
+    if (op == "==") {
+      return left === right;
+    }
+  }
+
+  try {
+    return left[op](right);
+  } catch (e) {
+    throw new Error(`Cannot perform operation ${op} on ${left}`);
+  }
 }
 
 function applyUnary(operator, operand) {
