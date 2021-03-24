@@ -2,6 +2,7 @@ const v = require("voca");
 const { SliceArray } = require("slice");
 const { handleNegativeIndex } = require("../helpers");
 const NyxPrimitive = require("./Primitive");
+const NyxDecimal = require("./Decimal");
 
 class NyxString extends NyxPrimitive {
   constructor(value) {
@@ -55,13 +56,23 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.camelCase(this.__value__));
   }
 
-  capitalize() {
-    return new NyxString(v.capitalize(this.__value__));
+  // not working
+  // capitalize() {
+  //   return new NyxString(v.capitalize(this.__value__));
+  // }
+
+  "char-at"(pos) {
+    return new NyxString(this.__data__[pos.toString()]);
   }
 
-  decapitalize() {
-    return new NyxString(v.decapitalize(this.__value__));
+  "code-point-at"(pos) {
+    return new NyxDecimal(v.codePointAt(this.__value__, pos.toString()));
   }
+
+  // not working
+  // decapitalize() {
+  //   return new NyxString(v.decapitalize(this.__value__));
+  // }
 
   downcase() {
     return new NyxString(v.lowerCase(this.__value__));
@@ -110,6 +121,10 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.snakeCase(this.__value__));
   }
 
+  substring(start, end) {
+    return this.slice(start, end);
+  }
+
   "swap-case"() {
     return new NyxString(v.swapCase(this.__value__));
   }
@@ -118,9 +133,10 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.titleCase(this.__value__));
   }
 
+  // not great
   truncate(length, end = "...") {
-    l = parseInt(length.__value__.toString());
-    return new NyxString(v.prune(this.__value__, l, end.toString()));
+    let l = parseInt(length.__value__.toString());
+    return new NyxString(v.truncate(this.__value__, l, end.toString()));
   }
 
   upcase() {
