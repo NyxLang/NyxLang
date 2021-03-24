@@ -187,7 +187,7 @@ function parse(input) {
         next();
         return {
           type: "Boolean",
-          value: tok.value,
+          value: tok.value == "true",
           line: tok.line,
           col: tok.col,
         };
@@ -333,6 +333,8 @@ function parse(input) {
       type: "CallExpression",
       func,
       args,
+      line: func.line,
+      col: func.col,
     };
   }
 
@@ -349,6 +351,13 @@ function parse(input) {
       exp.type = "MemberExpression";
       exp.object = parseMemberExpression(exprs.slice(0, exprs.length - 1));
       exp.property = last;
+    } else if (last.type == "CallExpression") {
+      exp.type = "CallExpression";
+      exp.func = parseMemberExpression([
+        ...exprs.slice(0, exprs.length - 1),
+        last.func,
+      ]);
+      exp.args = last.args;
     }
     exp.line = last.line;
     exp.col = last.col;
@@ -667,6 +676,7 @@ function parse(input) {
         program.push(exp);
       }
       tok = peek();
+
       if (!eof()) {
         skipNewline(tok.value);
       }
@@ -689,7 +699,7 @@ function parse(input) {
         memberExprs.push(parseAtom());
         tok = peek();
       }
-      return parseMemberExpression(memberExprs);
+      return maybeBinary(parseMemberExpression(memberExprs), 0);
     }
 
     if (tok && tok.value == "if") {
