@@ -27,6 +27,11 @@ class NyxString extends NyxPrimitive {
     throw new Error("Assignment to string index not allowed");
   }
 
+  "+"(other) {
+    const str = this.__value__ + other.__value__;
+    return new NyxString(str);
+  }
+
   [Symbol.iterator]() {
     this.current = 0;
     return this;
