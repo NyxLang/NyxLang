@@ -584,6 +584,20 @@ function parse(input) {
     };
   }
 
+  function parseSlice(object) {
+    let exp = {
+      type: "SliceExpression",
+      object,
+      line: object.line,
+      col: object.col,
+    };
+    skipPunc("[");
+    const index = parseExpression();
+    skipPunc("]");
+    exp.index = index;
+    return exp;
+  }
+
   function parseAtom() {
     let tok = peek();
 
@@ -646,7 +660,7 @@ function parse(input) {
         return;
       }
 
-      throw new Error(`Token of type ${tok.type} not recognized`);
+      throw new Error(`Syntax Error: ${tok.value} not valid`);
     });
   }
 
@@ -717,6 +731,10 @@ function parse(input) {
       } else {
         current = saved;
       }
+    }
+
+    if (tok && tok.value == "[") {
+      return parseSlice(exp);
     }
 
     return exp;
