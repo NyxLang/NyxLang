@@ -64,6 +64,10 @@ class List extends NyxObject {
     return value;
   }
 
+  append(item) {
+    return this.push(item);
+  }
+
   each(fn) {
     for (let item of this) {
       fn(item);
@@ -76,6 +80,12 @@ class List extends NyxObject {
       fn(item, new NyxDecimal(i.toString()));
       i++;
     }
+  }
+
+  push(item) {
+    this["[]="](new NyxDecimal(this.__length__.toString()), item);
+    this.__length__ = this.__data__.size;
+    return this;
   }
 
   slice(start, stop, step = 1) {
