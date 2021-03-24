@@ -1,14 +1,15 @@
+const uuid = require("uuid");
 const hash = require("object-hash");
-const equal = require("fast-deep-equal/es6");
 
 class NyxObject {
   constructor(className = "Object", type = "object") {
     this.__class__ = className;
     this.__type__ = type;
+    this.__object_id__ = uuid.v4();
   }
 
   "=="(other) {
-    return equal(this, other);
+    return hash(this.__dump__);
   }
 
   is(other) {
@@ -27,7 +28,7 @@ class NyxObject {
     let str = `<class:${this.__class__}>\n`;
     str += "{\n";
     for (let key of Object.keys(this)) {
-      str += `\t${key}: ${this[key]}\n`;
+      str += `\t${key}: ${this[key].toString()}\n`;
     }
     str += "}";
     return str;
@@ -35,10 +36,6 @@ class NyxObject {
 
   toString() {
     return this.__dump__();
-  }
-
-  __hash__() {
-    return hash(this.toString());
   }
 }
 
