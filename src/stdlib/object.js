@@ -1,3 +1,4 @@
+const NyxDecimal = require("../types/Decimal");
 const NyxString = require("../types/String");
 
 function type(obj) {
@@ -24,6 +25,10 @@ function string(obj) {
   return new NyxString(obj.toString());
 }
 
+function decimal(obj) {
+  return new NyxDecimal(obj.toString());
+}
+
 module.exports = {
   type,
   "class-name": className,
@@ -31,4 +36,5 @@ module.exports = {
   dump,
   hash,
   string,
+  decimal,
 };
