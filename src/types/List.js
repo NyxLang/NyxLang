@@ -1,6 +1,7 @@
 const hash = require("object-hash");
 const NyxObject = require("./Object");
 const NyxDecimal = require("./Decimal");
+const { handleNegativeIndex } = require("../helpers");
 
 class List extends NyxObject {
   constructor(array) {
@@ -43,16 +44,12 @@ class List extends NyxObject {
   }
 
   "[]"(index) {
-    const i = BigInt(index.toString());
-    if (i < 0n) {
-      const l = BigInt(this.__length__.toString());
-      index = new NyxDecimal((l + i).toString());
-    }
+    index = handleNegativeIndex(index, this);
     const h = index.__hash__();
     const val = this.__data__.get(h);
 
     if (!val) {
-      throw new Error(`Index "${index.toString()}" not found in object`);
+      throw new Error(`Index not found in object`);
     }
 
     return val;

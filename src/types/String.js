@@ -1,5 +1,5 @@
 const v = require("voca");
-const NyxDecimal = require("./Decimal");
+const { handleNegativeIndex } = require("../helpers");
 const NyxPrimitive = require("./Primitive");
 
 class NyxString extends NyxPrimitive {
@@ -15,18 +15,12 @@ class NyxString extends NyxPrimitive {
   }
 
   ["[]"](index) {
-    const i = BigInt(index.toString());
-    if (i < 0n) {
-      const l = BigInt(this.__length__.toString());
-      index = l + i;
-    }
+    index = handleNegativeIndex(index, this);
     const val = this.__data__[index.toString()];
     if (val) {
       return val;
     }
-    throw new Error(
-      `Index ${index.toString()} not found in string ${this.__value__}`
-    );
+    throw new Error(`Index not found in string ${this.__value__}`);
   }
 
   ["[]="]() {

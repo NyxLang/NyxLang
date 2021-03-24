@@ -1,3 +1,5 @@
+const NyxDecimal = require("./types/Decimal");
+
 exports.isDigit = function (char) {
   return /[0-9]/.test(char);
 };
@@ -20,6 +22,15 @@ exports.isOpChar = function (char) {
 
 exports.isPunc = function (char) {
   return ";:()[]{},.'".indexOf(char) >= 0;
+};
+
+exports.handleNegativeIndex = function (index, seq) {
+  const i = BigInt(index.toString());
+  if (i < 0n) {
+    const l = BigInt(seq.__length__.toString());
+    index = new NyxDecimal((l + i).toString());
+  }
+  return index;
 };
 
 exports.operators = [
