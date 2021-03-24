@@ -38,6 +38,20 @@ class List extends NyxObject {
       },
     };
   }
+
+  each(fn) {
+    for (let item of this) {
+      fn(item);
+    }
+  }
+
+  "each-with-index"(fn) {
+    let i = 0;
+    for (let item of this) {
+      fn(item, new NyxDecimal(i.toString()));
+      i++;
+    }
+  }
 }
 
 module.exports = List;
