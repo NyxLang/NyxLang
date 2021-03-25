@@ -18,6 +18,7 @@
     "object-hash": "^2.1.1",
     "readline-sync": "^1.4.10",
     "slice": "^1.0.0",
+    "string-manager": "^3.0.0",
     "uuid": "^8.3.2",
     "voca": "^1.4.0"
   }
