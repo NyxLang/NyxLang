@@ -25,6 +25,10 @@ function string(obj) {
   return new NyxString(obj.toString());
 }
 
+function isString(obj) {
+  return obj instanceof NyxString;
+}
+
 function decimal(obj) {
   return new NyxDecimal(obj.toString());
 }
@@ -36,5 +40,6 @@ module.exports = {
   dump,
   hash,
   string,
+  "string?": isString,
   decimal,
 };
