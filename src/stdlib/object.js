@@ -1,5 +1,5 @@
 const NyxDecimal = require("../types/Decimal");
-const NyxString = require("../types/String");
+const NyxString = require("../types/Sequences");
 
 function type(obj) {
   return obj.__type__;

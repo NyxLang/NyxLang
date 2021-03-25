@@ -4,8 +4,7 @@ const lexer = require("./lexer");
 const parse = require("./parser");
 const Environment = require("./environment");
 const NyxDecimal = require("./types/Decimal");
-const NyxString = require("./types/String");
-const List = require("./types/List");
+const { NyxString, List } = require("./types/Sequences");
 const globals = require("./stdlib/globals");
 
 const globalEnv = new Environment();
