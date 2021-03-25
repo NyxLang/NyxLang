@@ -185,6 +185,11 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__.from(parseInt(i.toString())));
   }
 
+  "grapheme-at"(pos) {
+    pos = parseInt(pos.toString());
+    return new NyxString(v.graphemeAt(this.__value__, pos));
+  }
+
   graphemes() {
     const gs = v.graphemes(this.__value__);
     const chars = gs.map((g) => new NyxString(g));
@@ -351,6 +356,10 @@ class NyxString extends NyxPrimitive {
 
   "starts-with?"(str) {
     return v.startsWith(this.__value__, str.__value__);
+  }
+
+  "strip-bom"() {
+    return new NyxString(v.stripBom(this.__value__));
   }
 
   "strip-tags"(tags) {
