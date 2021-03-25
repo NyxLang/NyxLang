@@ -1,5 +1,6 @@
 const v = require("voca");
 const { SliceArray } = require("slice");
+const stringManager = require("string-manager");
 const { handleNegativeIndex } = require("../helpers");
 const NyxPrimitive = require("./Primitive");
 const NyxDecimal = require("./Decimal");
@@ -215,6 +216,10 @@ class NyxString extends NyxPrimitive {
 
   reverse() {
     return new NyxString(v.reverseGrapheme(this.__value__));
+  }
+
+  "single-space"() {
+    return new NyxString(stringManager.toSingleSpace(this.__value__));
   }
 
   slice(start, stop, step = 1) {
