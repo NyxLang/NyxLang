@@ -1,16 +1,16 @@
-const _Object = require("../types/Object");
+const NyxObject = require("../types/Object");
 const Primitive = require("../types/Primitive");
-const _Number = require("../types/Number");
-const Decimal = require("../types/Decimal");
+const NyxNumber = require("../types/Number");
 const Range = require("../types/Range");
 const { NyxString, List } = require("../types/Sequences");
+const NyxDecimal = require("../types/Decimal");
 
 types = {
   Nil: null,
-  Object: _Object,
+  Object: NyxObject,
   Primitive,
-  Number: _Number,
-  Decimal,
+  Number: NyxNumber,
+  Decimal: NyxDecimal,
   Range,
   List,
   String: NyxString,
