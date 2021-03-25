@@ -1,7 +1,7 @@
 const v = require("voca");
 const { SliceArray } = require("slice");
-const stringManager = require("string-manager");
 const Sugar = require("sugar");
+const ms = require("mout/string");
 const hash = require("object-hash");
 const NyxPrimitive = require("./Primitive");
 const NyxDecimal = require("./Decimal");
@@ -106,6 +106,10 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__.compact());
   }
 
+  contains(str) {
+    return this.includes(str);
+  }
+
   count(str) {
     return new NyxDecimal(v.countSubstrings(this.__value__, str.__value__));
   }
@@ -123,6 +127,11 @@ class NyxString extends NyxPrimitive {
 
   "count-words"() {
     return new NyxString(v.countWords(this.__value__));
+  }
+
+  crop(i) {
+    i = parseInt(i.toString());
+    return new NyxString(ms.crop(this.__value__, i));
   }
 
   downcase() {
@@ -153,6 +162,14 @@ class NyxString extends NyxPrimitive {
 
   "escape-html"() {
     return new NyxString(this.__value__.escapeHTML());
+  }
+
+  "escape-regexp"() {
+    return new NyxString(ms.escapeRegExp(this.__value__));
+  }
+
+  "escape-unicode"(printable = false) {
+    return new NyxString(ms.escapeUnicode(this.__value__, printable));
   }
 
   "escape-url"() {
@@ -233,6 +250,10 @@ class NyxString extends NyxPrimitive {
     );
   }
 
+  "pascal-case"() {
+    return new NyxString(ms.pascalCase(this.__value__));
+  }
+
   parameterize() {
     return new NyxString(this.__value__.parameterize());
   }
@@ -255,6 +276,14 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__.removeTags(tags));
   }
 
+  "remove-non-ascii"() {
+    return new NyxString(ms.removeNonASCII(this.__value__));
+  }
+
+  "remove-non-word"() {
+    return new NyxString(ms.removeNonWord(this.__value__));
+  }
+
   repeat(times = 1) {
     return new NyxString(v.repeat(this.__value__, times.toString()));
   }
@@ -271,13 +300,13 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.reverseGrapheme(this.__value__));
   }
 
+  "sentence-case"() {
+    return new NyxString(ms.sentenceCase(this.__value__));
+  }
+
   shift(n) {
     n = parseInt(n.toString());
     return new NyxString(this.__value__.shift(n));
-  }
-
-  "single-space"() {
-    return new NyxString(stringManager.toSingleSpace(this.__value__));
   }
 
   slice(start, stop, step = 1) {
@@ -367,12 +396,25 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.truncate(this.__value__, l, end.toString()));
   }
 
+  "un-camel-case"(delimiter = " ") {
+    delimiter = delimiter.toString();
+    return new NyxString(ms.unCamelCase(this.__value__));
+  }
+
   "unescape-html"() {
     return new NyxString(this.__value__.unescapeHTML());
   }
 
+  "unescape-unicode"() {
+    return new NyxString(ms.unescapeUnicode(this.__value__));
+  }
+
   "unescape-url"() {
     return new NyxString(this.__value__.unescapeURL());
+  }
+
+  "un-hyphenate"() {
+    return new NyxString(ms.unhyphenate(this.__value__));
   }
 
   upcase() {
