@@ -2,10 +2,15 @@ const v = require("voca");
 const { SliceArray } = require("slice");
 const stringManager = require("string-manager");
 const hash = require("object-hash");
+const Sugar = require("sugar");
 const { handleNegativeIndex } = require("../helpers");
 const NyxPrimitive = require("./Primitive");
 const NyxDecimal = require("./Decimal");
 const NyxObject = require("./Object");
+
+Sugar.extend({
+  namespaces: [String],
+});
 
 class NyxString extends NyxPrimitive {
   constructor(value) {
@@ -67,6 +72,14 @@ class NyxString extends NyxPrimitive {
     return v.isAlphaDigit(this.__value__);
   }
 
+  "base64-decode"() {
+    return new NyxString(this.__value__.decodeBase64());
+  }
+
+  "base64-encode"() {
+    return new NyxString(this.__value__.encodeBase64());
+  }
+
   "blank?"() {
     return v.isBlank(this.__value__);
   }
@@ -75,10 +88,9 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.camelCase(this.__value__));
   }
 
-  // not working
-  // capitalize() {
-  //   return new NyxString(v.capitalize(this.__value__));
-  // }
+  capitalize() {
+    return new NyxString(this.__value__.capitalize(true));
+  }
 
   "char-at"(pos) {
     return new NyxString(this.__data__[pos.toString()]);
@@ -92,6 +104,10 @@ class NyxString extends NyxPrimitive {
     const points = v.codePoints(this.__value__);
     const nums = points.map((point) => new NyxDecimal(point));
     return new List(nums);
+  }
+
+  compact() {
+    return new NyxString(this.__value__.compact());
   }
 
   count(str) {
@@ -112,11 +128,6 @@ class NyxString extends NyxPrimitive {
   "count-words"() {
     return new NyxString(v.countWords(this.__value__));
   }
-
-  // not working
-  // decapitalize() {
-  //   return new NyxString(v.decapitalize(this.__value__));
-  // }
 
   downcase() {
     return new NyxString(v.lowerCase(this.__value__));
