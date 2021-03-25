@@ -1,23 +1,19 @@
 const v = require("voca");
 const { SliceArray } = require("slice");
 const stringManager = require("string-manager");
-const hash = require("object-hash");
 const Sugar = require("sugar");
-const { handleNegativeIndex } = require("../helpers");
+const hash = require("object-hash");
 const NyxPrimitive = require("./Primitive");
 const NyxDecimal = require("./Decimal");
 const NyxObject = require("./Object");
+const { handleNegativeIndex } = require("../helpers");
 
-Sugar.extend({
-  namespaces: [String],
-});
+Sugar.String.extend();
 
 class NyxString extends NyxPrimitive {
   constructor(value) {
     super(value, "String", "string");
-    this.__data__ = v.graphemes(value);
-    Object.freeze(this.__data__);
-    this.__length__ = this.__data__.length;
+    this.__length__ = this.__value__.length;
   }
 
   ["=="](other) {
@@ -26,7 +22,7 @@ class NyxString extends NyxPrimitive {
 
   ["[]"](index) {
     index = handleNegativeIndex(index, this);
-    const val = this.__data__[index.toString()];
+    const val = this.__value__[index.toString()];
     if (val) {
       return new NyxString(val);
     }
@@ -57,7 +53,7 @@ class NyxString extends NyxPrimitive {
   next() {
     if (this.current < this.length) {
       return {
-        value: new NyxString(this.__data__[this.current++]),
+        value: new NyxString(this.__value__[this.current++]),
         done: false,
       };
     }
@@ -93,7 +89,7 @@ class NyxString extends NyxPrimitive {
   }
 
   "char-at"(pos) {
-    return new NyxString(this.__data__[pos.toString()]);
+    return new NyxString(this.__value__[pos.toString()]);
   }
 
   "code-point-at"(pos) {
@@ -117,7 +113,7 @@ class NyxString extends NyxPrimitive {
   "count-where"(pred) {
     let count = 0;
     let i = 0;
-    for (let char of this.__data__) {
+    for (let char of this.__value__) {
       if (pred(new NyxString(char, new NyxDecimal(i.toString()), this))) {
         count++;
       }
@@ -133,6 +129,20 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.lowerCase(this.__value__));
   }
 
+  each(fn) {
+    for (let char of this.__value__) {
+      fn(new NyxString(char));
+    }
+  }
+
+  "each-with-index"(fn) {
+    let i = 0;
+    for (let char of this.__value__) {
+      fn(new NyxString(char), new NyxDecimal(i));
+      i++;
+    }
+  }
+
   "empty?"() {
     return v.isEmpty(this.__value__);
   }
@@ -141,10 +151,21 @@ class NyxString extends NyxPrimitive {
     return v.endsWith(this.__value__, str.__value__);
   }
 
+  "escape-html"() {
+    return new NyxString(this.__value__.escapeHTML());
+  }
+
+  "escape-url"() {
+    return new NyxString(this.__value__.escapeURL());
+  }
+
   first(length) {
-    let l = length.__value__.toString();
-    let chars = this.__data__.slice(0, l);
-    return new NyxString(chars.join(""));
+    let l = length.toString();
+    return new NyxString(v.first(this.__value__, l));
+  }
+
+  from(i = 0) {
+    return new NyxString(this.__value__.from(parseInt(i.toString())));
   }
 
   graphemes() {
@@ -179,9 +200,7 @@ class NyxString extends NyxPrimitive {
 
   last(length) {
     let len = parseInt(length.__value__.toString());
-    let start = this.__data__.length - len;
-    let chars = this.__data__.slice(start);
-    return new NyxString(chars.join(""));
+    return new NyxString(v.last(this.__value__, len));
   }
 
   latinize() {
@@ -214,6 +233,28 @@ class NyxString extends NyxPrimitive {
     );
   }
 
+  parameterize() {
+    return new NyxString(this.__value__.parameterize());
+  }
+
+  remove(str) {
+    return new NyxString(this.__value__.remove(str.toString()));
+  }
+
+  "remove-all"(str) {
+    return new NyxString(this.__value__.removeAll(str.toString()));
+  }
+
+  // Removes HTML tags *and their content*
+  "remove-html"(tags = "all") {
+    if (tags instanceof List) {
+      tags = [...tags].map((tag) => tag.toString());
+    } else if (tags instanceof NyxString) {
+      tags = tags.toString();
+    }
+    return new NyxString(this.__value__.removeTags(tags));
+  }
+
   repeat(times = 1) {
     return new NyxString(v.repeat(this.__value__, times.toString()));
   }
@@ -228,6 +269,11 @@ class NyxString extends NyxPrimitive {
 
   reverse() {
     return new NyxString(v.reverseGrapheme(this.__value__));
+  }
+
+  shift(n) {
+    n = parseInt(n.toString());
+    return new NyxString(this.__value__.shift(n));
   }
 
   "single-space"() {
@@ -248,7 +294,7 @@ class NyxString extends NyxPrimitive {
       step = -step;
       reversed = true;
     }
-    const chars = SliceArray.from(this.__data__);
+    const chars = SliceArray.from(this.__value__.split(""));
     const sliced = chars[[start, stop, step]];
     if (reversed) {
       sliced.reverse();
@@ -264,6 +310,10 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.snakeCase(this.__value__));
   }
 
+  spacify() {
+    return new NyxString(this.__value__.spacify());
+  }
+
   split(sep = "") {
     const chunks = v.split(this.__value__, sep.toString());
     const strs = chunks.map((str) => new NyxString(str));
@@ -272,6 +322,15 @@ class NyxString extends NyxPrimitive {
 
   "starts-with?"(str) {
     return v.startsWith(this.__value__, str.__value__);
+  }
+
+  "strip-tags"(tags) {
+    if (tags instanceof List) {
+      tags = [...tags].map((tag) => tag.toString());
+    } else if (tags instanceof NyxString) {
+      tags = tags.toString();
+    }
+    return new NyxString(this.__value__.stripTags(tags));
   }
 
   substring(start, end) {
@@ -284,6 +343,11 @@ class NyxString extends NyxPrimitive {
 
   "title-case"() {
     return new NyxString(v.titleCase(this.__value__));
+  }
+
+  to(i = this.__length__) {
+    i = parseInt(i.toString());
+    return new NyxString(this.__value__.to(i));
   }
 
   trim() {
@@ -301,6 +365,14 @@ class NyxString extends NyxPrimitive {
   truncate(length, end = "...") {
     let l = parseInt(length.__value__.toString());
     return new NyxString(v.truncate(this.__value__, l, end.toString()));
+  }
+
+  "unescape-html"() {
+    return new NyxString(this.__value__.unescapeHTML());
+  }
+
+  "unescape-url"() {
+    return new NyxString(this.__value__.unescapeURL());
   }
 
   upcase() {
