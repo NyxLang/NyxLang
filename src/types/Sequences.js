@@ -21,6 +21,26 @@ class NyxString extends NyxPrimitive {
     return this.__value__ == other.__value__;
   }
 
+  [">"](other) {
+    return this.__value__ > other.__value__;
+  }
+
+  "<"(other) {
+    return this.__value__ < other.__value__;
+  }
+
+  ">="(other) {
+    return this.__value__ >= other.__value__;
+  }
+
+  "<="(other) {
+    return this.__value__ <= other.__value__;
+  }
+
+  "!="(other) {
+    return this.__value__ != other.__value__;
+  }
+
   ["[]"](index) {
     index = handleNegativeIndex(index, this);
     const val = this.__value__[index.toString()];
