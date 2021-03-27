@@ -7,6 +7,10 @@ class NyxPrimitive extends NyxObject {
     this.__value__ = value;
   }
 
+  is(other) {
+    return this["=="](other);
+  }
+
   toString() {
     return this.__value__.toString();
   }
