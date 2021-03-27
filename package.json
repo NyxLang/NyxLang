@@ -20,6 +20,7 @@
     "object-hash": "^2.1.1",
     "readline-sync": "^1.4.10",
     "slice": "^1.0.0",
+    "string": "^3.3.3",
     "sugar": "^2.0.6",
     "uuid": "^8.3.2",
     "voca": "^1.4.0"
