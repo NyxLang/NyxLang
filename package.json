@@ -22,6 +22,7 @@
     "slice": "^1.0.0",
     "string": "^3.3.3",
     "sugar": "^2.0.6",
+    "underscore.string": "^3.3.5",
     "uuid": "^8.3.2",
     "voca": "^1.4.0"
   }
