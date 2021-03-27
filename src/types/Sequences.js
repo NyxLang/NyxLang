@@ -6,7 +6,7 @@ const hash = require("object-hash");
 const NyxPrimitive = require("./Primitive");
 const NyxDecimal = require("./Decimal");
 const NyxObject = require("./Object");
-const { handleNegativeIndex } = require("../helpers");
+const { handleNegativeIndex, decimalParameterToInt } = require("../helpers");
 
 Sugar.String.extend();
 
@@ -444,19 +444,13 @@ class NyxString extends NyxPrimitive {
 class List extends NyxObject {
   constructor(array) {
     super("List", "list");
-    this.__data__ = new Map();
-
-    let i = 0n;
-    for (let item of array) {
-      this.__data__.set(hash(i.toString()), item);
-      i += 1n;
-    }
-    this.__length__ = this.__data__.size;
+    this.__data__ = array;
+    this.__length__ = this.__data__.length;
   }
 
   toString() {
     let str = "[";
-    for (let val of this.__data__.values()) {
+    for (let val of this.__data__) {
       str += `${val.toString()}, `;
     }
     str = str.substring(0, str.length - 2) + "]";
@@ -468,9 +462,9 @@ class List extends NyxObject {
     let i = 0;
     return {
       next() {
-        if (i < data.size) {
+        if (i < data.length) {
           const val = {
-            value: data.get(hash(i.toString())),
+            value: data[i],
             done: false,
           };
           i++;
@@ -483,8 +477,8 @@ class List extends NyxObject {
 
   "[]"(index) {
     index = handleNegativeIndex(index, this);
-    const h = index.__hash__();
-    const val = this.__data__.get(h);
+    const i = decimalParameterToInt(index);
+    const val = this.__data__[i];
 
     if (!val) {
       throw new Error(`Index not found in object`);
@@ -495,9 +489,9 @@ class List extends NyxObject {
 
   "[]="(index, value) {
     index = handleNegativeIndex(index, this);
-    const h = index.__hash__();
-    this.__data__.set(h, value);
-    this.__length__ = this.__data__.size;
+    const i = decimalParameterToInt(index);
+    this.__data__[i] = value;
+    this.__length__ = this.__data__.length;
     return value;
   }
 
@@ -539,7 +533,7 @@ class List extends NyxObject {
 
   push(item) {
     this["[]="](new NyxDecimal(this.__length__.toString()), item);
-    this.__length__ = this.__data__.size;
+    this.__length__ = this.__data__.length;
     return this;
   }
 

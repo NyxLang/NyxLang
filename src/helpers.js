@@ -33,6 +33,10 @@ exports.handleNegativeIndex = function (index, seq) {
   return index;
 };
 
+exports.decimalParameterToInt = function (param) {
+  return parseInt(param.toString());
+};
+
 exports.operators = [
   "+",
   "-",
