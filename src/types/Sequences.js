@@ -3,6 +3,7 @@ const { SliceArray } = require("slice");
 const Sugar = require("sugar");
 const ms = require("mout/string");
 const S = require("string");
+const s = require("underscore.string");
 const NyxPrimitive = require("./Primitive");
 const NyxDecimal = require("./Decimal");
 const NyxObject = require("./Object");
@@ -103,6 +104,10 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__[pos.toString()]);
   }
 
+  chars() {
+    return this.split("");
+  }
+
   "chomp-left"(prefix) {
     const res = S(this.__value__).chompLeft(prefix.__value__).s;
     return new NyxString(res);
@@ -111,6 +116,12 @@ class NyxString extends NyxPrimitive {
   "chomp-right"(suffix) {
     const res = S(this.__value__).chompRight(suffix.__value__).s;
     return new NyxString(res);
+  }
+
+  chop(step) {
+    step = decimalParameterToInt(step);
+    const res = s.chop(this.__value__, step);
+    return new List(res);
   }
 
   "code-point-at"(pos) {
@@ -265,6 +276,11 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.latinise(this.__value__));
   }
 
+  levenshtein(other) {
+    const res = s.levenshtein(this.__value__, other.__value__);
+    return new NyxDecimal(res);
+  }
+
   lines() {
     return new List(this.__value__.lines());
   }
@@ -273,7 +289,26 @@ class NyxString extends NyxPrimitive {
     return v.isLowerCase(this.__value__);
   }
 
-  "number-format"() {}
+  map(fn) {
+    const res = s.map(this.__value__, fn);
+    return new NyxString(res);
+  }
+
+  "map-with-index"(fn) {
+    let i = 0;
+    let s = "";
+    for (let c of this.__value__) {
+      s += fn(c, i);
+      i++;
+    }
+    return new NyxString(s);
+  }
+
+  "number-format"(decimals) {
+    decimals = decimalParameterToInt(decimals);
+    const res = s.numberFormat(this.__value__, decimals);
+    return new NyxString(res);
+  }
 
   "numeric?"() {
     return v.isNumeric(this.__value__);
@@ -305,8 +340,17 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__.parameterize());
   }
 
+  pred() {
+    return this.shift(-1);
+  }
+
   prepend(str) {
     return new NyxString(v.insert(this.__value__, str.__value__, 0));
+  }
+
+  quote(quoteChar) {
+    const res = s.quote(this.__value__, quoteChar.__value__);
+    return new NyxString(res);
   }
 
   remove(str) {
@@ -315,6 +359,11 @@ class NyxString extends NyxPrimitive {
 
   "remove-all"(str) {
     return new NyxString(this.__value__.removeAll(str.toString()));
+  }
+
+  "remove-diacritics"() {
+    const res = s.cleanDiacritics(this.__value__);
+    return new NyxString(res);
   }
 
   // Removes HTML tags *and their content*
@@ -394,6 +443,13 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__.spacify());
   }
 
+  splice(start = 0, length = this.__length__, str = "") {
+    start = decimalParameterToInt(start);
+    length = decimalParameterToInt(length);
+    const res = s.splice(this.__value__, start, length, str.toString());
+    return new NyxString(res);
+  }
+
   split(sep = "") {
     const chunks = v.split(this.__value__, sep.toString());
     const strs = chunks.map((str) => new NyxString(str));
@@ -430,6 +486,15 @@ class NyxString extends NyxPrimitive {
 
   substring(start, end) {
     return this.slice(start, end);
+  }
+
+  succ() {
+    return this.shift(1);
+  }
+
+  surround(wrap) {
+    const res = s.surround(this.__value__, wrap.__value__);
+    return new NyxString(res);
   }
 
   "swap-case"() {
@@ -479,8 +544,13 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__.unescapeURL());
   }
 
-  "un-hyphenate"() {
+  unhyphenate() {
     return new NyxString(ms.unhyphenate(this.__value__));
+  }
+
+  unquote(quoteChar) {
+    const res = s.quote(this.__value__, quoteChar.__value__);
+    return new NyxString(res);
   }
 
   upcase() {
