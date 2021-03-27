@@ -43,7 +43,8 @@ class NyxString extends NyxPrimitive {
 
   ["[]"](index) {
     index = handleNegativeIndex(index, this);
-    const val = this.__value__[index.toString()];
+    index = decimalParameterToInt(index);
+    const val = this.__value__[index];
     if (val) {
       return new NyxString(val);
     }
