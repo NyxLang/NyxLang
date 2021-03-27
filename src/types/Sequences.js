@@ -2,7 +2,7 @@ const v = require("voca");
 const { SliceArray } = require("slice");
 const Sugar = require("sugar");
 const ms = require("mout/string");
-const hash = require("object-hash");
+const S = require("string");
 const NyxPrimitive = require("./Primitive");
 const NyxDecimal = require("./Decimal");
 const NyxObject = require("./Object");
@@ -82,6 +82,11 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__.encodeBase64());
   }
 
+  between(left, right) {
+    const res = S(this.__value__).between(left.__value__, right.__value__).s;
+    return new NyxString(res);
+  }
+
   "blank?"() {
     return v.isBlank(this.__value__);
   }
@@ -96,6 +101,16 @@ class NyxString extends NyxPrimitive {
 
   "char-at"(pos) {
     return new NyxString(this.__value__[pos.toString()]);
+  }
+
+  "chomp-left"(prefix) {
+    const res = S(this.__value__).chompLeft(prefix.__value__).s;
+    return new NyxString(res);
+  }
+
+  "chomp-right"(suffix) {
+    const res = S(this.__value__).chompRight(suffix.__value__).s;
+    return new NyxString(res);
   }
 
   "code-point-at"(pos) {
@@ -166,6 +181,16 @@ class NyxString extends NyxPrimitive {
     return v.endsWith(this.__value__, str.__value__);
   }
 
+  "ensure-left"(prefix) {
+    const res = S(this.__value__).ensureLeft(prefix.__value__).s;
+    return new NyxString(res);
+  }
+
+  "ensure-right"(suffix) {
+    const res = S(this.__value__).ensureRight(suffix.__value__).s;
+    return new NyxString(res);
+  }
+
   "escape-html"() {
     return new NyxString(this.__value__.escapeHTML());
   }
@@ -202,6 +227,11 @@ class NyxString extends NyxPrimitive {
     return new List(chars);
   }
 
+  humanize() {
+    const res = S(this.__value__).humanize().s;
+    return new NyxString(res);
+  }
+
   hyphenate() {
     return new NyxString(v.kebabCase(this.__value__));
   }
@@ -235,9 +265,15 @@ class NyxString extends NyxPrimitive {
     return new NyxString(v.latinise(this.__value__));
   }
 
+  lines() {
+    return new List(this.__value__.lines());
+  }
+
   "lowercase?"() {
     return v.isLowerCase(this.__value__);
   }
+
+  "number-format"() {}
 
   "numeric?"() {
     return v.isNumeric(this.__value__);
@@ -368,8 +404,19 @@ class NyxString extends NyxPrimitive {
     return v.startsWith(this.__value__, str.__value__);
   }
 
+  strip(...args) {
+    const strings = args.map((str) => str.__value__);
+    const res = S(this.__value__).strip(...strings).s;
+    return new NyxString(res);
+  }
+
   "strip-bom"() {
     return new NyxString(v.stripBom(this.__value__));
+  }
+
+  "strip-punctuation"() {
+    const res = S(this.__value__).stripPunctuation().s;
+    return new NyxString(res);
   }
 
   "strip-tags"(tags) {
