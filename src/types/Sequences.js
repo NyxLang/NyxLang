@@ -68,6 +68,12 @@ class NyxString extends NyxPrimitive {
     return v.isAlphaDigit(this.__value__);
   }
 
+  append(str) {
+    return new NyxString(
+      v.insert(this.__value__, str.__value__, this.__length__)
+    );
+  }
+
   "base64-decode"() {
     return new NyxString(this.__value__.decodeBase64());
   }
@@ -261,6 +267,10 @@ class NyxString extends NyxPrimitive {
 
   parameterize() {
     return new NyxString(this.__value__.parameterize());
+  }
+
+  prepend(str) {
+    return new NyxString(v.insert(this.__value__, str.__value__, 0));
   }
 
   remove(str) {
