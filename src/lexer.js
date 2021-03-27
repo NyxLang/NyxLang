@@ -95,7 +95,27 @@ function Lexer(input) {
     while (!eof()) {
       let ch = next();
       if (escaped) {
-        str += ch;
+        if (ch == "n") {
+          str += "\n";
+        } else if (ch == "b") {
+          str += "\b";
+        } else if (ch == "f") {
+          str += "\f";
+        } else if (ch == "r") {
+          str += "\r";
+        } else if (ch == "t") {
+          str += "\t";
+        } else if (ch == "v") {
+          str += "\v";
+        } else if (ch == "0") {
+          str += "\0";
+        } else if (ch == "'") {
+          str += "'";
+        } else if (ch == '"') {
+          str += '"';
+        } else if (ch == "\\") {
+          str += "\\";
+        }
         escaped = false;
       } else if (ch == "\\") {
         escaped = true;
