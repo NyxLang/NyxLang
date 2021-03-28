@@ -678,6 +678,10 @@ class List extends NyxObject {
     return new List([...this, ...other]);
   }
 
+  "-"(other) {
+    return this.difference(other);
+  }
+
   "&"(other) {
     return this.intersection(other);
   }
