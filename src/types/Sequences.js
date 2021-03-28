@@ -10,6 +10,7 @@ const NyxObject = require("./Object");
 const { handleNegativeIndex, decimalParameterToInt } = require("../helpers");
 
 Sugar.String.extend();
+Sugar.Array.extend();
 
 class NyxString extends NyxPrimitive {
   constructor(value) {
@@ -319,7 +320,7 @@ class NyxString extends NyxPrimitive {
     let i = 0;
     let s = "";
     for (let c of this.__value__) {
-      s += fn(c, i);
+      s += fn(c, new NyxDecimal(i));
       i++;
     }
     return new NyxString(s);
@@ -647,8 +648,46 @@ class List extends NyxObject {
     return this.push(item);
   }
 
+  "+"(other) {
+    return new List([...this, ...other]);
+  }
+
+  "all?"(search) {
+    return this["every?"](search);
+  }
+
   append(item) {
     return this.push(item);
+  }
+
+  average() {
+    const nums = this.__data__.map((num) => decimalParameterToInt(num));
+    const avg = nums.average();
+    return new NyxDecimal(avg);
+  }
+
+  clone() {
+    return new List(this.__data__.clone());
+  }
+
+  compact() {
+    return new List(this.__data__.compact());
+  }
+
+  count(search) {
+    let res = 0;
+    for (let item of this.__data__) {
+      if (typeof search == "function") {
+        if (search(item)) {
+          res++;
+        }
+      } else {
+        if (item.toString() === search.toString()) {
+          res++;
+        }
+      }
+    }
+    return new NyxDecimal(res);
   }
 
   each(fn) {
@@ -665,6 +704,95 @@ class List extends NyxObject {
     }
   }
 
+  "every?"(search) {
+    for (let item of this.__data__) {
+      if (typeof search == "function") {
+        if (search(item) == false || search(item) == null) {
+          return false;
+        }
+      } else {
+        if (search.toString() != item.toString()) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
+  exclude(fn) {
+    let filtered = [];
+    for (let item of this.__data__) {
+      if (!fn(item)) {
+        filtered.push(item);
+      }
+    }
+    return new List(filtered);
+  }
+
+  filter(fn) {
+    let filtered = [];
+    for (let item of this.__data__) {
+      if (fn(item)) {
+        filtered.push(item);
+      }
+    }
+    return new List(filtered);
+  }
+
+  find(search) {
+    for (let item of this.__data__) {
+      if (typeof search == "function") {
+        if (search(item)) {
+          return item;
+        }
+      } else {
+        if (search.toString() == item.toString()) {
+          return item;
+        }
+      }
+    }
+    return null;
+  }
+
+  "find-index"(search) {
+    let i = 0;
+    for (let item of this.__data__) {
+      if (typeof search == "function") {
+        if (search(item)) {
+          return new NyxDecimal(i);
+        }
+      } else {
+        if (search.toString() == item.toString()) {
+          return new NyxDecimal(i);
+        }
+      }
+    }
+    return new NyxDecimal("-1");
+  }
+
+  first(num = 0) {
+    num = parseInt(num.toString());
+    if (num == 0) {
+      return this.__data__[0];
+    }
+    let items = [];
+    for (let i = 0; i < num; i++) {
+      items.push(this.__data__[i]);
+    }
+    return new List(items);
+  }
+
+  insert(item, index) {
+    index = decimalParameterToInt(index);
+    return new List(this.__data__.add(item, index));
+  }
+
+  "insert!"(item, index) {
+    index = decimalParameterToInt(index);
+    this.__data__ = this.__data__.add(item, index);
+    return this;
+  }
+
   join(sep = "") {
     const arr = [...this];
     const str = arr.join(sep.toString());
@@ -679,10 +807,24 @@ class List extends NyxObject {
     return mapped;
   }
 
+  "map-with-index"(fn) {
+    let mapped = new List([]);
+    let i = 0;
+    for (let item of this) {
+      mapped.push(fn(item, new NyxDecimal(i)));
+      i++;
+    }
+    return mapped;
+  }
+
   push(item) {
     this["[]="](new NyxDecimal(this.__length__.toString()), item);
     this.__length__ = this.__data__.length;
     return this;
+  }
+
+  reject(fn) {
+    return this.exclude(fn);
   }
 
   slice(start, stop, step = 1) {
@@ -707,5 +849,18 @@ class List extends NyxObject {
     return new List([...sliced]);
   }
 }
+
+List.new = function (...args) {
+  return new List(args);
+};
+
+List.from = function (iterable, mapFn) {
+  const mapped = [...iterable].map((item) => mapFn(item));
+  return new List(mapped);
+};
+
+List["is?"] = function (obj) {
+  return obj instanceof List;
+};
 
 module.exports = { NyxString, List };
