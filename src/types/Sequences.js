@@ -16,6 +16,11 @@ class NyxString extends NyxPrimitive {
   constructor(value) {
     super(value, "String", "string");
     this.__length__ = this.__value__.length;
+
+    Object.defineProperty(this, "__length__", {
+      writable: false,
+      enumerable: false,
+    });
   }
 
   ["=="](other) {
@@ -612,7 +617,10 @@ class List extends NyxObject {
     for (let val of this.__data__) {
       str += `${val.toString()}, `;
     }
-    str = str.substring(0, str.length - 2) + "]";
+    if (this.__length__) {
+      str = str.substring(0, str.length - 2);
+    }
+    str += "]";
     return str;
   }
 
@@ -683,9 +691,11 @@ class List extends NyxObject {
   }
 
   average() {
-    const nums = this.__data__.map((num) => decimalParameterToInt(num));
-    const avg = nums.average();
-    return new NyxDecimal(avg);
+    const sum = this.__data__.reduce((total, n) => {
+      return total["+"](n);
+    }, new NyxDecimal("0"));
+    const avg = sum["/"](new NyxDecimal(this.__length__.toString()));
+    return avg;
   }
 
   clone() {
@@ -706,7 +716,7 @@ class List extends NyxObject {
 
   count(search) {
     let res = 0;
-    for (let item of this.__data__) {
+    for (let item of this) {
       if (typeof search == "function") {
         if (search(item)) {
           res++;
@@ -718,6 +728,25 @@ class List extends NyxObject {
       }
     }
     return new NyxDecimal(res);
+  }
+
+  difference(other) {
+    let diff = [];
+    let inArray = false;
+    for (let item of this) {
+      for (let el of other) {
+        if (item.toString() == el.toString()) {
+          inArray = true;
+          continue;
+        }
+      }
+      if (!inArray) {
+        diff.push(item);
+      } else {
+        inArray = false;
+      }
+    }
+    return new List(diff);
   }
 
   each(fn) {
@@ -843,14 +872,15 @@ class List extends NyxObject {
   }
 
   "index-of"(search, index = 0) {
+    index = handleNegativeIndex(index);
     index = decimalParameterToInt(index);
     for (let i = index; i < this.__length__; i++) {
       if (typeof search == "function") {
-        if (search(item)) {
+        if (search(this.__data__[i])) {
           return new NyxDecimal(i);
         }
       } else {
-        if (search.toString() == item.toString()) {
+        if (search.toString() == this.__data__[i].toString()) {
           return new NyxDecimal(i);
         }
       }
@@ -900,6 +930,23 @@ class List extends NyxObject {
     return new List(items);
   }
 
+  "last-index-of"(search, index = this.__length__ - 1) {
+    index = handleNegativeIndex(index);
+    index = decimalParameterToInt(index);
+    for (let i = index; i >= 0; i--) {
+      if (typeof search == "function") {
+        if (search(this.__data__[i])) {
+          return new NyxDecimal(i);
+        }
+      } else {
+        if (search.toString() == this.__data__[i].toString()) {
+          return new NyxDecimal(i);
+        }
+      }
+    }
+    return new NyxDecimal("-1");
+  }
+
   map(fn) {
     let mapped = new List([]);
     for (let item of this) {
@@ -918,6 +965,52 @@ class List extends NyxObject {
     return mapped;
   }
 
+  max() {
+    const res = this.__data__.reduce((acc, n) => {
+      if (n.toString() > acc.toString()) {
+        return n;
+      }
+      return acc;
+    }, "");
+    return res;
+  }
+
+  median() {
+    const nums = this.__data__.map((n) => Number(n.toString()));
+    nums.sort((a, b) => a - b);
+    if (nums.length % 2 == 0) {
+      let m1 = nums[nums.length / 2 - 1];
+      let m2 = nums[nums.length / 2];
+      return new NyxDecimal(((m1 + m2) / 2).toString());
+    }
+    return new NyxDecimal(nums[Math.floor(nums.length / 2)]);
+  }
+
+  min() {
+    const res = this.__data__.reduce((acc, n) => {
+      if (n.toString() < acc.toString()) {
+        return n;
+      }
+      return acc;
+    }, Infinity);
+    return res;
+  }
+
+  "none?"(search) {
+    for (let item of this.__data__) {
+      if (typeof search == "function") {
+        if (search(item)) {
+          return false;
+        }
+      } else {
+        if (search.toString() == item.toString()) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   prepend(item) {
     this.__data__.unshift(item);
     this.__length__ = this.__data__.length;
@@ -930,8 +1023,47 @@ class List extends NyxObject {
     return this;
   }
 
+  reduce(fn, init) {
+    let acc = init;
+    for (let item of this) {
+      acc = fn(acc, item);
+    }
+    return acc;
+  }
+
+  "reduce-right"(fn, init) {
+    let acc = init;
+    for (let i = this.__length__ - 1; i >= 0; i--) {
+      acc = fn(acc, this.__data__[i]);
+    }
+    return acc;
+  }
+
   reject(fn) {
     return this.exclude(fn);
+  }
+
+  remove(search) {
+    const arr = [...this.__data__];
+    if (typeof search == "function") {
+      arr.remove(search);
+    } else {
+      arr.remove((n) => {
+        return n.toString() == search.toString();
+      });
+    }
+    return new List(arr);
+  }
+
+  "remove!"(search) {
+    if (typeof search == "function") {
+      this.__data__.remove(search);
+    } else {
+      this.__data__.remove((n) => {
+        return n.toString() == search.toString();
+      });
+    }
+    return this;
   }
 
   shift() {
