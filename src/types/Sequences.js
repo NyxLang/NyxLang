@@ -674,6 +674,14 @@ class List extends NyxObject {
     return new List(this.__data__.compact());
   }
 
+  concat(...lists) {
+    let arr = [...this];
+    for (let list of lists) {
+      arr = [...arr, ...list];
+    }
+    return new List(arr);
+  }
+
   count(search) {
     let res = 0;
     for (let item of this.__data__) {
@@ -780,6 +788,18 @@ class List extends NyxObject {
       items.push(this.__data__[i]);
     }
     return new List(items);
+  }
+
+  flatten() {
+    let flattened = new List([]);
+    for (let item of this) {
+      if (item instanceof List) {
+        flattened = flattened.concat(item.flatten());
+      } else {
+        flattened.push(item);
+      }
+    }
+    return flattened;
   }
 
   insert(item, index) {
