@@ -5,6 +5,11 @@ class NyxPrimitive extends NyxObject {
   constructor(value, className, type) {
     super(className, type);
     this.__value__ = value;
+
+    Object.defineProperty(this, "__value__", {
+      writable: false,
+      enumerable: false,
+    });
   }
 
   is(other) {
@@ -21,6 +26,10 @@ class NyxPrimitive extends NyxObject {
 
   __hash__() {
     return hash(this.toString());
+  }
+
+  __dump__() {
+    return this.toString();
   }
 }
 

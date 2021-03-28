@@ -6,6 +6,21 @@ class NyxObject {
     this.__class__ = className;
     this.__type__ = type;
     this.__object_id__ = uuid.v4();
+
+    Object.defineProperty(this, "__object_id__", {
+      writable: false,
+      enumerable: false,
+    });
+
+    Object.defineProperty(this, "__type__", {
+      writable: false,
+      enumerable: false,
+    });
+
+    Object.defineProperty(this, "__class__", {
+      writable: false,
+      enumerable: false,
+    });
   }
 
   "=="(other) {

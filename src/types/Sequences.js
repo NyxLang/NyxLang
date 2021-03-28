@@ -595,6 +595,16 @@ class List extends NyxObject {
     super("List", "list");
     this.__data__ = array;
     this.__length__ = this.__data__.length;
+
+    Object.defineProperty(this, "__length__", {
+      writable: false,
+      enumerable: false,
+    });
+
+    Object.defineProperty(this, "__data__", {
+      writable: false,
+      enumerable: false,
+    });
   }
 
   toString() {
@@ -604,6 +614,10 @@ class List extends NyxObject {
     }
     str = str.substring(0, str.length - 2) + "]";
     return str;
+  }
+
+  __dump__() {
+    return this.toString();
   }
 
   [Symbol.iterator]() {
@@ -748,7 +762,7 @@ class List extends NyxObject {
   }
 
   find(search) {
-    for (let item of this.__data__) {
+    for (let item of this) {
       if (typeof search == "function") {
         if (search(item)) {
           return item;
@@ -764,7 +778,7 @@ class List extends NyxObject {
 
   "find-index"(search) {
     let i = 0;
-    for (let item of this.__data__) {
+    for (let item of this) {
       if (typeof search == "function") {
         if (search(item)) {
           return new NyxDecimal(i);
@@ -774,6 +788,7 @@ class List extends NyxObject {
           return new NyxDecimal(i);
         }
       }
+      i++;
     }
     return new NyxDecimal("-1");
   }
@@ -802,6 +817,11 @@ class List extends NyxObject {
     return flattened;
   }
 
+  from(index) {
+    index = decimalParameterToInt(index);
+    return this.slice(index, this.__length__);
+  }
+
   insert(item, index) {
     index = decimalParameterToInt(index);
     return new List(this.__data__.add(item, index));
@@ -810,6 +830,7 @@ class List extends NyxObject {
   "insert!"(item, index) {
     index = decimalParameterToInt(index);
     this.__data__ = this.__data__.add(item, index);
+    this.__length__ = this.__data__.length;
     return this;
   }
 
@@ -837,6 +858,12 @@ class List extends NyxObject {
     return mapped;
   }
 
+  prepend(item) {
+    this.__data__.unshift(item);
+    this.__length__ = this.__data__.length;
+    return this;
+  }
+
   push(item) {
     this["[]="](new NyxDecimal(this.__length__.toString()), item);
     this.__length__ = this.__data__.length;
@@ -845,6 +872,12 @@ class List extends NyxObject {
 
   reject(fn) {
     return this.exclude(fn);
+  }
+
+  shift() {
+    const item = this.__data__.shift();
+    this.__length__ = this.__data__.length;
+    return item;
   }
 
   slice(start, stop, step = 1) {
@@ -867,6 +900,15 @@ class List extends NyxObject {
       sliced.reverse();
     }
     return new List([...sliced]);
+  }
+
+  to(index) {
+    index = decimalParameterToInt(index);
+    return this.slice(0, index);
+  }
+
+  unshift(item) {
+    return this.prepend(item);
   }
 }
 
