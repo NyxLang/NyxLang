@@ -138,6 +138,10 @@ class NyxDecimal extends NyxNumber {
     return new NyxDecimal(math.bignumber(1));
   }
 
+  "even?"() {
+    return parseInt(this.toString()) % 2 == 0;
+  }
+
   floor() {
     const res = super.floor();
     return new NyxDecimal(res);
@@ -166,6 +170,10 @@ class NyxDecimal extends NyxNumber {
   norm() {
     const res = super.norm();
     return new NyxDecimal(res);
+  }
+
+  "odd?"() {
+    return parseInt(this.toString()) % 2 != 0;
   }
 
   round() {
