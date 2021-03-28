@@ -662,8 +662,16 @@ class List extends NyxObject {
     return this.push(item);
   }
 
+  "=="(other) {
+    return this["equal?"](other);
+  }
+
   "+"(other) {
     return new List([...this, ...other]);
+  }
+
+  "&"(other) {
+    return this.intersection(other);
   }
 
   "all?"(search) {
@@ -724,6 +732,14 @@ class List extends NyxObject {
       fn(item, new NyxDecimal(i.toString()));
       i++;
     }
+  }
+
+  "empty?"() {
+    return this.__length__ == 0;
+  }
+
+  "equal?"(other) {
+    return this.toString() == other.toString();
   }
 
   "every?"(search) {
@@ -822,6 +838,26 @@ class List extends NyxObject {
     return this.slice(index, this.__length__);
   }
 
+  includes(search) {
+    return !!this.find(search);
+  }
+
+  "index-of"(search, index = 0) {
+    index = decimalParameterToInt(index);
+    for (let i = index; i < this.__length__; i++) {
+      if (typeof search == "function") {
+        if (search(item)) {
+          return new NyxDecimal(i);
+        }
+      } else {
+        if (search.toString() == item.toString()) {
+          return new NyxDecimal(i);
+        }
+      }
+    }
+    return new NyxDecimal("-1");
+  }
+
   insert(item, index) {
     index = decimalParameterToInt(index);
     return new List(this.__data__.add(item, index));
@@ -834,10 +870,34 @@ class List extends NyxObject {
     return this;
   }
 
+  intersection(other) {
+    let intersects = [];
+    for (let item of this) {
+      for (let thing of other) {
+        if (item.toString() == thing.toString()) {
+          intersects.push(item);
+        }
+      }
+    }
+    return new List(intersects);
+  }
+
   join(sep = "") {
     const arr = [...this];
     const str = arr.join(sep.toString());
     return new NyxString(str);
+  }
+
+  last(num = this.__length__ - 1) {
+    num = decimalParameterToInt(num);
+    if (num == this.__length__ - 1) {
+      return this.__data__[this.__length__ - 1];
+    }
+    let items = [];
+    for (let i = num - 1; i < this.__length__; i++) {
+      items.push(this.__data__[i]);
+    }
+    return new List(items);
   }
 
   map(fn) {
