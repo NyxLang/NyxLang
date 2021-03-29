@@ -1282,7 +1282,7 @@ List.new = function (...args) {
   return new List(args);
 };
 
-List.from = function (iterable, mapFn) {
+List.from = function (iterable, mapFn = (n) => n) {
   const mapped = [...iterable].map((item) => mapFn(item));
   return new List(mapped);
 };
