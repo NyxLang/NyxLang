@@ -88,6 +88,32 @@ function Lexer(input) {
     };
   }
 
+  function readEscapeSequence(ch) {
+    let str = "";
+    if (ch == "n") {
+      str += "\n";
+    } else if (ch == "b") {
+      str += "\b";
+    } else if (ch == "f") {
+      str += "\f";
+    } else if (ch == "r") {
+      str += "\r";
+    } else if (ch == "t") {
+      str += "\t";
+    } else if (ch == "v") {
+      str += "\v";
+    } else if (ch == "0") {
+      str += "\0";
+    } else if (ch == "'") {
+      str += "'";
+    } else if (ch == '"') {
+      str += '"';
+    } else if (ch == "\\") {
+      str += "\\";
+    }
+    return str;
+  }
+
   function readEscaped(end) {
     let escaped = false;
     let str = "";
@@ -95,32 +121,14 @@ function Lexer(input) {
     while (!eof()) {
       let ch = next();
       if (escaped) {
-        if (ch == "n") {
-          str += "\n";
-        } else if (ch == "b") {
-          str += "\b";
-        } else if (ch == "f") {
-          str += "\f";
-        } else if (ch == "r") {
-          str += "\r";
-        } else if (ch == "t") {
-          str += "\t";
-        } else if (ch == "v") {
-          str += "\v";
-        } else if (ch == "0") {
-          str += "\0";
-        } else if (ch == "'") {
-          str += "'";
-        } else if (ch == '"') {
-          str += '"';
-        } else if (ch == "\\") {
-          str += "\\";
-        }
+        str += readEscapeSequence(ch);
         escaped = false;
       } else if (ch == "\\") {
         escaped = true;
       } else if (ch == end) {
         break;
+      } else if (ch == "\n") {
+        croak(`String literals cannot span multiple lines`);
       } else {
         str += ch;
       }
@@ -128,10 +136,10 @@ function Lexer(input) {
     return str;
   }
 
-  function readString() {
+  function readString(start) {
     return {
       type: "String",
-      value: readEscaped('"'),
+      value: readEscaped(start),
       line,
       col,
     };
@@ -184,8 +192,8 @@ function Lexer(input) {
 
     if (isDigit(ch)) {
       return readNumber();
-    } else if (ch == '"') {
-      return readString();
+    } else if (ch == '"' || ch == "'") {
+      return readString(ch);
     } else if (isOpChar(ch)) {
       return readOp();
     } else if (isIdStart(ch)) {
