@@ -293,6 +293,8 @@ function evaluateCall(exp, env) {
   let args = new Array(argNames.length);
   let argsParam = false;
   let keywordArgs = false;
+  let argsLength = 0;
+  let kwargsLength = 0;
   let k = 0;
   for (let i = 0; i < exp.args.length; i++) {
     // Detect *args param and pack its args into list
@@ -306,6 +308,11 @@ function evaluateCall(exp, env) {
       [k, args] = unpackSplatArg(k, exp.args[i], args, env);
       // Detect keyword argument
     } else if (isKeywordArg(exp.args[i])) {
+      if (argsParam) {
+        kwargsLength++;
+      } else {
+        argsLength++;
+      }
       let idx = argNames.findIndex((name) => name == exp.args[i].left.name);
       if (idx > -1) {
         args[idx] = evaluate(exp.args[i].right, env);
@@ -314,6 +321,7 @@ function evaluateCall(exp, env) {
       // Detect positional argument
     } else if (!argsParam && !keywordArgs) {
       args[k] = evaluate(exp.args[i], env);
+      argsLength++;
     } else {
       throw new Error(
         "Cannot have positional arguments after keyword arguments"
@@ -479,6 +487,8 @@ function evaluateFunctionDefinition(exp, env) {
 
 function makeLambda(exp, env) {
   let argsParam = false;
+  let argLength = 0;
+  let kwargsLength = 0;
   const params = exp.params.map((param) => {
     if (argsParam && param.operator && param.operator == "*") {
       throw new Error(
@@ -486,6 +496,11 @@ function makeLambda(exp, env) {
       );
     }
     if (param.name) {
+      if (argsParam) {
+        kwargsLength++;
+      } else {
+        argLength++;
+      }
       return param.name;
     } else if (param.type == "Assignment") {
       return param.left.name;
@@ -548,10 +563,16 @@ function makeLambda(exp, env) {
     value: exp.name || `lambda-${lambda.__object_id__}`,
   });
 
-  Object.defineProperty(lambda, "__length__", {
+  Object.defineProperty(lambda, "__args_length__", {
     writable: false,
     enumerable: false,
-    value: params.length,
+    value: argLength,
+  });
+
+  Object.defineProperty(lambda, "__kwargs_length__", {
+    writable: false,
+    enumerable: false,
+    value: kwargsLength,
   });
 
   return lambda;
