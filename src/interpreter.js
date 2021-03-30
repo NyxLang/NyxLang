@@ -1,4 +1,5 @@
 const uuid = require("uuid");
+const hash = require("object-hash");
 const stream = require("./input");
 const lexer = require("./lexer");
 const parse = require("./parser");
@@ -497,6 +498,7 @@ function makeLambda(exp, env) {
     }
   });
   const lambda = function (...args) {
+    console.log(exp);
     let scope = env.extend();
     let defaults = {};
     let names = exp.params.map((param) => {
@@ -523,7 +525,7 @@ function makeLambda(exp, env) {
   Object.defineProperty(lambda, "__object_id__", {
     writable: false,
     enumerable: false,
-    value: uuid.v4(),
+    value: hash(uuid.v4()),
   });
 
   Object.defineProperty(lambda, "__type__", {
@@ -536,6 +538,12 @@ function makeLambda(exp, env) {
     writable: false,
     enumerable: false,
     value: "Function",
+  });
+
+  Object.defineProperty(lambda, "__name__", {
+    writable: false,
+    enumerable: false,
+    value: exp.name,
   });
 
   return lambda;
