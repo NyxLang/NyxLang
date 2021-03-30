@@ -73,7 +73,6 @@ exports.operators = [
 
 exports.keywords = [
   "let",
-  "const",
   "do",
   "if",
   "else",

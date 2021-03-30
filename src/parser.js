@@ -204,9 +204,6 @@ function parse(input) {
       case "let":
         return parseVariableDefinition();
 
-      case "const":
-        return parseConstantDefinition();
-
       case "do":
         skipKw("do");
         return parseBlock();
@@ -279,28 +276,6 @@ function parse(input) {
     }
     return {
       type: "VariableDefinition",
-      name: tok.value,
-      value,
-      line: tok.line,
-      col: tok.col,
-    };
-  }
-
-  function parseConstantDefinition() {
-    const tok = next();
-    const value = parseExpression();
-
-    if (value.left && value.left.type == "SequenceExpression") {
-      return {
-        type: "ConstantParallelDefinition",
-        names: value.left.expressions,
-        values: value.right.expressions,
-        line: value.line,
-        col: value.col,
-      };
-    }
-    return {
-      type: "ConstantDefinition",
       name: tok.value,
       value,
       line: tok.line,
