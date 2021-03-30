@@ -250,11 +250,9 @@ function evaluateParallelAssignment(exp, env) {
       throw new Error("Too many values to assign");
     }
   } else {
-    if (exp.right) {
-      values = evaluate(exp.right, env).__data__;
-    } else if (exp.values) {
-      values = evaluate(exp.values, env).__data__;
-    }
+    values = exp.right
+      ? evaluate(exp.right, env).__data__
+      : evaluate(exp.values, env).__data__;
   }
   names.forEach((item, i) => {
     val = evaluateVariableAssignment(
