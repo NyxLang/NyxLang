@@ -498,7 +498,6 @@ function makeLambda(exp, env) {
     }
   });
   const lambda = function (...args) {
-    console.log(exp);
     let scope = env.extend();
     let defaults = {};
     let names = exp.params.map((param) => {
