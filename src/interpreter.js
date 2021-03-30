@@ -293,42 +293,19 @@ function evaluateCall(exp, env) {
   let keywordArgs = false;
   let k = 0;
   for (let i = 0; i < exp.args.length; i++) {
-    let rest = [];
-    let j = 0;
-    // Detect *args and unpack
-    if (argNames[i] && argNames[i].match(/^\*/)) {
-      for (j = i; j < exp.args.length; j++) {
-        if (exp.args[j].type == "Assignment") {
-          break;
-        }
-        rest.push(exp.args[j]);
-      }
-      rest = rest.map((arg) => evaluate(arg, env));
-      args[k] = new List(rest);
+    // Detect *args param and pack its args into list
+    if (isRestArg(argNames[k])) {
+      let rest;
+      [i, rest] = evaluateRestArgs(i, exp.args, env);
+      args[k] = rest;
       argsParam = true;
-      i = j - 1;
-      continue;
       // Detect splat operation and unpack
-    } else if (exp.args[i].type == "UnaryOperation") {
-      if (exp.args[i].operator == "*") {
-        let value = evaluate(exp.args[i].operand, env);
-        try {
-          for (let v of value) {
-            args[k] = v;
-            k++;
-          }
-          k--; // Because k will increment at bottom of loop, leaving a gap
-          // in args array if not decremented here
-        } catch (e) {
-          throw new Error("Cannot unpack a non-iterable object");
-        }
-      } else {
-        args[k] = evaluate(exp.args[i], env);
-      }
+    } else if (isSplatArg(exp.args[i])) {
+      [k, args] = unpackSplatArg(k, exp.args[i], args, env);
       // Detect keyword argument
-    } else if (exp.args[i].type == "Assignment") {
+    } else if (isKeywordArg(exp.args[i])) {
       let idx = argNames.findIndex((name) => name == exp.args[i].left.name);
-      if (idx > 0) {
+      if (idx > -1) {
         args[idx] = evaluate(exp.args[i].right, env);
         keywordArgs = true;
       }
@@ -344,6 +321,49 @@ function evaluateCall(exp, env) {
   }
   let v = func.apply(obj, args);
   return v;
+}
+
+function isRestArg(arg) {
+  return arg && arg.match(/^\*/);
+}
+
+function evaluateRestArgs(idx, args, env) {
+  let rest = [];
+  let i;
+  for (i = idx; i < args.length; i++) {
+    if (args[i].type == "Assignment") {
+      break;
+    }
+    rest.push(args[i]);
+  }
+  rest = rest.map((arg) => evaluate(arg, env));
+  rest = new List(rest);
+  return [i - 1, rest];
+}
+
+function isSplatArg(arg) {
+  return arg.type == "UnaryOperation" && arg.operator == "*";
+}
+
+function unpackSplatArg(idx, splatArg, callArgs, env) {
+  let value = evaluate(splatArg.operand, env);
+  let i = idx;
+  try {
+    for (let v of value) {
+      // mutates callArgs
+      callArgs[i] = v;
+      i++;
+    }
+    i--; // Because k will increment at bottom of loop, leaving a gap
+    // in args array if not decremented here
+  } catch (e) {
+    throw new Error("Cannot unpack a non-iterable object");
+  }
+  return [i, callArgs];
+}
+
+function isKeywordArg(arg) {
+  return arg.type == "Assignment";
 }
 
 const STRIP_COMMENTS = /(\/\/.*$)|(\/\*[\s\S]*?\*\/)|(\s*=[^,\)]*(('(?:\\'|[^'\r\n])*')|("(?:\\"|[^"\r\n])*"))|(\s*=[^,\)]*))/gm;
