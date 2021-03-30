@@ -127,8 +127,6 @@ function Lexer(input) {
         escaped = true;
       } else if (ch == end) {
         break;
-      } else if (ch == "\n") {
-        croak(`String literals cannot span multiple lines`);
       } else {
         str += ch;
       }
