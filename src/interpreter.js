@@ -546,6 +546,12 @@ function makeLambda(exp, env) {
     value: exp.name,
   });
 
+  Object.defineProperty(lambda, "__length__", {
+    writable: false,
+    enumerable: false,
+    value: params.length,
+  });
+
   return lambda;
 }
 
