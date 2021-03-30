@@ -372,7 +372,7 @@ function evaluateFunctionDefinition(exp, env) {
 }
 
 function makeLambda(exp, env) {
-  const lambda = (...args) => {
+  const lambda = function (...args) {
     let scope = env.extend();
     let defaults = {};
     let names = exp.params.map((param) => {
