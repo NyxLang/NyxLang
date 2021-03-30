@@ -118,7 +118,7 @@ function evaluateUnary(exp, env) {
 }
 
 function defineVariable(exp, env) {
-  if (env.lookup(exp.name)) {
+  if (env.existsInCurrentScope(exp.name)) {
     throw new Error(`Cannot redeclare identifier ${exp.name}`);
   }
   env.def(exp.name, null);
@@ -164,7 +164,7 @@ function evaluateParallelDefinition(exp, env) {
         };
       } else {
         throw new Error(
-          "Cannot have any additional names after splat operation"
+          "Cannot have any additional variable names after splat operation"
         );
       }
     } else if (exp.values) {
@@ -230,6 +230,9 @@ function evaluateVariableAssignment(exp, env) {
 
 function evaluateIdentifier(exp, env) {
   const val = env.get(exp.name);
+  if (val === null) {
+    throw new Error(`Cannot reference variable ${exp.name} before assignment`);
+  }
   return val && val.__value__ ? val.__value__ : val;
 }
 

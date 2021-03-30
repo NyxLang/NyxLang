@@ -18,6 +18,10 @@ Environment.prototype = {
     }
   },
 
+  existsInCurrentScope: function (name) {
+    return Object.prototype.hasOwnProperty.call(this.vars, name);
+  },
+
   get: function (name) {
     if (name in this.vars) {
       return this.vars[name];
