@@ -266,14 +266,32 @@ function evaluateCall(exp, env) {
   if (typeof func != "function") {
     throw new Error(`${name} is not a callable value`);
   }
-  let v = func.apply(
-    obj,
-    exp.args.map((arg) => {
-      let val = evaluate(arg, env);
-      return val;
-    })
-  );
+  const argNames = getArgNames(func);
+  const args = exp.args.map((arg) => {
+    if (arg.type == "Assignment") {
+      if (argNames.includes(arg.left.name)) {
+        return evaluate(arg.right, env);
+      }
+    }
+    let val = evaluate(arg, env);
+    return val;
+  });
+  let v = func.apply(obj, args);
   return v;
+}
+
+const STRIP_COMMENTS = /(\/\/.*$)|(\/\*[\s\S]*?\*\/)|(\s*=[^,\)]*(('(?:\\'|[^'\r\n])*')|("(?:\\"|[^"\r\n])*"))|(\s*=[^,\)]*))/gm;
+const ARGUMENT_NAMES = /([^\s,]+)/g;
+
+function getArgNames(func) {
+  fnString = func.toString().replace(STRIP_COMMENTS, "");
+  let result = fnString
+    .slice(fnString.indexOf("(") + 1, fnString.indexOf(")"))
+    .match(ARGUMENT_NAMES);
+  if (result == null) {
+    result = [];
+  }
+  return result;
 }
 
 function evaluateMember(exp, env) {
