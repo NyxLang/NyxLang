@@ -2,20 +2,14 @@ const NyxDecimal = require("../types/Decimal");
 const Range = require("../types/Range");
 
 function range(start, end, step = 1) {
-  try {
-    if (arguments.length == 1) {
-      end = start;
-      start = new NyxDecimal(0);
-    }
-
-    if (step == 1) {
-      step = new NyxDecimal(1);
-    }
-
-    return new Range(start, end, step);
-  } catch (e) {
-    throw new Error("Argument(s) to range must be integers");
+  if (arguments[1] === undefined && arguments[2] === undefined) {
+    end = start;
+    start = new NyxDecimal(0);
   }
+  start = start || new NyxDecimal(0);
+  step = new NyxDecimal(step.toString());
+
+  return new Range(start, end, step);
 }
 
 function length(sequence) {

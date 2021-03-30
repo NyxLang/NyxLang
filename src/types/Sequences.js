@@ -441,23 +441,21 @@ class NyxString extends NyxPrimitive {
     return new NyxString(this.__value__.shift(n));
   }
 
-  slice(start, stop, step = 1) {
-    console.log(arguments);
-    if (arguments.length == 1) {
-      stop = parseInt(start.toString());
+  slice(start, end, step = 1) {
+    if (arguments[1] === undefined && arguments[2] === undefined) {
+      end = decimalParameterToInt(start);
       start = 0;
-    } else {
-      start = parseInt(start.toString());
-      stop = parseInt(stop.toString());
-      step = parseInt(step.toString());
     }
+    start = decimalParameterToInt(start) || 0;
+    end = decimalParameterToInt(end) || start;
+    step = decimalParameterToInt(step);
     let reversed = false;
     if (step < 0) {
       step = -step;
       reversed = true;
     }
     const chars = SliceArray.from(this.__value__.split(""));
-    const sliced = chars[[start, stop, step]];
+    const sliced = chars[[start, end, step]];
     if (reversed) {
       sliced.reverse();
     }
@@ -1189,22 +1187,21 @@ class List extends NyxObject {
     return this;
   }
 
-  slice(start, stop, step = 1) {
-    if (arguments.length == 1) {
-      stop = parseInt(start.toString());
+  slice(start, end, step = 1) {
+    if (arguments[1] === undefined && arguments[2] === undefined) {
+      end = decimalParameterToInt(start);
       start = 0;
-    } else {
-      start = parseInt(start.toString());
-      stop = parseInt(stop.toString());
-      step = parseInt(step.toString());
     }
+    start = decimalParameterToInt(start) || 0;
+    end = decimalParameterToInt(end) || start;
+    step = decimalParameterToInt(step);
     let reversed = false;
     if (step < 0) {
       step = -step;
       reversed = true;
     }
     const arr = SliceArray.from([...this]);
-    const sliced = arr[[start, stop, step]];
+    const sliced = arr[[start, end, step]];
     if (reversed) {
       sliced.reverse();
     }
