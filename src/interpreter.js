@@ -29,17 +29,11 @@ function evaluate(exp, env = main) {
     case "VariableDefinition":
       return defineVariable(exp, env);
 
-    case "ConstantDefinition":
-      return defineConstant(exp, env);
-
     case "Assignment":
       return evaluateVariableAssignment(exp, env);
 
     case "VariableParallelDefinition":
       return evaluateParallelDefinition(exp, env);
-
-    case "ConstantParallelDefinition":
-      return evaluateParallelDefinition(exp, env, true);
 
     case "CallExpression":
       return evaluateCall(exp, env);
@@ -130,59 +124,54 @@ function defineVariable(exp, env) {
   return exp.value ? evaluateVariableAssignment(exp.value, env) : null;
 }
 
-function defineConstant(exp, env) {
-  if (env.lookup(exp.name)) {
-    throw new Error(`Cannot redeclare identifier ${exp.name}`);
-  }
-  env.def(exp.name, null);
-  return evaluateVariableAssignment(exp.value, env, true);
-}
-
-function evaluateParallelDefinition(exp, env, constant = false) {
+function evaluateParallelDefinition(exp, env) {
   const names = (exp.names && exp.names.expressions) || exp.names;
-  const values = (exp.values && exp.values.expressions) || exp.values;
-  let evaluatedValues;
-  if (values) {
-    evaluatedValues = values.map((value) => {
-      return evaluate(value, exp);
-    });
-  } else {
-    evaluatedValues = names.map((value) => null);
-  }
-  names.forEach((item, i) => {
-    if (constant) {
-      defineConstant(
-        {
-          name: item.name,
-          value: { name: item.name, value: evaluatedValues[i] },
-        },
-        env
-      );
+  let values = null;
+  if (
+    (exp.right && exp.right.expressions) ||
+    (exp.values && exp.values.expressions)
+  ) {
+    values = (exp.right && exp.right.expressions) || exp.values.expressions;
+    if (values) {
+      values = values.map((value) => {
+        return evaluate(value, exp);
+      });
     } else {
-      defineVariable(item, env);
+      values = names.map((value) => null);
     }
+    if (names.length > values.length) {
+      throw new Error("Not enough values to assign");
+    } else if (names.length < values.length) {
+      throw new Error("Too many values to assign");
+    }
+  } else {
+    if (exp.right) {
+      values = evaluate(exp.right, env).__data__;
+    } else if (exp.values) {
+      values = evaluate(exp.values, env).__data__;
+    }
+  }
+  console.log(values);
+  names.forEach((item, i) => {
+    defineVariable(item, env);
   });
 
-  if (!constant && exp.values) {
+  if (exp.values) {
     evaluateParallelAssignment(exp, env);
   }
   return null;
 }
 
-function evaluateVariableAssignment(exp, env, constant = false) {
+function evaluateVariableAssignment(exp, env) {
+  // console.log(exp);
   if (exp && exp.left && exp.left.type == "SequenceExpression") {
-    return evaluateParallelAssignment(exp, env, constant);
+    return evaluateParallelAssignment(exp, env);
   } else if (exp && exp.left && exp.left.type == "SliceExpression") {
     return evaluateIndexedAssignment(exp, env);
   }
 
   const name = (exp.left && exp.left.name) || exp.name;
   let value = (exp.right && evaluate(exp.right, env)) || exp.value;
-  const oldValue = env.vars[name];
-
-  if (oldValue && oldValue.__constant__) {
-    throw new Error("Cannot assign new value to constant");
-  }
 
   if (exp.operator == "+=") {
     value = applyBinary("+", env.get(name).__value__, value);
@@ -215,7 +204,6 @@ function evaluateVariableAssignment(exp, env, constant = false) {
     });
   }
   env.set(name, {
-    __constant__: constant,
     __value__: value,
   });
 
@@ -227,18 +215,34 @@ function evaluateIdentifier(exp, env) {
   return val && val.__value__ ? val.__value__ : val;
 }
 
-function evaluateParallelAssignment(exp, env, constant) {
+function evaluateParallelAssignment(exp, env) {
   let val;
+  let values;
   const names = (exp.left && exp.left.expressions) || exp.names.expressions;
-  const values = (exp.right && exp.right.expressions) || exp.values.expressions;
-  const evaluatedValues = values.map((value) => {
-    return evaluate(value, env);
-  });
+  if (
+    (exp.right && exp.right.expressions) ||
+    (exp.values && exp.values.expressions)
+  ) {
+    values = (exp.right && exp.right.expressions) || exp.values.expressions;
+    values = values.map((value) => {
+      return evaluate(value, env);
+    });
+    if (names.length > values.length) {
+      throw new Error("Not enough values to assign");
+    } else if (names.length < values.length) {
+      throw new Error("Too many values to assign");
+    }
+  } else {
+    if (exp.right) {
+      values = evaluate(exp.right, env).__data__;
+    } else if (exp.values) {
+      values = evaluate(exp.values, env).__data__;
+    }
+  }
   names.forEach((item, i) => {
     val = evaluateVariableAssignment(
-      { name: item.name, value: evaluatedValues[i] },
-      env,
-      constant
+      { name: item.name, value: values[i] },
+      env
     );
   });
   return val;
@@ -410,10 +414,7 @@ function makeLambda(exp, env) {
       return param.name;
     });
     names.forEach((name, i) => {
-      scope.def(
-        name,
-        { __constant__: false, __value__: args[i] } || defaults[name]
-      );
+      scope.def(name, { __value__: args[i] } || defaults[name]);
     });
     return executeFunctionBody(exp.body, scope);
   };
