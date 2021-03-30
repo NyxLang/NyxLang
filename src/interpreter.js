@@ -545,7 +545,7 @@ function makeLambda(exp, env) {
   Object.defineProperty(lambda, "__name__", {
     writable: false,
     enumerable: false,
-    value: exp.name,
+    value: exp.name || `lambda-${lambda.__object_id__}`,
   });
 
   Object.defineProperty(lambda, "__length__", {
