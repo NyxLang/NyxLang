@@ -266,8 +266,8 @@ function evaluateCall(exp, env) {
   if (typeof func != "function") {
     throw new Error(`${name} is not a callable value`);
   }
-  const argNames = func.__names__ || getArgNames(func);
-  let args = [];
+  const argNames = func.__params__ || getArgNames(func);
+  let args = new Array(argNames.length);
   let i = 0;
   for (let arg of exp.args) {
     if (arg.type == "Assignment") {
@@ -278,7 +278,6 @@ function evaluateCall(exp, env) {
     }
     i++;
   }
-  // args = args.filter((arg) => arg !== undefined);;
   let v = func.apply(obj, args);
   return v;
 }
@@ -393,7 +392,7 @@ function evaluateFunctionDefinition(exp, env) {
 }
 
 function makeLambda(exp, env) {
-  const __names__ = exp.params.map((param) => {
+  const params = exp.params.map((param) => {
     if (param.name) {
       return param.name;
     } else if (param.type == "Assignment") {
@@ -418,7 +417,7 @@ function makeLambda(exp, env) {
     });
     return executeFunctionBody(exp.body, scope);
   };
-  lambda.__names__ = __names__;
+  lambda.__params__ = params;
 
   Object.defineProperty(lambda, "__object_id__", {
     writable: false,
