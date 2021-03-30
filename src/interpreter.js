@@ -143,11 +143,9 @@ function evaluateParallelDefinition(exp, env) {
       throw new Error("Not enough values to assign");
     }
   } else {
-    if (exp.right) {
-      values = evaluate(exp.right, env).__data__;
-    } else if (exp.values) {
-      values = evaluate(exp.values, env).__data__;
-    }
+    values = exp.right
+      ? evaluate(exp.right, env).__data__
+      : evaluate(exp.values, env).__data__;
   }
   let toDefine = null;
   names.forEach((item, i) => {
