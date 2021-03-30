@@ -353,11 +353,6 @@ function parse(input) {
       (tok && tok.type != "Dedent") ||
       (tok.type == "Dedent" && tok.value >= indentLevel)
     ) {
-      if (eof()) {
-        throw new NyxInputError(
-          "A block must be closed with an unindented newline"
-        );
-      }
       if (tok.value == "\n") {
         skipNewline("\n");
         tok = peek();
@@ -379,7 +374,6 @@ function parse(input) {
     if (tok && tok.type == "Dedent") {
       next();
     }
-
     return exp;
   }
 
@@ -655,7 +649,7 @@ function parse(input) {
         program.push(exp);
       }
       tok = peek();
-      if (!eof()) {
+      if (tok && tok.type == "Newline") {
         skipNewline(tok.value);
       }
     }
