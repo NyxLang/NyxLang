@@ -476,8 +476,10 @@ class NyxString extends NyxPrimitive {
   }
 
   splice(start = 0, length = this.__length__, str = "") {
+    start = handleNegativeIndex(start);
     start = decimalParameterToInt(start);
     length = decimalParameterToInt(length);
+    console.log(start, length);
     const res = s.splice(this.__value__, start, length, str.toString());
     return new NyxString(res);
   }
