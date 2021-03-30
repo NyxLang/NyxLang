@@ -277,6 +277,7 @@ function evaluateIndexedAssignment(exp, env) {
 }
 
 function evaluateCall(exp, env) {
+  console.log(exp);
   let obj = null;
   if (exp.func.type == "MemberExpression") {
     obj = evaluate(exp.func.object, env);
@@ -289,15 +290,36 @@ function evaluateCall(exp, env) {
   }
   const argNames = func.__params__ || getArgNames(func);
   let args = new Array(argNames.length);
-  let i = 0;
-  for (let arg of exp.args) {
-    if (arg.type == "Assignment") {
-      let idx = argNames.findIndex((name) => name == arg.left.name);
-      args[idx] = evaluate(arg.right, env);
+  let argsParam = false;
+  let keywordArgs = false;
+  for (let i = 0; i < exp.args.length; i++) {
+    let rest = [];
+    let j = 0;
+    if (argNames[i] && argNames[i].match(/^\*/)) {
+      for (j = i; j < exp.args.length; j++) {
+        if (exp.args[j].type == "Assignment") {
+          break;
+        }
+        rest.push(exp.args[j]);
+      }
+      rest = rest.map((arg) => evaluate(arg, env));
+      args[i] = new List(rest);
+      argsParam = true;
+      i = j - 1;
+      continue;
+    } else if (exp.args[i].type == "Assignment") {
+      let idx = argNames.findIndex((name) => name == exp.args[i].left.name);
+      if (idx > 0) {
+        args[idx] = evaluate(exp.args[i].right, env);
+        keywordArgs = true;
+      }
+    } else if (!argsParam && !keywordArgs) {
+      args[i] = evaluate(exp.args[i], env);
     } else {
-      args[i] = evaluate(arg, env);
+      throw new Error(
+        "Cannot have positional arguments after keyword arguments"
+      );
     }
-    i++;
   }
   let v = func.apply(obj, args);
   return v;
@@ -413,26 +435,48 @@ function evaluateFunctionDefinition(exp, env) {
 }
 
 function makeLambda(exp, env) {
+  let argsParam = false;
   const params = exp.params.map((param) => {
+    if (argsParam && param.operator && param.operator == "*") {
+      throw new Error(
+        "Can only have 1 positional args param in a function definition"
+      );
+    }
     if (param.name) {
       return param.name;
     } else if (param.type == "Assignment") {
       return param.left.name;
+    } else if (param.type == "UnaryOperation") {
+      if (param.operator == "*") {
+        argsParam = true;
+        return `*${param.operand.name}`;
+      } else {
+        throw new Error(
+          `Unrecognized operator ${param.operator} in function definition`
+        );
+      }
     }
   });
   const lambda = function (...args) {
     let scope = env.extend();
     let defaults = {};
     let names = exp.params.map((param) => {
+      if (param.type == "UnaryOperation") {
+        if (param.operator == "*") {
+          return param.operand.name;
+        }
+      }
       if (param.type == "Assignment") {
         defaults[param.left.name] = evaluate(param.right, scope);
         return param.left.name;
       }
       return param.name;
     });
-    names.forEach((name, i) => {
+    let i = 0;
+    for (let name of names) {
       scope.def(name, { __value__: args[i] } || defaults[name]);
-    });
+      i++;
+    }
     return executeFunctionBody(exp.body, scope);
   };
   lambda.__params__ = params;
