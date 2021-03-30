@@ -442,6 +442,7 @@ class NyxString extends NyxPrimitive {
   }
 
   slice(start, stop, step = 1) {
+    console.log(arguments);
     if (arguments.length == 1) {
       stop = parseInt(start.toString());
       start = 0;
@@ -473,15 +474,6 @@ class NyxString extends NyxPrimitive {
 
   spacify() {
     return new NyxString(this.__value__.spacify());
-  }
-
-  splice(start = 0, length = this.__length__, str = "") {
-    start = handleNegativeIndex(start);
-    start = decimalParameterToInt(start);
-    length = decimalParameterToInt(length);
-    console.log(start, length);
-    const res = s.splice(this.__value__, start, length, str.toString());
-    return new NyxString(res);
   }
 
   split(sep = "") {

@@ -278,7 +278,7 @@ function evaluateCall(exp, env) {
     }
     i++;
   }
-  args = args.filter((arg) => arg !== undefined);
+  // args = args.filter((arg) => arg !== undefined);;
   let v = func.apply(obj, args);
   return v;
 }
