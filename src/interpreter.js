@@ -168,10 +168,11 @@ function evaluateParallelDefinition(exp, env) {
           "Cannot have any additional names after splat operation"
         );
       }
-    } else {
+    } else if (exp.values) {
       toDefine = { ...item, value: { name: item.name, value: values[i] } };
+    } else {
+      toDefine = item;
     }
-    // console.log(toDefine);
     defineVariable(toDefine, env);
   });
 
