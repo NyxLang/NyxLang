@@ -141,8 +141,6 @@ function evaluateParallelDefinition(exp, env) {
     }
     if (names.length > values.length) {
       throw new Error("Not enough values to assign");
-    } else if (names.length < values.length) {
-      throw new Error("Too many values to assign");
     }
   } else {
     if (exp.right) {
@@ -151,19 +149,39 @@ function evaluateParallelDefinition(exp, env) {
       values = evaluate(exp.values, env).__data__;
     }
   }
-  console.log(values);
+  let toDefine = null;
   names.forEach((item, i) => {
-    defineVariable(item, env);
+    if (item.type == "UnaryOperation" && item.operator == "*") {
+      if (i == names.length - 1) {
+        toDefine = {
+          type: "Identifier",
+          name: item.operand.name,
+          line: item.line,
+          col: item.col,
+          value: {
+            name: item.operand.name,
+            value: new List(values.slice(i)),
+          },
+        };
+      } else {
+        throw new Error(
+          "Cannot have any additional names after splat operation"
+        );
+      }
+    } else {
+      toDefine = { ...item, value: { name: item.name, value: values[i] } };
+    }
+    // console.log(toDefine);
+    defineVariable(toDefine, env);
   });
 
-  if (exp.values) {
+  if (exp.values && !toDefine) {
     evaluateParallelAssignment(exp, env);
   }
   return null;
 }
 
 function evaluateVariableAssignment(exp, env) {
-  // console.log(exp);
   if (exp && exp.left && exp.left.type == "SequenceExpression") {
     return evaluateParallelAssignment(exp, env);
   } else if (exp && exp.left && exp.left.type == "SliceExpression") {
