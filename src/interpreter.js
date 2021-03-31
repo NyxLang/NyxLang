@@ -1,3 +1,5 @@
+"use strict";
+
 const uuid = require("uuid");
 const hash = require("object-hash");
 const stream = require("./input");
@@ -530,7 +532,7 @@ function makeLambda(exp, env) {
   });
   const lambda = function (...args) {
     let scope = env.extend();
-    scope.set("self", this);
+    scope.def("self", this);
     let defaults = {};
     let names = exp.params.map((param) => {
       if (param.type == "UnaryOperation") {
