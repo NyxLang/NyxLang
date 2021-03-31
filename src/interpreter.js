@@ -4,8 +4,7 @@ const stream = require("./input");
 const lexer = require("./lexer");
 const parse = require("./parser");
 const Environment = require("./environment");
-const NyxDecimal = require("./types/Decimal");
-const { NyxString, List } = require("./types/Sequences");
+const { Decimal, String, List } = require("./stdlib/types");
 const globals = require("./stdlib/globals");
 
 const globalEnv = new Environment();
@@ -70,14 +69,14 @@ function evaluate(exp, env = main) {
       return evaluateIdentifier(exp, env);
 
     case "Decimal":
-      return new NyxDecimal(exp.value);
+      return new Decimal(exp.value);
 
     case "Boolean":
     case "Nil":
       return exp.value;
 
     case "String":
-      return new NyxString(exp.value);
+      return new String(exp.value);
 
     case "ControlStatement":
       return exp.value;
@@ -92,7 +91,13 @@ function evaluate(exp, env = main) {
       return evaluateSlice(exp, env);
 
     default:
-      return exp;
+      if (Array.isArray(exp)) {
+        return new List(exp);
+      } else if (typeof exp == "number") {
+        return new Decimal(exp);
+      } else if (typeof exp == "string") {
+        return new String(exp);
+      }
   }
 }
 
@@ -525,6 +530,7 @@ function makeLambda(exp, env) {
   });
   const lambda = function (...args) {
     let scope = env.extend();
+    scope.set("self", this);
     let defaults = {};
     let names = exp.params.map((param) => {
       if (param.type == "UnaryOperation") {
@@ -545,7 +551,34 @@ function makeLambda(exp, env) {
     }
     return executeFunctionBody(exp.body, scope);
   };
-  lambda.__params__ = params;
+
+  lambda.__call__ = function __call__(context, ...args) {
+    return function () {
+      lambda.call(context, ...args);
+    };
+  };
+
+  lambda.__bind__ = function __bind__(context, ...args) {
+    return function () {
+      lambda.bind(context, ...args);
+    };
+  };
+
+  Object.defineProperty(lambda, "__call__", {
+    writable: false,
+    enumerable: false,
+  });
+
+  Object.defineProperty(lambda, "__bind__", {
+    writable: false,
+    enumerable: false,
+  });
+
+  Object.defineProperty(lambda, "__params__", {
+    writable: false,
+    enumerable: false,
+    value: params,
+  });
 
   Object.defineProperty(lambda, "__object_id__", {
     writable: false,

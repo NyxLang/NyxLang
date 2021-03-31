@@ -9,3 +9,7 @@ class NilClass extends NyxPrimitive {
     return "nil";
   }
 }
+
+NilClass.Nil = new NilClass();
+
+module.exports = NilClass;

@@ -10,6 +10,7 @@ class BaseObject {
     this.__private_methods__ = Object.create(null);
     this.__protected_methods__ = Object.create(null);
     this.__subclasses__ = [];
+    this.__baseclasses__ = [];
 
     Object.defineProperty(this, "__object_id__", {
       writable: false,
@@ -42,6 +43,11 @@ class BaseObject {
     });
 
     Object.defineProperty(this, "__subclasses__", {
+      writable: false,
+      enumerable: false,
+    });
+
+    Object.defineProperty(this, "__baseclasses__", {
       writable: false,
       enumerable: false,
     });
