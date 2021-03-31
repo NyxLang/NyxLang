@@ -40,6 +40,10 @@ class NyxObject {
   toString() {
     return this.__dump__();
   }
+
+  __string__() {
+    return this.toString();
+  }
 }
 
 module.exports = NyxObject;

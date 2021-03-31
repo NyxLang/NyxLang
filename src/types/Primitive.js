@@ -27,10 +27,6 @@ class NyxPrimitive extends NyxObject {
   __hash__() {
     return hash(this.toString());
   }
-
-  __dump__() {
-    return this.toString();
-  }
 }
 
 module.exports = NyxPrimitive;
