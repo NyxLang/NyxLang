@@ -22,7 +22,7 @@ function hash(obj) {
 }
 
 function string(obj) {
-  return new NyxString(obj.toString());
+  return obj.__string__();
 }
 
 function isString(obj) {

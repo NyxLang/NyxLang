@@ -24,4 +24,8 @@ types.Number.__parent__ = types.Primitive;
 types.Primitive.__parent__ = types.Object;
 types.Object.__parent__ = types.Nil;
 
+types.Object.prototype.__string__ = function __string__() {
+  return new types.String(this.toString());
+};
+
 module.exports = types;
