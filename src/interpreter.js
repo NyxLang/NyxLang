@@ -312,7 +312,7 @@ function evaluateCall(exp, env) {
       argsParam = true;
       // Detect splat operation and unpack
     } else if (isSplatArg(exp.args[i])) {
-      [k, args] = unpackSplatArg(k, exp.args[i], args, env);
+      [k, args, argsLength] = unpackSplatArg(k, exp.args[i], args, env);
       // Detect keyword argument
     } else if (isKeywordArg(exp.args[i])) {
       if (argsParam) {
@@ -362,13 +362,14 @@ function isSplatArg(arg) {
   return arg.type == "UnaryOperation" && arg.operator == "*";
 }
 
-function unpackSplatArg(idx, splatArg, callArgs, env) {
+function unpackSplatArg(idx, splatArg, callArgs, argsLength, env) {
   let value = evaluate(splatArg.operand, env);
   let i = idx;
   try {
     for (let v of value) {
       // mutates callArgs
       callArgs[i] = v;
+      argsLength++;
       i++;
     }
     i--; // Because k will increment at bottom of loop, leaving a gap
@@ -376,7 +377,7 @@ function unpackSplatArg(idx, splatArg, callArgs, env) {
   } catch (e) {
     throw new Error("Cannot unpack a non-iterable object");
   }
-  return [i, callArgs];
+  return [i, callArgs, argsLength];
 }
 
 function isKeywordArg(arg) {
