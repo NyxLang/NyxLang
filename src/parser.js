@@ -125,7 +125,7 @@ function parse(input) {
 
   function maybeCall(expr) {
     expr = expr();
-    return isPunc("(") ? parseCall(expr) : expr;
+    return isPunc("(") ? maybeCall(() => parseCall(expr)) : expr;
   }
 
   function maybeBinary(left, myPrec, sequence = null, notSeq = null) {
@@ -659,7 +659,6 @@ function parse(input) {
   function parseExpression(sequence = null, notSeq = null) {
     const exp = maybeCall(() => maybeBinary(parseAtom(), 0, sequence, notSeq));
     let tok = peek();
-
     if ((sequence && !notSeq) || (tok && tok.value == "," && !notSeq)) {
       return parseSequenceExpression(exp, sequence);
     }
@@ -669,7 +668,7 @@ function parse(input) {
       if (tok.value == ".") {
         memberExprs.push(exp);
       } else if (tok.value == "[") {
-        memberExprs.push(parseSlice(exp));
+        memberExprs.push(maybeCall(() => parseSlice(exp)));
         tok = peek();
       }
       while (tok.value == "." || tok.value == "[") {
@@ -677,11 +676,15 @@ function parse(input) {
           skipPunc(".");
           memberExprs.push(parseAtom());
         } else if (tok.value == "[") {
-          memberExprs.push(parseSlice(memberExprs[memberExprs.length - 1]));
+          memberExprs.push(
+            maybeCall(() => parseSlice(memberExprs[memberExprs.length - 1]))
+          );
         }
         tok = peek();
       }
-      return maybeBinary(parseMemberExpression(memberExprs), 0);
+      return maybeCall(() =>
+        maybeBinary(parseMemberExpression(memberExprs), 0)
+      );
     }
 
     if (tok && tok.value == "if") {

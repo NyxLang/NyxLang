@@ -284,8 +284,15 @@ function evaluateCall(exp, env) {
     obj = evaluate(exp.func.object, env);
   }
   let func = evaluate(exp.func, env);
-  let name =
-    exp.func.name || `${exp.func.object.name}.${exp.func.property.name}`;
+  let name = "";
+  if (exp.func.name) {
+    name = exp.func.name;
+  } else if (exp.func.object && exp.func.property) {
+    name = `${exp.func.object.name}.${exp.func.property.name}`;
+  } else {
+    name = `func.__name__`;
+  }
+
   if (typeof func != "function") {
     throw new Error(`${name} is not a callable value`);
   }
