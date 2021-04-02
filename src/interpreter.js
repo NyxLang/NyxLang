@@ -128,8 +128,19 @@ function defineVariable(exp, env) {
   if (env.existsInCurrentScope(exp.name)) {
     throw new Error(`Cannot redeclare identifier ${exp.name}`);
   }
-  env.def(exp.name, null);
-  return exp.value ? evaluateVariableAssignment(exp.value, env) : null;
+  env.def(exp.name, createEnvVarValue(exp.value, env));
+  return;
+}
+
+function createEnvVarValue(value, env, constant = false) {
+  let v = evaluate(value, env);
+  return {
+    id: v.__object_id__,
+    type: v.__type__,
+    class: v.__class__,
+    constant,
+    value: v,
+  };
 }
 
 function evaluateParallelDefinition(exp, env) {
