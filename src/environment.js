@@ -26,7 +26,6 @@ Environment.prototype = {
     if (name in this.vars) {
       return this.vars[name];
     }
-    throw new Error(`Undefined identifier ${name}`);
   },
 
   set: function (name, value) {

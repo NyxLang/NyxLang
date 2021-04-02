@@ -138,7 +138,7 @@ function defineVariable(exp, env) {
   env.def(name, createEnvVarValue(value, exp.constant));
 }
 
-function createEnvVarValue(value, constant) {
+function createEnvVarValue(value, constant = false) {
   if (constant) {
     Object.freeze(value);
   }
@@ -217,6 +217,12 @@ function evaluateVariableAssignment(exp, env) {
   }
 
   const name = (exp.left && exp.left.name) || exp.name;
+  const oldValue = env.get(name);
+  if (oldValue.constant) {
+    throw new Error(
+      `Cannot reassign to constant varaible at ${exp.line}:${exp.col}`
+    );
+  }
   let value = (exp.right && evaluate(exp.right, env)) || exp.value;
 
   if (exp.operator == "+=") {
@@ -249,19 +255,17 @@ function evaluateVariableAssignment(exp, env) {
       enumerable: false,
     });
   }
-  env.set(name, {
-    __value__: value,
-  });
+  return env.set(name, createEnvVarValue(value));
 
   return null;
 }
 
 function evaluateIdentifier(exp, env) {
   const val = env.get(exp.name);
-  if (val === null) {
-    throw new Error(`Cannot reference variable ${exp.name} before assignment`);
+  if (val) {
+    return val.value;
   }
-  return val && val.value ? val.value : val;
+  throw new Error(`Undefined identifier ${name} at ${exp.line}:${exp.col}`);
 }
 
 function evaluateParallelAssignment(exp, env) {
