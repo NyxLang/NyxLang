@@ -130,13 +130,13 @@ function parse(input) {
 
   function checkIfAssignment(operator) {
     return (
-      tok.value == "=" ||
-      tok.value == "+=" ||
-      tok.value == "-=" ||
-      tok.value == "*=" ||
-      tok.value == "/=" ||
-      tok.value == "//=" ||
-      tok.value == "%="
+      operator == "=" ||
+      operator == "+=" ||
+      operator == "-=" ||
+      operator == "*=" ||
+      operator == "/=" ||
+      operator == "//=" ||
+      operator == "%="
     );
   }
 
@@ -209,6 +209,9 @@ function parse(input) {
       case "let":
         return parseVariableDefinition();
 
+      case "const":
+        return parseVariableDefinition(true);
+
       case "do":
         skipKw("do");
         return parseBlock();
@@ -251,13 +254,11 @@ function parse(input) {
 
   function parseVariableDefinition(constant = false) {
     const tok = peek();
-
     if (constant) {
       skipKw("const");
     } else {
       skipKw("let");
     }
-
     let assignment = parseExpression();
     let node = {};
     if (assignment.left.type == "SequenceExpression") {
@@ -273,6 +274,7 @@ function parse(input) {
         `Variable names must be valid identifiers at (${tok.line}:${tok.col})`
       );
     }
+    node.constant = constant;
     node.line = tok.line;
     node.col = tok.col;
     return node;

@@ -8,6 +8,7 @@ const parse = require("./parser");
 const Environment = require("./environment");
 const { Decimal, String, List } = require("./stdlib/types");
 const globals = require("./stdlib/globals");
+const object = require("./stdlib/object");
 
 const globalEnv = new Environment();
 globalEnv.vars = { ...globals };
@@ -128,12 +129,15 @@ function defineVariable(exp, env) {
   if (env.existsInCurrentScope(exp.name)) {
     throw new Error(`Cannot redeclare identifier ${exp.name}`);
   }
-  env.def(exp.name, createEnvVarValue(exp.value, env));
+  env.def(exp.name, createEnvVarValue(exp.value, env, exp.constant));
   return;
 }
 
-function createEnvVarValue(value, env, constant = false) {
+function createEnvVarValue(value, env, constant) {
   let v = evaluate(value, env);
+  if (constant) {
+    Object.freeze(v);
+  }
   return {
     id: v.__object_id__,
     type: v.__type__,
@@ -144,6 +148,8 @@ function createEnvVarValue(value, env, constant = false) {
 }
 
 function evaluateParallelDefinition(exp, env) {
+  console.log(exp);
+  return;
   const names = (exp.names && exp.names.expressions) || exp.names;
   let values = null;
   if (
