@@ -395,7 +395,7 @@ const STRIP_COMMENTS = /(\/\/.*$)|(\/\*[\s\S]*?\*\/)|(\s*=[^,\)]*(('(?:\\'|[^'\r
 const ARGUMENT_NAMES = /([^\s,]+)/g;
 
 function getArgNames(func) {
-  fnString = func.toString().replace(STRIP_COMMENTS, "");
+  let fnString = func.toString().replace(STRIP_COMMENTS, "");
   let result = fnString
     .slice(fnString.indexOf("(") + 1, fnString.indexOf(")"))
     .match(ARGUMENT_NAMES);
