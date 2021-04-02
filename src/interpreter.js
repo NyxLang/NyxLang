@@ -11,7 +11,11 @@ const globals = require("./stdlib/globals");
 const object = require("./stdlib/object");
 
 const globalEnv = new Environment();
-globalEnv.vars = { ...globals };
+
+for (let key of Object.keys(globals)) {
+  globalEnv.vars[key] = createEnvVarValue(globals[key], true);
+}
+
 const main = globalEnv.extend();
 
 function evaluate(exp, env = main) {
@@ -129,21 +133,21 @@ function defineVariable(exp, env) {
   if (env.existsInCurrentScope(exp.name)) {
     throw new Error(`Cannot redeclare identifier ${exp.name}`);
   }
-  env.def(exp.name, createEnvVarValue(exp.value, env, exp.constant));
-  return;
+  let name = exp.name.name;
+  let value = evaluate(exp.value, env);
+  env.def(name, createEnvVarValue(value, exp.constant));
 }
 
-function createEnvVarValue(value, env, constant) {
-  let v = evaluate(value, env);
+function createEnvVarValue(value, constant) {
   if (constant) {
-    Object.freeze(v);
+    Object.freeze(value);
   }
   return {
-    id: v.__object_id__,
-    type: v.__type__,
-    class: v.__class__,
+    id: value.__object_id__,
+    type: value.__type__,
+    class: value.__class__,
     constant,
-    value: v,
+    value,
   };
 }
 
@@ -257,7 +261,7 @@ function evaluateIdentifier(exp, env) {
   if (val === null) {
     throw new Error(`Cannot reference variable ${exp.name} before assignment`);
   }
-  return val && val.__value__ ? val.__value__ : val;
+  return val && val.value ? val.value : val;
 }
 
 function evaluateParallelAssignment(exp, env) {
@@ -513,8 +517,7 @@ function executeFor(exp, env) {
 function evaluateFunctionDefinition(exp, env) {
   const name = exp.name;
   const value = makeLambda(exp, env);
-  env.def(name, value);
-  return;
+  env.def(name, createEnvVarValue(value, true));
 }
 
 function makeLambda(exp, env) {
