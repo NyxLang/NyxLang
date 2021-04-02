@@ -245,42 +245,26 @@ function parse(input) {
   }
 
   function parseVariableDefinition() {
-    let tok = lookahead();
-    let exp = null;
-    if (lookahead(2) && lookahead(2).value == ",") {
-      next();
-      exp = parseExpression();
-    }
-    if (exp && exp.left && exp.left.type == "SequenceExpression") {
-      return {
-        type: "VariableParallelDefinition",
-        names: exp.left,
-        values: exp.right || null,
-        line: exp.line,
-        col: exp.col,
-      };
-    } else if (exp && exp.type == "SequenceExpression") {
-      return {
-        type: "VariableParallelDefinition",
-        names: exp.expressions,
-        line: exp.line,
-        col: exp.col,
-      };
-    }
-    let value;
-    if (lookahead(2) && lookahead(2).value == "=") {
-      next(); // skip to identifier for binary assignment
-      value = parseExpression();
+    const tok = peek();
+    skipKw("let");
+    let assignment = parseExpression();
+    let node = {};
+    if (assignment.left.type == "SequenceExpression") {
+      node.type = "VariableParallelDefinition";
+      node.names = assignment.left;
+      node.values = assignment.right;
+    } else if (assignment.left.type == "Identifier") {
+      node.type = "VariableDefinition";
+      node.name = assignment.left;
+      node.value = assignment.right;
     } else {
-      value = null;
+      throw new Error(
+        `Left side of assignment must be a name at (${tok.line}:${tok.col})`
+      );
     }
-    return {
-      type: "VariableDefinition",
-      name: tok.value,
-      value,
-      line: tok.line,
-      col: tok.col,
-    };
+    node.line = tok.line;
+    node.col = tok.col;
+    return node;
   }
 
   function parseSequenceExpression(first, sequence) {
