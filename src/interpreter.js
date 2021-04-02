@@ -220,7 +220,7 @@ function evaluateVariableAssignment(exp, env) {
   const oldValue = env.get(name);
   if (oldValue.constant) {
     throw new Error(
-      `Cannot reassign to constant varaible at ${exp.line}:${exp.col}`
+      `Cannot reassign to constant variable at ${exp.line}:${exp.col}`
     );
   }
   let value = (exp.right && evaluate(exp.right, env)) || exp.value;
