@@ -226,17 +226,17 @@ function evaluateVariableAssignment(exp, env) {
   let value = (exp.right && evaluate(exp.right, env)) || exp.value;
 
   if (exp.operator == "+=") {
-    value = applyBinary("+", env.get(name).__value__, value);
+    value = applyBinary("+", env.get(name).value, value);
   } else if (exp.operator == "-=") {
-    value = applyBinary("-", env.get(name).__value__, value);
+    value = applyBinary("-", env.get(name).value, value);
   } else if (exp.operator == "*=") {
-    value = applyBinary("*", env.get(name).__value__, value);
+    value = applyBinary("*", env.get(name).value, value);
   } else if (exp.operator == "/=") {
-    value = applyBinary("/", env.get(name).__value__, value);
+    value = applyBinary("/", env.get(name).value, value);
   } else if (exp.operator == "//=") {
-    value = applyBinary("//", env.get(name).__value__, value);
+    value = applyBinary("//", env.get(name).value, value);
   } else if (exp.operator == "%=") {
-    value = applyBinary("%", env.get(name).__value__, value);
+    value = applyBinary("%", env.get(name).value, value);
   }
 
   if (typeof value == "object") {
