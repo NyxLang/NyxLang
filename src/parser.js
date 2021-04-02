@@ -128,6 +128,18 @@ function parse(input) {
     return isPunc("(") ? maybeCall(() => parseCall(expr)) : expr;
   }
 
+  function checkIfAssignment(operator) {
+    return (
+      tok.value == "=" ||
+      tok.value == "+=" ||
+      tok.value == "-=" ||
+      tok.value == "*=" ||
+      tok.value == "/=" ||
+      tok.value == "//=" ||
+      tok.value == "%="
+    );
+  }
+
   function maybeBinary(left, myPrec, sequence = null, notSeq = null) {
     let tok = isOperator();
     if (!sequence && tok) {
@@ -136,19 +148,12 @@ function parse(input) {
       }
       let hisPrec = PRECEDENCE[tok.value];
       if (hisPrec > myPrec) {
-        next();
+        next(); // skip operator to parse right side
         return maybeBinary(
           {
-            type:
-              tok.value == "=" ||
-              tok.value == "+=" ||
-              tok.value == "-=" ||
-              tok.value == "*=" ||
-              tok.value == "/=" ||
-              tok.value == "//=" ||
-              tok.value == "%="
-                ? "Assignment"
-                : "BinaryOperation",
+            type: checkIfAssignment(tok.value)
+              ? "Assignment"
+              : "BinaryOperation",
             operator: tok.value,
             left,
             right: maybeBinary(
@@ -244,9 +249,15 @@ function parse(input) {
     }
   }
 
-  function parseVariableDefinition() {
+  function parseVariableDefinition(constant = false) {
     const tok = peek();
-    skipKw("let");
+
+    if (constant) {
+      skipKw("const");
+    } else {
+      skipKw("let");
+    }
+
     let assignment = parseExpression();
     let node = {};
     if (assignment.left.type == "SequenceExpression") {
@@ -259,7 +270,7 @@ function parse(input) {
       node.value = assignment.right;
     } else {
       throw new Error(
-        `Left side of assignment must be a name at (${tok.line}:${tok.col})`
+        `Variable names must be valid identifiers at (${tok.line}:${tok.col})`
       );
     }
     node.line = tok.line;
