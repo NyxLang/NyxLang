@@ -9,6 +9,7 @@ const Environment = require("./environment");
 const { Decimal, String, List } = require("./stdlib/types");
 const globals = require("./stdlib/globals");
 const object = require("./stdlib/object");
+const NyxDecimal = require("./types/Decimal");
 
 const globalEnv = new Environment();
 
@@ -38,9 +39,6 @@ function evaluate(exp, env = main) {
 
     case "Assignment":
       return evaluateVariableAssignment(exp, env);
-
-    case "VariableParallelDefinition":
-      return evaluateParallelDefinition(exp, env);
 
     case "CallExpression":
       return evaluateCall(exp, env);
@@ -130,12 +128,14 @@ function evaluateUnary(exp, env) {
 }
 
 function defineVariable(exp, env) {
-  if (env.existsInCurrentScope(exp.name)) {
-    throw new Error(`Cannot redeclare identifier ${exp.name}`);
+  if (exp.names) {
+    return evaluateParallelDefinition(exp, env);
   }
-  let name = exp.name.name;
-  let value = evaluate(exp.value, env);
-  env.def(name, createEnvVarValue(value, exp.constant));
+  const name = exp.name.name;
+  if (env.existsInCurrentScope(name)) {
+    throw new Error(`Cannot redeclare identifier ${name}`);
+  }
+  env.def(name, createEnvVarValue(evaluate(exp.value, env), exp.constant));
 }
 
 function createEnvVarValue(value, constant = false) {
@@ -152,78 +152,77 @@ function createEnvVarValue(value, constant = false) {
 }
 
 function evaluateParallelDefinition(exp, env) {
-  console.log(exp);
-  return;
-  const names = (exp.names && exp.names.expressions) || exp.names;
-  let values = null;
-  if (
-    (exp.right && exp.right.expressions) ||
-    (exp.values && exp.values.expressions)
-  ) {
-    values = (exp.right && exp.right.expressions) || exp.values.expressions;
-    if (values) {
-      values = values.map((value) => {
-        return evaluate(value, exp);
-      });
-    } else {
-      values = names.map((value) => null);
-    }
-    if (names.length > values.length) {
-      throw new Error("Not enough values to assign");
-    }
+  let names = exp.names.expressions;
+  let values;
+  if (exp.values.type == "SequenceExpression") {
+    values = exp.values.expressions.map((value) => evaluate(value, env));
   } else {
-    values = exp.right
-      ? evaluate(exp.right, env).__data__
-      : evaluate(exp.values, env).__data__;
+    [names, values] = unpackIterable(names, exp.values, env);
   }
-  let toDefine = null;
-  names.forEach((item, i) => {
-    if (item.type == "UnaryOperation" && item.operator == "*") {
-      if (i == names.length - 1) {
-        toDefine = {
-          type: "Identifier",
-          name: item.operand.name,
-          line: item.line,
-          col: item.col,
-          value: {
-            name: item.operand.name,
-            value: new List(values.slice(i)),
-          },
-        };
-      } else {
-        throw new Error(
-          "Cannot have any additional variable names after splat operation"
-        );
-      }
-    } else if (exp.values) {
-      toDefine = { ...item, value: { name: item.name, value: values[i] } };
-    } else {
-      toDefine = item;
+  const valuesLength = values.__length__ ? values.__length__ : values.length;
+  if (names.length > valuesLength) {
+    throw new Error(
+      `Not enough values to unpack (expected ${names.length}, got ${valuesLength}) at ${exp.line}:${exp.col}`
+    );
+  } else if (names.length < valuesLength) {
+    throw new Error(
+      `Too many values to unpack (expected ${names.length}, got ${valuesLength})`
+    );
+  }
+  names.forEach((node, i) => {
+    let name = node.name;
+    if (env.existsInCurrentScope(name)) {
+      throw new Error(`Cannot redeclare identifier ${name}`);
     }
-    defineVariable(toDefine, env);
+    env.def(name, createEnvVarValue(values[i], exp.constant));
   });
 
-  if (exp.values && !toDefine) {
-    evaluateParallelAssignment(exp, env);
+  function unpackIterable(names, value, env) {
+    const iter = evaluate(value, env);
+    try {
+      [...iter];
+    } catch (e) {
+      throw new Error(
+        `Value to unpack must be iterable at ${value.line}:${value.col}`
+      );
+    }
+
+    let values = [];
+    names = names.map((name, i) => {
+      if (name.type == "UnaryOperation" && name.operator == "*") {
+        values[i] = iter.slice(i, iter.__length__);
+        return name.operand;
+      } else if (i > names.length - 1) {
+        throw new Error(
+          `"Cannot have any additional variable names after spread operation"`
+        );
+      }
+      values[i] = iter["[]"](new NyxDecimal(i));
+      return name;
+    });
+    return [names, values];
   }
-  return null;
 }
 
 function evaluateVariableAssignment(exp, env) {
-  if (exp && exp.left && exp.left.type == "SequenceExpression") {
+  if (exp.left.type == "SequenceExpression") {
     return evaluateParallelAssignment(exp, env);
-  } else if (exp && exp.left && exp.left.type == "SliceExpression") {
+  } else if (exp.left.type == "SliceExpression") {
     return evaluateIndexedAssignment(exp, env);
   }
 
-  const name = (exp.left && exp.left.name) || exp.name;
+  const name = exp.left.name;
   const oldValue = env.get(name);
-  if (oldValue.constant) {
+  if (!oldValue) {
+    throw new Error(
+      `Must define variable ${name} before assigning to it at ${exp.line}:${exp.col}`
+    );
+  } else if (oldValue.constant) {
     throw new Error(
       `Cannot reassign to constant variable at ${exp.line}:${exp.col}`
     );
   }
-  let value = (exp.right && evaluate(exp.right, env)) || exp.value;
+  let value = evaluate(exp.right, env);
 
   if (exp.operator == "+=") {
     value = applyBinary("+", env.get(name).value, value);
@@ -239,25 +238,7 @@ function evaluateVariableAssignment(exp, env) {
     value = applyBinary("%", env.get(name).value, value);
   }
 
-  if (typeof value == "object") {
-    Object.defineProperty(value, "__object_id__", {
-      writable: false,
-      enumerable: false,
-    });
-
-    Object.defineProperty(value, "__type__", {
-      writable: false,
-      enumerable: false,
-    });
-
-    Object.defineProperty(value, "__class__", {
-      writable: false,
-      enumerable: false,
-    });
-  }
-  return env.set(name, createEnvVarValue(value));
-
-  return null;
+  return env.set(name, createEnvVarValue(value)).value;
 }
 
 function evaluateIdentifier(exp, env) {
@@ -265,7 +246,7 @@ function evaluateIdentifier(exp, env) {
   if (val) {
     return val.value;
   }
-  throw new Error(`Undefined identifier ${name} at ${exp.line}:${exp.col}`);
+  throw new Error(`Undefined identifier ${exp.name} at ${exp.line}:${exp.col}`);
 }
 
 function evaluateParallelAssignment(exp, env) {

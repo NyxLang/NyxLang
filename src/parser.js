@@ -260,13 +260,18 @@ function parse(input) {
       skipKw("let");
     }
     let assignment = parseExpression();
-    let node = {};
+    let node = { type: "VariableDefinition" };
     if (assignment.left.type == "SequenceExpression") {
-      node.type = "VariableParallelDefinition";
+      assignment.left.expressions.forEach((expr) => {
+        if (expr.type != "Identifier" && expr.type != "UnaryOperation") {
+          throw new Error(
+            `Variable names must be valid identifiers at (${expr.line}:${expr.col})`
+          );
+        }
+      });
       node.names = assignment.left;
       node.values = assignment.right;
     } else if (assignment.left.type == "Identifier") {
-      node.type = "VariableDefinition";
       node.name = assignment.left;
       node.value = assignment.right;
     } else {

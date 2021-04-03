@@ -23,7 +23,8 @@ Environment.prototype = {
   },
 
   get: function (name) {
-    if (name in this.vars) {
+    let scope = this.lookup(name);
+    if (scope && name in scope.vars) {
       return this.vars[name];
     }
   },
