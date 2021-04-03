@@ -172,7 +172,9 @@ function evaluateParallelDefinition(exp, env) {
   names.forEach((node, i) => {
     let name = node.name;
     if (env.existsInCurrentScope(name)) {
-      throw new Error(`Cannot redeclare identifier ${name}`);
+      throw new Error(
+        `Cannot redeclare identifier ${name} at ${node.line}:${node.col}`
+      );
     }
     env.def(name, createEnvVarValue(values[i], exp.constant));
   });
