@@ -172,32 +172,32 @@ function evaluateParallelDefinition(exp, env) {
     }
     env.def(name, createEnvVarValue(values[i], exp.constant));
   });
+}
 
-  function unpackIterable(names, value, env) {
-    const iter = evaluate(value, env);
-    try {
-      [...iter];
-    } catch (e) {
+function unpackIterable(names, value, env) {
+  const iter = evaluate(value, env);
+  try {
+    [...iter];
+  } catch (e) {
+    throw new Error(
+      `Value to unpack must be iterable at ${value.line}:${value.col}`
+    );
+  }
+
+  let values = [];
+  names = names.map((name, i) => {
+    if (name.type == "UnaryOperation" && name.operator == "*") {
+      values[i] = iter.slice(i, iter.__length__);
+      return name.operand;
+    } else if (i > names.length - 1) {
       throw new Error(
-        `Value to unpack must be iterable at ${value.line}:${value.col}`
+        `"Cannot have any additional variable names after spread operation"`
       );
     }
-
-    let values = [];
-    names = names.map((name, i) => {
-      if (name.type == "UnaryOperation" && name.operator == "*") {
-        values[i] = iter.slice(i, iter.__length__);
-        return name.operand;
-      } else if (i > names.length - 1) {
-        throw new Error(
-          `"Cannot have any additional variable names after spread operation"`
-        );
-      }
-      values[i] = iter["[]"](new NyxDecimal(i));
-      return name;
-    });
-    return [names, values];
-  }
+    values[i] = iter["[]"](new NyxDecimal(i));
+    return name;
+  });
+  return [names, values];
 }
 
 function evaluateVariableAssignment(exp, env) {
@@ -234,7 +234,7 @@ function evaluateVariableAssignment(exp, env) {
     value = applyBinary("%", env.get(name).value, value);
   }
 
-  return env.set(name, createEnvVarValue(value)).value;
+  env.set(name, createEnvVarValue(value));
 }
 
 function evaluateIdentifier(exp, env) {
@@ -246,34 +246,33 @@ function evaluateIdentifier(exp, env) {
 }
 
 function evaluateParallelAssignment(exp, env) {
-  let val;
+  let names = exp.left.expressions;
   let values;
-  const names = (exp.left && exp.left.expressions) || exp.names.expressions;
-  if (
-    (exp.right && exp.right.expressions) ||
-    (exp.values && exp.values.expressions)
-  ) {
-    values = (exp.right && exp.right.expressions) || exp.values.expressions;
-    values = values.map((value) => {
-      return evaluate(value, env);
-    });
-    if (names.length > values.length) {
-      throw new Error("Not enough values to assign");
-    } else if (names.length < values.length) {
-      throw new Error("Too many values to assign");
-    }
+  if (exp.right.type == "SequenceExpression") {
+    values = exp.right.expressions.map((value) => evaluate(value, env));
   } else {
-    values = exp.right
-      ? evaluate(exp.right, env).__data__
-      : evaluate(exp.values, env).__data__;
+    [names, values] = unpackIterable(names, exp.right, env);
   }
-  names.forEach((item, i) => {
-    val = evaluateVariableAssignment(
-      { name: item.name, value: values[i] },
-      env
-    );
+  names.forEach((name) => {
+    if (!env.get(name.name)) {
+      throw new Error(
+        `Must define variable ${name.name} before assigning to it at ${exp.line}:${exp.col}`
+      );
+    }
   });
-  return val;
+  const valuesLength = values.__length__ ? values.__length__ : values.length;
+  if (names.length > valuesLength) {
+    throw new Error(
+      `Not enough values to unpack (expected ${names.length}, got ${valuesLength}) at ${exp.line}:${exp.col}`
+    );
+  } else if (names.length < valuesLength) {
+    throw new Error(
+      `Too many values to unpack (expected ${names.length}, got ${valuesLength})`
+    );
+  }
+  names.forEach((node, i) => {
+    env.def(node.name, createEnvVarValue(values[i], exp.constant));
+  });
 }
 
 function evaluateIndexedAssignment(exp, env) {
