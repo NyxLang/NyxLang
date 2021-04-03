@@ -96,13 +96,7 @@ function evaluate(exp, env = main) {
       return evaluateSlice(exp, env);
 
     default:
-      if (Array.isArray(exp)) {
-        return new List(exp);
-      } else if (typeof exp == "number") {
-        return new Decimal(exp);
-      } else if (typeof exp == "string") {
-        return new String(exp);
-      }
+      return exp;
   }
 }
 
@@ -481,16 +475,26 @@ function executeUntil(exp, env) {
 
 function executeFor(exp, env) {
   const seq = evaluate(exp.vars.right, env);
+  let i = 0;
   for (let val of seq) {
     let scope = env.extend();
     if (exp.vars.left.type == "Identifier") {
       defineVariable(
         {
-          name: exp.vars.left.name,
-          value: {
-            name: exp.vars.left.name,
-            value: evaluate(val, scope),
-          },
+          name: exp.vars.left,
+          value: val,
+          line: exp.vars.line,
+          col: exp.vars.col,
+        },
+        scope
+      );
+    } else if (exp.vars.left.type == "SequenceExpression") {
+      defineVariable(
+        {
+          names: exp.vars.left,
+          values: val,
+          line: exp.vars.line,
+          col: exp.vars.col,
         },
         scope
       );
