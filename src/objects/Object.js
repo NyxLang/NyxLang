@@ -2,15 +2,11 @@ const uuid = require("uuid");
 const hash = require("object-hash");
 
 class BaseObject {
-  constructor(className = "Object", type = "object") {
-    this.__class__ = className;
+  constructor(constructor = Obj.Object, type = "object") {
+    this.__class__ = constructor;
     this.__type__ = type;
     this.__object_id__ = hash(uuid.v4());
     this.__dict__ = Object.create(null);
-    this.__private_methods__ = Object.create(null);
-    this.__protected_methods__ = Object.create(null);
-    this.__subclasses__ = [];
-    this.__baseclasses__ = [];
 
     Object.defineProperty(this, "__object_id__", {
       writable: false,
@@ -31,26 +27,6 @@ class BaseObject {
       writable: false,
       enumerable: false,
     });
-
-    Object.defineProperty(this, "__private_methods__", {
-      writable: false,
-      enumerable: false,
-    });
-
-    Object.defineProperty(this, "__protected_methods__", {
-      writable: false,
-      enumerable: false,
-    });
-
-    Object.defineProperty(this, "__subclasses__", {
-      writable: false,
-      enumerable: false,
-    });
-
-    Object.defineProperty(this, "__baseclasses__", {
-      writable: false,
-      enumerable: false,
-    });
   }
 
   is(other) {
@@ -60,6 +36,9 @@ class BaseObject {
   __dump__() {
     let str = `<class:${this.__class__}, id: ${this.__object_id__}>`;
     str += "{\n";
+    for (let key of Object.keys(this)) {
+      str += `\t${key}: ${this[key].toString()}\n`;
+    }
     for (let key of Object.keys(this.__dict__)) {
       str += `\t${key}: ${this[key].toString()}\n`;
     }
@@ -67,19 +46,26 @@ class BaseObject {
     return str;
   }
 
-  toString() {
-    return this.__dump__();
-  }
-
   __string__() {
-    return this.toString();
+    return new String(this.toString());
   }
-
-  __call__() {}
 }
 
-BaseObject.freeze = function (obj) {
+function NewObject(destination, constructor, type) {
+  let o = new BaseObject(constructor, type);
+  for (let key of Object.getOwnPropertyNames(o)) {
+    destination[key] = o[key];
+  }
+  for (let key of Object.getOwnPropertyNames(o.__proto__)) {
+    destination.__proto__[key] = o.__proto__[key];
+  }
+  return destination;
+}
+
+NewObject.freeze = function freeze(obj) {
   return Object.freeze(obj);
 };
 
-module.exports = BaseObject;
+const Obj = { Object: NewObject };
+
+module.exports = Obj;
