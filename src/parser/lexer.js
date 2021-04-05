@@ -7,8 +7,8 @@ const {
   operators,
   isPunc,
   keywords,
-} = require("./helpers");
-const { NyxInputError } = require("./errors");
+} = require("../helpers");
+const { NyxInputError } = require("../errors");
 
 function Lexer(input) {
   let pos = 0;

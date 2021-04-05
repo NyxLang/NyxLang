@@ -2,14 +2,11 @@
 
 const uuid = require("uuid");
 const hash = require("object-hash");
-const stream = require("./input");
-const lexer = require("./lexer");
-const parse = require("./parser");
-const Environment = require("./environment");
-const { Decimal, String, List } = require("./stdlib/types");
-const globals = require("./stdlib/globals");
-const object = require("./stdlib/object");
-const NyxDecimal = require("./types/Decimal");
+const Parser = require("../parser/parser");
+const Environment = require("../environment");
+const { Decimal, String, List } = require("../stdlib/types");
+const globals = require("../stdlib/globals");
+const object = require("../stdlib/object");
 
 const globalEnv = new Environment();
 
@@ -194,7 +191,7 @@ function unpackIterable(names, value, env) {
         `"Cannot have any additional variable names after spread operation"`
       );
     }
-    values[i] = iter["[]"](new NyxDecimal(i));
+    values[i] = iter["[]"](new Decimal(i));
     return name;
   });
   return [names, values];
@@ -507,7 +504,7 @@ function executeFor(exp, env) {
 function evaluateFunctionDefinition(exp, env) {
   const name = exp.name;
   const value = makeLambda(exp, env);
-  env.def(name, createEnvVarValue(value, true));
+  env.def(name, createEnvVarValue(value));
 }
 
 function makeLambda(exp, env) {
@@ -702,4 +699,6 @@ function notFalsy(val) {
   return val !== false && val !== null;
 }
 
-module.exports = evaluate;
+module.exports = function (input) {
+  return evaluate(Parser(input));
+};

@@ -1,7 +1,5 @@
 const Lexer = require("./lexer");
-const stream = require("./input");
-const { NyxInputError } = require("./errors");
-const { exp, to } = require("mathjs");
+const { NyxInputError } = require("../errors");
 
 // Binary operator precedence table
 const PRECEDENCE = {
@@ -731,4 +729,6 @@ function parse(input) {
   }
 }
 
-module.exports = parse;
+module.exports = function (input) {
+  return parse(Lexer(input));
+};

@@ -1,9 +1,9 @@
 const repl = require("repl");
-const { parseAndEvaluate } = require("./util");
+const Interpreter = require("./interpreter/interpreter");
 const outputString = require("./stdlib/io")["output-string"];
 
 function eval(cmd, context, fileName, callback) {
-  callback(null, parseAndEvaluate(cmd));
+  callback(null, Interpreter(cmd));
 }
 
 repl.start({
