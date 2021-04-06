@@ -19,21 +19,19 @@ math.import([
     },
     { lazy: false }
   ),
-  factory(
-    "double",
-    ["typed", "Double"],
-    function createDouble({ typed, Double }) {
-      return typed("double", {
-        "number | string": (x) => new Number(x),
-      });
-    }
-  ),
+  factory("double", ["typed", "Double"], function createDouble({ typed }) {
+    return typed("double", {
+      "number | string": (x) => new Number(x),
+      BigNumber: (x) => new Number(x.toNumber()),
+      Fraction: (x) => new Number(x.valueOf()),
+    });
+  }),
   factory("add", ["typed"], function createDoubleAdd({ typed }) {
     return typed("add", {
-      "Double, Double": (a, b) => a + b,
-      "Double, BigNumber": (a, b) => b.add(a.valueOf()).toNumber(),
+      "Double, Double": (a, b) => math.double(a + b),
+      "Double, BigNumber": (a, b) => math.double(b.add(a.valueOf()).toNumber()),
       "Double, Fraction": (a, b) => math.double(b.add(a.valueOf()).valueOf()),
-      "BigNumber, Double": (a, b) => a.add(b.valueOf()).toNumber(),
+      "BigNumber, Double": (a, b) => math.double(a.add(b.valueOf()).toNumber()),
       "Fraction, Double": (a, b) => math.double(a.add(b.valueOf()).valueOf()),
     });
   }),
