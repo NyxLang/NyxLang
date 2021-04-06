@@ -1,5 +1,6 @@
 const object = require("./Object")["Object"];
 const string = require("./String")["String"];
+const number = require("./Numbers")["Number"];
 const double = require("./Numbers")["Double"];
 const fraction = require("./Numbers")["Fraction"];
 const complex = require("./Numbers")["Complex"];
@@ -10,7 +11,9 @@ const dict = require("./Dict")["Dict"];
 
 function mixin(source, destination) {
   for (let key of Object.getOwnPropertyNames(source)) {
-    destination[key] = source[key];
+    if (!source[key]) {
+      destination[key] = source[key];
+    }
   }
   return destination;
 }
@@ -53,6 +56,10 @@ Obj.is = function __is__(obj1, obj2) {
   return obj1.__object_id__ == obj2.__object_id__;
 };
 
+function Num(value) {
+  return value;
+}
+
 function Double(num) {
   return num;
 }
@@ -87,6 +94,7 @@ function Dict(args) {
 
 module.exports = {
   Object: Obj,
+  Number: Num,
   Double,
   Decimal,
   Fraction,
