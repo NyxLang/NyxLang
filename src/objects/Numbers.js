@@ -1,26 +1,41 @@
-const math = require("mathjs");
+const math = require("./_math");
 
-class NyxNumber {}
-
-function Double(value) {
-  return new Number(value);
+class NyxNumber {
+  "+"(other) {
+    return math.add(this, other);
+  }
 }
 
-function Decimal(value) {
-  return new math.bignumber(value);
+function numberMixin(destination) {
+  for (let key of Object.getOwnPropertyNames(NyxNumber.prototype)) {
+    destination.__proto__[key] = NyxNumber.prototype[key];
+  }
+  return destination;
 }
 
-function Fraction(value) {
-  return new math.fraction(value);
+function double(value) {
+  let n = new math.double(value);
+  return numberMixin(n);
 }
 
-function Complex(value) {
-  return new math.complex(value);
+function decimal(value) {
+  let d = new math.bignumber(value);
+  return numberMixin(d);
+}
+
+function fraction(value) {
+  let f = new math.fraction(value);
+  return numberMixin(f);
+}
+
+function complex(value) {
+  let c = new math.complex(value);
+  return numberMixin(c);
 }
 
 module.exports = {
-  Double,
-  Decimal,
-  Fraction,
-  Complex,
+  Double: double,
+  Decimal: decimal,
+  Fraction: fraction,
+  Complex: complex,
 };
