@@ -56,7 +56,7 @@ math.typed.conversions.unshift(
     from: "BigNumber",
     to: "Double",
     convert: function bigNumToDouble(bignum) {
-      return bignum.toNumber();
+      return new math.Double(bignum);
     },
   },
   {
