@@ -73,6 +73,7 @@ function Double(num) {
   let o = Obj(Double, "Double");
   let d = double(num);
   mixinObj(o, d);
+  d.__superclasses__.push(Num);
   return d;
 }
 
@@ -80,6 +81,7 @@ function Decimal(num) {
   let o = Obj(Decimal, "Decimal");
   let d = decimal(num);
   mixinObj(o, d);
+  d.__superclasses__.push(Num);
   return d;
 }
 
@@ -87,6 +89,7 @@ function Fraction(num) {
   let o = Obj(Fraction, "Fraction");
   let f = fraction(num);
   mixinObj(o, f);
+  f.__superclasses__.push(Num);
   return f;
 }
 
@@ -94,6 +97,7 @@ function Complex(num) {
   let o = Obj(Complex, "Complex");
   let c = complex(num);
   mixinObj(o, c);
+  c.__superclasses__.push(Num);
   return c;
 }
 
