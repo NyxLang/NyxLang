@@ -75,12 +75,32 @@ function Double(num) {
   return d;
 }
 
+Double.__superclasses__ = Arr(Num);
+Double.__subclasses__ = Arr();
+Object.defineProperty(Double, "__superclasses__", {
+  enumerable: false,
+  writable: false,
+});
+Object.defineProperty(Double, "__subclasses__", {
+  enumerable: false,
+});
+
 function Decimal(num) {
   let o = Obj(Decimal, "Decimal");
   let d = decimal(num);
   mixinObj(o, d);
   return d;
 }
+
+Decimal.__superclasses__ = Arr(Num);
+Decimal.__subclasses__ = Arr();
+Object.defineProperty(Decimal, "__superclasses__", {
+  enumerable: false,
+  writable: false,
+});
+Object.defineProperty(Decimal, "__subclasses__", {
+  enumerable: false,
+});
 
 function Fraction(num) {
   let o = Obj(Fraction, "Fraction");
@@ -89,12 +109,32 @@ function Fraction(num) {
   return f;
 }
 
+Fraction.__superclasses__ = Arr(Num);
+Fraction.__subclasses__ = Arr();
+Object.defineProperty(Fraction, "__superclasses__", {
+  enumerable: false,
+  writable: false,
+});
+Object.defineProperty(Fraction, "__subclasses__", {
+  enumerable: false,
+});
+
 function Complex(num) {
   let o = Obj(Complex, "Complex");
   let c = complex(num);
   mixinObj(o, c);
   return c;
 }
+
+Complex.__superclasses__ = Arr(Num);
+Complex.__subclasses__ = Arr();
+Object.defineProperty(Complex, "__superclasses__", {
+  enumerable: false,
+  writable: false,
+});
+Object.defineProperty(Complex, "__subclasses__", {
+  enumerable: false,
+});
 
 function Str(str) {
   let o = Obj(Str, "String");
