@@ -19,14 +19,17 @@ function mixin(source, destination) {
 }
 
 function defineProps(obj) {
-  Object.defineProperty(obj, "__dict__", {
+  Object.defineProperty(obj, "__object_id__", {
     enumerable: false,
+    writable: false,
   });
-  Object.defineProperty(obj, "__subclasses__", {
+  Object.defineProperty(obj, "__class__", {
     enumerable: false,
+    writable: false,
   });
-  Object.defineProperty(obj, "__superclasses__", {
+  Object.defineProperty(obj, "__type__", {
     enumerable: false,
+    writable: false,
   });
 }
 
@@ -43,11 +46,7 @@ let objProtoMixin = {
   },
 };
 
-let objMixin = {
-  __dict__: Object.create(null), // use Dict when exists
-  __subclasses__: [], // use Arr when exists
-  __superclasses__: [], // use Arr when exists
-};
+let objMixin = {};
 
 function Obj(constructor, type) {
   let obj = object(constructor, type);
@@ -73,7 +72,6 @@ function Double(num) {
   let o = Obj(Double, "Double");
   let d = double(num);
   mixinObj(o, d);
-  d.__superclasses__.push(Num);
   return d;
 }
 
@@ -81,7 +79,6 @@ function Decimal(num) {
   let o = Obj(Decimal, "Decimal");
   let d = decimal(num);
   mixinObj(o, d);
-  d.__superclasses__.push(Num);
   return d;
 }
 
@@ -89,7 +86,6 @@ function Fraction(num) {
   let o = Obj(Fraction, "Fraction");
   let f = fraction(num);
   mixinObj(o, f);
-  f.__superclasses__.push(Num);
   return f;
 }
 
@@ -97,7 +93,6 @@ function Complex(num) {
   let o = Obj(Complex, "Complex");
   let c = complex(num);
   mixinObj(o, c);
-  c.__superclasses__.push(Num);
   return c;
 }
 
