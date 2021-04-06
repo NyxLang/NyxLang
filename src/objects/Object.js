@@ -23,38 +23,11 @@ class BaseObject {
       enumerable: false,
     });
   }
-
-  is(other) {
-    return this.__object_id__ == other.__object_id__;
-  }
-
-  __dump__() {
-    let str = `<class:${this.__class__}, id: ${this.__object_id__}>`;
-    str += "{\n";
-    for (let key of Object.keys(this)) {
-      str += `\t${key}: ${this[key].toString()}\n`;
-    }
-    for (let key of Object.keys(this.__dict__)) {
-      str += `\t${key}: ${this[key].toString()}\n`;
-    }
-    str += "}";
-    return str;
-  }
-
-  __string__() {
-    return new String(this.toString());
-  }
 }
 
-function NewObject(destination, constructor, type) {
+function NewObject(constructor, type) {
   let o = new BaseObject(constructor, type);
-  for (let key of Object.getOwnPropertyNames(o)) {
-    destination[key] = o[key];
-  }
-  for (let key of Object.getOwnPropertyNames(o.__proto__)) {
-    destination.__proto__[key] = o.__proto__[key];
-  }
-  return destination;
+  return o;
 }
 
 const Obj = { Object: NewObject };
