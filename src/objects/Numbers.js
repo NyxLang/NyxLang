@@ -37,7 +37,12 @@ function complex(value) {
   return numberMixin(c);
 }
 
+function number() {
+  return new NyxNumber();
+}
+
 module.exports = {
+  Number: number,
   Double: double,
   Decimal: decimal,
   Fraction: fraction,
