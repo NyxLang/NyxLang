@@ -1,6 +1,10 @@
 const math = require("./_math");
 
 class NyxNumber {
+  constructor() {
+    throw new Error("Cannot instantiate abstract Number class directly");
+  }
+
   "+"(other) {
     return math.add(this, other);
   }
