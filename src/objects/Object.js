@@ -6,7 +6,7 @@ class BaseObject {
     this.__class__ = constructor;
     this.__type__ = type;
     this.__object_id__ = hash(uuid.v4());
-    this.__dict__ = Object.create(null);
+    // do this.__dict__ as builtin Hash/Dict/Map
 
     Object.defineProperty(this, "__object_id__", {
       writable: false,
@@ -19,11 +19,6 @@ class BaseObject {
     });
 
     Object.defineProperty(this, "__class__", {
-      writable: false,
-      enumerable: false,
-    });
-
-    Object.defineProperty(this, "__dict__", {
       writable: false,
       enumerable: false,
     });
@@ -61,10 +56,6 @@ function NewObject(destination, constructor, type) {
   }
   return destination;
 }
-
-NewObject.freeze = function freeze(obj) {
-  return Object.freeze(obj);
-};
 
 const Obj = { Object: NewObject };
 
