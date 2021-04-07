@@ -25,11 +25,29 @@ class BaseObject {
   }
 }
 
+function defineProperties(obj) {
+  Object.defineProperty(obj, "__object_id__", {
+    writable: false,
+    enumerable: false,
+  });
+
+  Object.defineProperty(obj, "__type__", {
+    writable: false,
+    enumerable: false,
+  });
+
+  Object.defineProperty(obj, "__class__", {
+    writable: false,
+    enumerable: false,
+  });
+  return obj;
+}
+
 function NewObject(constructor, type) {
   let o = new BaseObject(constructor, type);
   return o;
 }
 
-const Obj = { Object: NewObject };
+const Obj = { Object: NewObject, defineProperties };
 
 module.exports = Obj;

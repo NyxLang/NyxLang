@@ -9,50 +9,8 @@ const symbol = require("./Symbol")["Symbol"];
 const array = require("./Array")["Array"];
 const dict = require("./Dict")["Dict"];
 
-function mixin(source, destination) {
-  for (let key of Object.getOwnPropertyNames(source)) {
-    if (!destination[key]) {
-      destination[key] = source[key];
-    }
-  }
-  return destination;
-}
-
-function defineProps(obj) {
-  Object.defineProperty(obj, "__object_id__", {
-    enumerable: false,
-    writable: false,
-  });
-  Object.defineProperty(obj, "__class__", {
-    enumerable: false,
-    writable: false,
-  });
-  Object.defineProperty(obj, "__type__", {
-    enumerable: false,
-    writable: false,
-  });
-}
-
-function mixinObj(source, destination) {
-  mixin(source, destination);
-  mixin(source.__proto__, destination.__proto__);
-  defineProps(destination);
-  return destination;
-}
-
-let objProtoMixin = {
-  __string__: function __string__() {
-    return Str(this.toString());
-  },
-};
-
-let objMixin = {};
-
 function Obj(constructor, type) {
   let obj = object(constructor, type);
-  mixin(objProtoMixin, obj.__proto__);
-  mixin(objMixin, obj);
-  defineProps(obj);
   return obj;
 }
 
@@ -65,14 +23,21 @@ Obj.is = function __is__(obj1, obj2) {
 };
 
 function Num(value) {
-  return value;
+  return new number(value);
 }
 
+Num.__superclasses__ = Arr(Obj);
+Num.__subclasses__ = Arr(Double, Decimal, Fraction, Complex);
+Object.defineProperty(Num, "__superclasses__", {
+  enumerable: false,
+  writable: false,
+});
+Object.defineProperty(Num, "__subclasses__", {
+  enumerable: false,
+});
+
 function Double(num) {
-  let o = Obj(Double, "Double");
-  let d = double(num);
-  mixinObj(o, d);
-  return d;
+  return double(num);
 }
 
 Double.__superclasses__ = Arr(Num);
@@ -86,10 +51,7 @@ Object.defineProperty(Double, "__subclasses__", {
 });
 
 function Decimal(num) {
-  let o = Obj(Decimal, "Decimal");
-  let d = decimal(num);
-  mixinObj(o, d);
-  return d;
+  return decimal(num);
 }
 
 Decimal.__superclasses__ = Arr(Num);
@@ -103,10 +65,7 @@ Object.defineProperty(Decimal, "__subclasses__", {
 });
 
 function Fraction(num) {
-  let o = Obj(Fraction, "Fraction");
-  let f = fraction(num);
-  mixinObj(o, f);
-  return f;
+  return fraction(num);
 }
 
 Fraction.__superclasses__ = Arr(Num);
@@ -120,10 +79,7 @@ Object.defineProperty(Fraction, "__subclasses__", {
 });
 
 function Complex(num) {
-  let o = Obj(Complex, "Complex");
-  let c = complex(num);
-  mixinObj(o, c);
-  return c;
+  return complex(num);
 }
 
 Complex.__superclasses__ = Arr(Num);
@@ -137,15 +93,7 @@ Object.defineProperty(Complex, "__subclasses__", {
 });
 
 function Str(str) {
-  let o = Obj(Str, "String");
-  let s = string(str);
-  mixinObj(o, s);
-  s.__length__ = Decimal(s.length);
-  Object.defineProperty(s, "__length__", {
-    enumerable: false,
-    writable: false,
-  });
-  return s;
+  return string(str);
 }
 
 function Sym(sym) {
@@ -153,15 +101,7 @@ function Sym(sym) {
 }
 
 function Arr(...args) {
-  let o = Obj(Arr, "Array");
-  let a = array(...args);
-  mixinObj(o, a);
-  a.__length__ = Decimal(a.length);
-  Object.defineProperty(a, "__length__", {
-    enumerable: false,
-    writable: false,
-  });
-  return a;
+  return array(...args);
 }
 
 function Dict(args) {

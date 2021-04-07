@@ -1,4 +1,5 @@
 const { create, all, factory, typedDependencies } = require("mathjs");
+// const Double = require("./_double");
 
 let math = create(typedDependencies);
 
@@ -11,28 +12,31 @@ math.import([
     "Double",
     ["typed"],
     function createDouble({ typed }) {
+      class Double extends Number {}
       typed.addType({
         name: "Double",
-        test: (x) => x instanceof Number,
+        test: function isDouble(x) {
+          return x instanceof Double;
+        },
       });
-      return Number;
+      return Double;
     },
     { lazy: false }
   ),
-  factory("double", ["typed", "Double"], function createDouble({ typed }) {
-    return typed("double", {
-      "number | string": (x) => new Number(x),
-      BigNumber: (x) => new Number(x.toNumber()),
-      Fraction: (x) => new Number(x.valueOf()),
-    });
-  }),
+  factory(
+    "double",
+    ["typed", "Double"],
+    function createDouble({ typed, Double }) {
+      return typed("double", {
+        "number | string": (x) => new math.Double(x),
+        BigNumber: (x) => new math.Double(x.toNumber()),
+        Fraction: (x) => new math.Double(x.valueOf()),
+      });
+    }
+  ),
   factory("add", ["typed"], function createDoubleAdd({ typed }) {
     return typed("add", {
       "Double, Double": (a, b) => math.double(a + b),
-      "Double, BigNumber": (a, b) => math.double(b.add(a.valueOf()).toNumber()),
-      "Double, Fraction": (a, b) => math.double(b.add(a.valueOf()).valueOf()),
-      "BigNumber, Double": (a, b) => math.double(a.add(b.valueOf()).toNumber()),
-      "Fraction, Double": (a, b) => math.double(a.add(b.valueOf()).valueOf()),
     });
   }),
 ]);

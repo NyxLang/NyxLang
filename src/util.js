@@ -1,11 +1,10 @@
-const math = require("mathjs");
-const evaluate = require("./interpreter");
-const parse = require("./parser");
-const lexer = require("./lexer");
-const NyxDecimal = require("./types/Decimal");
-
-function parseAndEvaluate(input) {
-  return evaluate(parse(lexer(input)));
+function mixin(source, destination) {
+  for (let key of Object.getOwnPropertyNames(source)) {
+    if (!destination[key]) {
+      destination[key] = source[key];
+    }
+  }
+  return destination;
 }
 
-module.exports = { parseAndEvaluate };
+module.exports = { mixin };
