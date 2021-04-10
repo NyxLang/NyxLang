@@ -15,7 +15,7 @@ class NyxNumber {
 
 function numberReturn(value) {
   console.log(math.typeOf(value));
-  if (value instanceof math.Double) {
+  if (value instanceof math.Double || typeof value == "number") {
     return double(value);
   } else if (math.typeOf(value) == "BigNumber") {
     return decimal(value);
@@ -40,6 +40,14 @@ function double(value) {
   let o = object(double, "Double");
   mixin(o, d);
   defineProperties(d);
+  d.toString = function doubleToString() {
+    if (isNaN(value)) {
+      return "NaN";
+    } else if (value == Infinity || value == -Infinity) {
+      return `${value < 0 ? "-" : ""}Infinity`;
+    }
+    return `${d.__proto__.toString.call(d)}d`;
+  };
   return numberMixin(d);
 }
 
@@ -56,6 +64,11 @@ function fraction(value) {
   let o = object(fraction, "Fraction");
   mixin(o, f);
   defineProperties(f);
+  f.toString = function fractionToString() {
+    let str = f.s > -1 ? "" : "-";
+    str += `${f.n}/${f.d}`;
+    return str;
+  };
   return numberMixin(f);
 }
 
@@ -64,6 +77,12 @@ function complex(value) {
   let o = object(complex, "Complex");
   mixin(o, c);
   defineProperties(c);
+  c.toString = function complexToString() {
+    let str = c.re.toString();
+    str += c.im < 0 ? "" : "+";
+    str += `${c.im.toString()}i`;
+    return str;
+  };
   return numberMixin(c);
 }
 
