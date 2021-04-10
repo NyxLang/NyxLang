@@ -15,7 +15,7 @@ math.import([
   factory(
     "Double",
     ["typed"],
-    function createDouble({ typed, Double }) {
+    function createDouble({ typed }) {
       typed.addType({
         name: "Double",
         test: function isDouble(x) {
@@ -26,13 +26,17 @@ math.import([
     },
     { lazy: false }
   ),
-  factory("double", ["typed", "Double"], function createDouble({ typed }) {
-    return typed("double", {
-      "number | string": (x) => new math.Double(x),
-      BigNumber: (x) => new math.Double(x.toNumber()),
-      Fraction: (x) => new math.Double(x.valueOf()),
-    });
-  }),
+  factory(
+    "double",
+    ["typed", "Double"],
+    function createDouble({ typed, Double }) {
+      return typed("double", {
+        "number | string": (x) => new math.Double(x),
+        BigNumber: (x) => new math.Double(x.toNumber()),
+        Fraction: (x) => new math.Double(x.valueOf()),
+      });
+    }
+  ),
   factory("add", ["typed"], function createDoubleAdd({ typed }) {
     return typed("add", {
       "Double, Double": (a, b) => math.double(a + b),
@@ -50,6 +54,20 @@ math.typed.conversions.unshift(
     to: "number",
     convert: function doubleToNumber(double) {
       return Number(double);
+    },
+  },
+  {
+    from: "Double",
+    to: "BigNumber",
+    convert: function doubleToBigNum(double) {
+      return new math.BigNumber(double.valueOf());
+    },
+  },
+  {
+    from: "Double",
+    to: "Fraction",
+    convert: function doubleToFraction(double) {
+      return new math.Fraction(double.valueOf());
     },
   },
   {
