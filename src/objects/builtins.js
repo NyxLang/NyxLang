@@ -7,6 +7,7 @@ const decimal = require("./Numbers")["Decimal"];
 const symbol = require("./Symbol")["Symbol"];
 const array = require("./Array")["Array"];
 const dict = require("./Dict")["Dict"];
+const range = require("./Range")["Range"];
 
 function Obj(constructor, type) {
   let obj = object(constructor, type);
@@ -108,6 +109,19 @@ function Dict(args) {
   return dict(args);
 }
 
+function Range(start, stop, step) {
+  return range(start, stop, step);
+}
+Range.__superclasses__ = Arr(Obj);
+Range.__subclasses__ = Arr();
+Object.defineProperty(Range, "__superclasses__", {
+  enumerable: false,
+  writable: false,
+});
+Object.defineProperty(Range, "__subclasses__", {
+  enumerable: false,
+});
+
 module.exports = {
   Object: Obj,
   Number: Num,
@@ -119,4 +133,5 @@ module.exports = {
   Symbol: Sym,
   Array: Arr,
   Dict,
+  Range,
 };
