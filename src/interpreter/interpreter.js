@@ -6,6 +6,7 @@ const Parser = require("../parser/parser");
 const Environment = require("../environment");
 const { String, List } = require("../stdlib/types");
 const builtins = require("../objects/builtins");
+const builtinFunctions = require("../functions/builtins");
 const globals = require("../stdlib/globals");
 
 const globalEnv = new Environment();
@@ -15,6 +16,9 @@ for (let key of Object.keys(globals)) {
 }
 for (let key of Object.keys(builtins)) {
   globalEnv.vars[key] = createEnvVarValue(builtins[key], true);
+}
+for (let key of Object.keys(builtinFunctions)) {
+  globalEnv.vars[key] = createEnvVarValue(builtinFunctions[key], true);
 }
 
 const main = globalEnv.extend();
