@@ -1,7 +1,11 @@
 const { create, all, factory, typedDependencies } = require("mathjs");
-// const Double = require("./_double");
+const Double = require("./_double");
 
 let math = create(typedDependencies);
+math.config({
+  number: "BigNumber",
+  precision: 64,
+});
 
 const allOthers = Object.keys(all)
   .map((key) => all[key])
@@ -11,8 +15,7 @@ math.import([
   factory(
     "Double",
     ["typed"],
-    function createDouble({ typed }) {
-      class Double extends Number {}
+    function createDouble({ typed, Double }) {
       typed.addType({
         name: "Double",
         test: function isDouble(x) {
@@ -23,20 +26,20 @@ math.import([
     },
     { lazy: false }
   ),
-  factory(
-    "double",
-    ["typed", "Double"],
-    function createDouble({ typed, Double }) {
-      return typed("double", {
-        "number | string": (x) => new math.Double(x),
-        BigNumber: (x) => new math.Double(x.toNumber()),
-        Fraction: (x) => new math.Double(x.valueOf()),
-      });
-    }
-  ),
+  factory("double", ["typed", "Double"], function createDouble({ typed }) {
+    return typed("double", {
+      "number | string": (x) => new math.Double(x),
+      BigNumber: (x) => new math.Double(x.toNumber()),
+      Fraction: (x) => new math.Double(x.valueOf()),
+    });
+  }),
   factory("add", ["typed"], function createDoubleAdd({ typed }) {
     return typed("add", {
       "Double, Double": (a, b) => math.double(a + b),
+      "Double, BigNumber": (a, b) => math.double(b.add(a.valueOf()).toNumber()),
+      "Double, Fraction": (a, b) => math.double(b.add(a.valueOf()).valueOf()),
+      "BigNumber, Double": (a, b) => math.double(a.add(b.valueOf()).toNumber()),
+      "Fraction, Double": (a, b) => math.double(a.add(b.valueOf()).valueOf()),
     });
   }),
 ]);
