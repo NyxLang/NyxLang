@@ -18,10 +18,7 @@ function outputString(...args) {
 }
 
 function print(...args) {
-  for (let arg of args) {
-    console.log(outputString(arg));
-  }
-  return null;
+  console.log(args.reduce((str, arg) => str + outputString(arg) + " ", ""));
 }
 
 function sprintf(...args) {
