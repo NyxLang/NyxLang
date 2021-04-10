@@ -123,7 +123,7 @@ function Lexer(input) {
     return str;
   }
 
-  function readEscaped(end) {
+  function readEscaped(end, multiline = false) {
     let escaped = false;
     let str = "";
     next();
@@ -136,6 +136,8 @@ function Lexer(input) {
         escaped = true;
       } else if (ch == end) {
         break;
+      } else if (ch == "\n" && !multiline) {
+        throw new Error(`Unexpected EOL in string literal at ${line}:${col}`);
       } else {
         str += ch;
       }
