@@ -14,7 +14,6 @@ class NyxNumber {
 }
 
 function numberReturn(value) {
-  console.log(math.typeOf(value));
   if (value instanceof math.Double || typeof value == "number") {
     return double(value);
   } else if (math.typeOf(value) == "BigNumber") {
