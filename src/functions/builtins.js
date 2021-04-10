@@ -1,3 +1,4 @@
 const sequences = require("./sequences");
+const io = require("./io");
 
-module.exports = { ...sequences };
+module.exports = { ...sequences, ...io };

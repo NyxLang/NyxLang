@@ -1,6 +1,6 @@
 const repl = require("repl");
 const Interpreter = require("./interpreter/interpreter");
-const outputString = require("./stdlib/io")["output-string"];
+const outputString = require("./util")["outputString"];
 
 function eval(cmd, context, fileName, callback) {
   callback(null, Interpreter(cmd));
