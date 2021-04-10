@@ -5,13 +5,16 @@ const hash = require("object-hash");
 const Parser = require("../parser/parser");
 const Environment = require("../environment");
 const { Decimal, String, List } = require("../stdlib/types");
+const builtins = require("../objects/builtins");
 const globals = require("../stdlib/globals");
-const object = require("../stdlib/object");
 
 const globalEnv = new Environment();
 
 for (let key of Object.keys(globals)) {
   globalEnv.vars[key] = createEnvVarValue(globals[key], true);
+}
+for (let key of Object.keys(builtins)) {
+  globalEnv.vars[key] = createEnvVarValue(builtins[key], true);
 }
 
 const main = globalEnv.extend();
@@ -71,7 +74,7 @@ function evaluate(exp, env = main) {
       return evaluateIdentifier(exp, env);
 
     case "Decimal":
-      return new Decimal(exp.value);
+      return builtins.Decimal(exp.value);
 
     case "Boolean":
     case "Nil":
@@ -191,7 +194,7 @@ function unpackIterable(names, value, env) {
         `"Cannot have any additional variable names after spread operation"`
       );
     }
-    values[i] = iter["[]"](new Decimal(i));
+    values[i] = iter["[]"](builtins.Decimal(i));
     return name;
   });
   return [names, values];
