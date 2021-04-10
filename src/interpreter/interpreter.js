@@ -4,7 +4,7 @@ const uuid = require("uuid");
 const hash = require("object-hash");
 const Parser = require("../parser/parser");
 const Environment = require("../environment");
-const { Decimal, String, List } = require("../stdlib/types");
+const { String, List } = require("../stdlib/types");
 const builtins = require("../objects/builtins");
 const globals = require("../stdlib/globals");
 
@@ -75,6 +75,9 @@ function evaluate(exp, env = main) {
 
     case "Decimal":
       return builtins.Decimal(exp.value);
+
+    case "Double":
+      return builtins.Double(exp.value);
 
     case "Boolean":
     case "Nil":

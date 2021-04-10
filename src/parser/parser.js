@@ -609,6 +609,11 @@ function parse(input) {
         return tok;
       }
 
+      if (tok && tok.type === "Double") {
+        next();
+        return tok;
+      }
+
       if (tok && tok.type === "String") {
         next();
         return tok;

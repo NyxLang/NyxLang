@@ -80,6 +80,15 @@ function Lexer(input) {
         throw new NyxInputError("Invalid numeric literal");
       }
     }
+    if (peek() == "d") {
+      next(); // advance pointer to next char in input stream
+      return {
+        type: "Double",
+        value: number,
+        line: line,
+        col: col,
+      };
+    }
     return {
       type: "Decimal",
       value: number,
