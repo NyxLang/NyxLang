@@ -21,7 +21,6 @@ describe("Testing basic numeric operations", () => {
 
     code = "0b11001";
     output = Interpreter(code);
-    // I have no idea why parseInt works with hex literals but not binary or octal
     expect(output.toString()).toBe(Number(output.toBinary()).toString());
     expect(output.toNumber()).toBe(Number(output.toBinary()));
 
@@ -29,5 +28,12 @@ describe("Testing basic numeric operations", () => {
     output = Interpreter(code);
     expect(output.toString()).toBe(Number(output.toOctal()).toString());
     expect(output.toNumber()).toBe(Number(output.toOctal()));
+  });
+
+  test("It should properly add two Decimal literals together", () => {
+    let code = "5 + 6";
+    let output = Interpreter(code);
+    expect(output.toString()).toBe("11");
+    expect(math.typeOf(output)).toBe("BigNumber");
   });
 });
