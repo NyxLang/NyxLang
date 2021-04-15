@@ -25,7 +25,7 @@ function Range(start, stop, step) {
 }
 
 module.exports = {
-  Double,
+  Inexact,
   Decimal,
   Fraction,
   Complex,
