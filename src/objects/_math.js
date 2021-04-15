@@ -26,17 +26,13 @@ math.import([
     },
     { lazy: false }
   ),
-  factory(
-    "double",
-    ["typed", "Double"],
-    function createDouble({ typed, Double }) {
-      return typed("double", {
-        "number | string": (x) => new math.Double(x),
-        BigNumber: (x) => new math.Double(x.toNumber()),
-        Fraction: (x) => new math.Double(x.valueOf()),
-      });
-    }
-  ),
+  factory("double", ["typed", "Double"], function createDouble({ typed }) {
+    return typed("double", {
+      "number | string": (x) => new math.Double(x),
+      BigNumber: (x) => new math.Double(x.toNumber()),
+      Fraction: (x) => new math.Double(x.valueOf()),
+    });
+  }),
   factory("add", ["typed"], function createDoubleAdd({ typed }) {
     return typed("add", {
       "Double, Double": (a, b) => math.double(a + b),
