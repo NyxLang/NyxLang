@@ -204,7 +204,7 @@ function parse(input) {
           col: tok.col,
         };
 
-      case "let":
+      case "var":
         return parseVariableDefinition();
 
       case "const":
@@ -255,7 +255,7 @@ function parse(input) {
     if (constant) {
       skipKw("const");
     } else {
-      skipKw("let");
+      skipKw("var");
     }
     let assignment = parseExpression();
     let node = { type: "VariableDefinition" };

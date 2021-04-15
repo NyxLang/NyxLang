@@ -84,7 +84,7 @@ exports.operators = [
 ];
 
 exports.keywords = [
-  "let",
+  "var",
   "const",
   "do",
   "if",
