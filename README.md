@@ -13,6 +13,7 @@ Nyx is a hybrid functional and object-oriented programming language that basical
 ## Short-term TODO list
 - [] Start working on tests and documentation/tutorials
 - [] Start working on a more formal specification
+- [] Add basic numeric operations for Decimal and Double types
 - [] Implement additional numeric types (Fraction, Complex, possibly Integer?)
 - [] Rewrite String class (work with grapheme clusters?) with additional functional interface
 - [] Rewrite List class (extend native JS Array) with additional functional interface
