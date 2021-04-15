@@ -7,6 +7,7 @@ const {
   operators,
   isPunc,
   keywords,
+  isHexadecimalChar,
 } = require("../helpers");
 const { NyxInputError } = require("../errors");
 
@@ -103,6 +104,7 @@ function Lexer(input) {
 
   function readEscapeSequence(ch) {
     let str = "";
+    let seq = "";
     if (ch == "n") {
       str += "\n";
     } else if (ch == "b") {
@@ -123,6 +125,14 @@ function Lexer(input) {
       str += '"';
     } else if (ch == "\\") {
       str += "\\";
+    } else if (ch == "x") {
+      // is hexadecimal escape sequence
+      seq = readWhile((ch) => isHexadecimalChar(ch));
+      str += String.fromCharCode(parseInt(seq, 16));
+    } else if (ch == "u") {
+      // is Unicode escape sequence
+      seq = readWhile((ch) => isHexadecimalChar(ch));
+      str += String.fromCodePoint(parseInt(seq, 16));
     }
     return str;
   }

@@ -24,6 +24,10 @@ exports.isPunc = function (char) {
   return ";:()[]{},.'".indexOf(char) >= 0;
 };
 
+exports.isHexadecimalChar = function (char) {
+  return /[0-9a-fA-F]/.test(char);
+};
+
 exports.handleNegativeIndex = function (index, seq) {
   const i = BigInt(index.toString());
   if (i < 0n) {
