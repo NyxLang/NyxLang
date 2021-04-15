@@ -33,7 +33,7 @@ function numberMixin(destination) {
 }
 
 function double(value) {
-  let d = new math.double(value);
+  let d = new math.double(value.valueOf());
   d.toString = function doubleToString() {
     if (isNaN(value)) {
       return "NaN";
@@ -42,6 +42,10 @@ function double(value) {
     }
     return `${d.__proto__.toString.call(d)}d`;
   };
+  Object.defineProperty(d, "toString", {
+    writable: false,
+    enumerable: false,
+  });
   return numberMixin(d);
 }
 
@@ -57,6 +61,10 @@ function fraction(value) {
     str += `${f.n}/${f.d}`;
     return str;
   };
+  Object.defineProperty(f, "toString", {
+    writable: false,
+    enumerable: false,
+  });
   return numberMixin(f);
 }
 
@@ -68,6 +76,10 @@ function complex(value) {
     str += `${c.im.toString()}i`;
     return str;
   };
+  Object.defineProperty(c, "toString", {
+    writable: false,
+    enumerable: false,
+  });
   return numberMixin(c);
 }
 
