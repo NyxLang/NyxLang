@@ -13,6 +13,7 @@ Nyx is a hybrid functional and object-oriented programming language that basical
 ## Short-term TODO list
 - [ ] Start working on tests and documentation/tutorials
 - [ ] Start working on a more formal specification
+- [ ] Change variable definition keyword from `let` to `var`
 - [ ] Add basic numeric operations for Decimal and Double types
 - [ ] Implement additional numeric types (Fraction, Complex, possibly Integer?)
 - [ ] Rewrite String class (work with grapheme clusters?) with additional functional interface
@@ -22,7 +23,6 @@ Nyx is a hybrid functional and object-oriented programming language that basical
 - [ ] Prevent creation of Newline and Indent/Dedent tokens when parens/brackets/braces are open
 - [ ] Make splat operator work fully like JS spread (including spreading a List into a List)
 - [ ] Build out numeric operations, functions, and methods
-- [ ] Enable string interpolation and tagged template strings
 - [ ] Build out math functionality
 
 ## Longer-term TODO list
@@ -43,3 +43,5 @@ Nyx is a hybrid functional and object-oriented programming language that basical
 - Compile to JS
 - In-language error handling
 - Release interpreter as package
+- Enable string interpolation and tagged template strings
+- Implement block-scoping variables with `let`, as in Scheme
