@@ -4,7 +4,8 @@
   "description": "A programming language that borrows things I like from other languages",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:all": "jest --all"
   },
   "author": "Jason Barr <jason@jasonsbarr.com>",
   "license": "MIT",
