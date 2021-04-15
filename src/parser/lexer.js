@@ -61,9 +61,13 @@ function Lexer(input) {
       ch.toLowerCase() == "o" ||
       ch.toLowerCase() == "b"
     ) {
-      number += ch;
-      next();
-      number += readWhile((ch) => /[a-zA-Z0-9]/.test(ch));
+      if (number == "0") {
+        number += ch;
+        next();
+        number += readWhile((ch) => /[a-zA-Z0-9]/.test(ch));
+      } else {
+        croak(`Invalid numeric literal`);
+      }
     }
     if (peek() == ".") {
       if (isDigit(lookahead())) {
@@ -77,7 +81,7 @@ function Lexer(input) {
         number += next();
         number += readWhile((ch) => isDigit(ch));
       } else {
-        throw new NyxInputError("Invalid numeric literal");
+        croak(`Invalid numeric literal`);
       }
     }
     if (peek() == "d") {
