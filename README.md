@@ -11,19 +11,19 @@ Nyx is a hybrid functional and object-oriented programming language that basical
 **EVERYTHING IS IN FLUX.** I basically started writing an interpreter to see if I could make certain things work (e.g. syntactically-significant whitespace), and then at some point I decided to rewrite things and think more about what exactly I wanted the language to be like. As long as this disclaimer is here, anything you try with this interpreter is just as likely to be broken as not. I'm basically learning about programming language implementation as I go, so this should be a fun adventure!
 
 ## Short-term TODO list
-- [] Start working on tests and documentation/tutorials
-- [] Start working on a more formal specification
-- [] Add basic numeric operations for Decimal and Double types
-- [] Implement additional numeric types (Fraction, Complex, possibly Integer?)
-- [] Rewrite String class (work with grapheme clusters?) with additional functional interface
-- [] Rewrite List class (extend native JS Array) with additional functional interface
-- [] Refine definitions of tokens and AST nodes
-- [] Include file, code, and start/end positions in tokens and AST nodes
-- [] Prevent creation of Newline and Indent/Dedent tokens when parens/brackets/braces are open
-- [] Make splat operator work fully like JS spread (including spreading a List into a List)
-- [] Build out numeric operations, functions, and methods
-- [] Enable string interpolation and tagged template strings
-- [] Build out math functionality
+- [ ] Start working on tests and documentation/tutorials
+- [ ] Start working on a more formal specification
+- [ ] Add basic numeric operations for Decimal and Double types
+- [ ] Implement additional numeric types (Fraction, Complex, possibly Integer?)
+- [ ] Rewrite String class (work with grapheme clusters?) with additional functional interface
+- [ ] Rewrite List class (extend native JS Array) with additional functional interface
+- [ ] Refine definitions of tokens and AST nodes
+- [ ] Include file, code, and start/end positions in tokens and AST nodes
+- [ ] Prevent creation of Newline and Indent/Dedent tokens when parens/brackets/braces are open
+- [ ] Make splat operator work fully like JS spread (including spreading a List into a List)
+- [ ] Build out numeric operations, functions, and methods
+- [ ] Enable string interpolation and tagged template strings
+- [ ] Build out math functionality
 
 ## Longer-term TODO list
 - Add Dictionary object with double splat operator
