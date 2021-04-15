@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
-    "test:all": "jest --all"
+    "test:all": "jest --all",
+    "test:watch": "jest --watch"
   },
   "author": "Jason Barr <jason@jasonsbarr.com>",
   "license": "MIT",
