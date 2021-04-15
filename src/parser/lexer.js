@@ -8,6 +8,8 @@ const {
   isPunc,
   keywords,
   isHexadecimalChar,
+  isOctalChar,
+  isBinaryChar,
 } = require("../helpers");
 const { NyxInputError } = require("../errors");
 
@@ -57,6 +59,7 @@ function Lexer(input) {
   function readNumber() {
     let number = readWhile((ch) => isDigit(ch));
     let ch = peek();
+    let hex = false;
     if (
       ch.toLowerCase() == "x" ||
       ch.toLowerCase() == "o" ||
@@ -64,16 +67,29 @@ function Lexer(input) {
     ) {
       if (number == "0") {
         number += ch;
-        next();
-        number += readWhile((ch) => /[a-zA-Z0-9]/.test(ch));
+        next(); // skip hex/oct/bin indicator
+        if (ch.toLowerCase() == "x") {
+          hex = true;
+          number += readWhile((ch) => isHexadecimalChar(ch));
+        } else if (ch.toLowerCase() == "o") {
+          number += readWhile((ch) => isOctalChar(ch));
+        } else if (ch.toLowerCase() == "b") {
+          number += readWhile((ch) => isBinaryChar(ch));
+        } else {
+          croak("Invalid numeric literal");
+        }
       } else {
-        croak(`Invalid numeric literal`);
+        croak("Invalid numeric literal");
       }
     }
     if (peek() == ".") {
-      if (isDigit(lookahead())) {
+      if (isHexadecimalChar(lookahead())) {
         number += next();
-        number += readWhile((ch) => isDigit(ch));
+        if (hex) {
+          number += readWhile((ch) => isHexadecimalChar(ch));
+        } else {
+          number += readWhile((ch) => isDigit(ch));
+        }
       }
     }
     if (peek() == "e") {
@@ -82,7 +98,7 @@ function Lexer(input) {
         number += next();
         number += readWhile((ch) => isDigit(ch));
       } else {
-        croak(`Invalid numeric literal`);
+        croak("Invalid numeric literal");
       }
     }
     if (peek() == "d") {

@@ -28,6 +28,14 @@ exports.isHexadecimalChar = function (char) {
   return /[0-9a-fA-F]/.test(char);
 };
 
+exports.isBinaryChar = function (char) {
+  return /[0-1]/.test(char);
+};
+
+exports.isOctalChar = function (char) {
+  return /[0-7]/.test(char);
+};
+
 exports.handleNegativeIndex = function (index, seq) {
   const i = BigInt(index.toString());
   if (i < 0n) {
