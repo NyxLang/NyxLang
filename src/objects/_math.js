@@ -84,7 +84,7 @@ math.typed.conversions.unshift(
     from: "Fraction",
     to: "Double",
     convert: function fractionToDouble(fraction) {
-      return new math.Double(fraction.n).div(fraction.d);
+      return new math.Double(fraction);
     },
   },
   {
