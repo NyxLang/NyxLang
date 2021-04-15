@@ -224,7 +224,7 @@ function Lexer(input) {
 
     let ch = peek();
 
-    if (ch == "#") {
+    if (ch == ";") {
       skipComment();
       return readNext();
     }
