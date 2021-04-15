@@ -1,7 +1,5 @@
 const math = require("./_math");
 const { mixin } = require("../util");
-const object = require("./Object")["Object"];
-const defineProperties = require("./Object")["defineProperties"];
 
 class NyxNumber {
   constructor() {
@@ -36,9 +34,6 @@ function numberMixin(destination) {
 
 function double(value) {
   let d = new math.double(value);
-  let o = object(double, "Double");
-  mixin(o, d);
-  defineProperties(d);
   d.toString = function doubleToString() {
     if (isNaN(value)) {
       return "NaN";
@@ -52,17 +47,11 @@ function double(value) {
 
 function decimal(value) {
   let d = new math.bignumber(value);
-  let o = object(decimal, "Decimal");
-  mixin(o, d);
-  defineProperties(d);
   return numberMixin(d);
 }
 
 function fraction(value) {
   let f = new math.fraction(value);
-  let o = object(fraction, "Fraction");
-  mixin(o, f);
-  defineProperties(f);
   f.toString = function fractionToString() {
     let str = f.s > -1 ? "" : "-";
     str += `${f.n}/${f.d}`;
@@ -73,9 +62,6 @@ function fraction(value) {
 
 function complex(value) {
   let c = new math.complex(value);
-  let o = object(complex, "Complex");
-  mixin(o, c);
-  defineProperties(c);
   c.toString = function complexToString() {
     let str = c.re.toString();
     str += c.im < 0 ? "" : "+";

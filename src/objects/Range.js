@@ -1,7 +1,4 @@
 const decimal = require("./Numbers")["Decimal"];
-const object = require("./Object")["Object"];
-const defineProperties = require("./Object")["defineProperties"];
-const { mixin } = require("../util");
 
 class Range {
   constructor(start, stop, step) {
@@ -42,11 +39,7 @@ class Range {
 }
 
 function range(start, stop, step) {
-  let r = new Range(start, stop, step);
-  let o = object(range, "Range");
-  mixin(o, r);
-  defineProperties(r);
-  return r;
+  return new Range(start, stop, step);
 }
 
 module.exports = { Range: range };
