@@ -144,9 +144,6 @@ function createEnvVarValue(value, constant = false) {
     Object.freeze(value);
   }
   return {
-    id: value.__object_id__,
-    type: value.__type__,
-    class: value.__class__,
     constant,
     value,
   };
@@ -599,28 +596,10 @@ function makeLambda(exp, env) {
     value: params,
   });
 
-  Object.defineProperty(lambda, "__object_id__", {
-    writable: false,
-    enumerable: false,
-    value: hash(uuid.v4()),
-  });
-
-  Object.defineProperty(lambda, "__type__", {
-    writable: false,
-    enumerable: false,
-    value: "function",
-  });
-
-  Object.defineProperty(lambda, "__class__", {
-    writable: false,
-    enumerable: false,
-    value: "Function",
-  });
-
   Object.defineProperty(lambda, "__name__", {
     writable: false,
     enumerable: false,
-    value: exp.name || `lambda-${lambda.__object_id__}`,
+    value: exp.name || `lambda-${hash(uuid.v4())}`,
   });
 
   Object.defineProperty(lambda, "__args_length__", {
