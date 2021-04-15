@@ -12,8 +12,8 @@ class NyxNumber {
 }
 
 function numberReturn(value) {
-  if (value instanceof math.Double || typeof value == "number") {
-    return double(value);
+  if (value instanceof math.Inexact || typeof value == "number") {
+    return inexact(value);
   } else if (math.typeOf(value) == "BigNumber") {
     return decimal(value);
   } else if (math.typeOf(value) == "Fraction") {
@@ -48,6 +48,8 @@ function inexact(value) {
   });
   return numberMixin(d);
 }
+
+console.log(inexact(5)["+"](inexact(6)));
 
 function decimal(value) {
   let d = new math.bignumber(value);

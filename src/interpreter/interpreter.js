@@ -670,9 +670,7 @@ function applyBinary(op, left, right) {
   try {
     return left[op](right);
   } catch (e) {
-    throw new Error(
-      `Cannot perform operation ${left} ${op} ${right} with operands of type ${left.__type__} and ${right.__type__}`
-    );
+    throw new Error(`Cannot perform operation ${left} ${op} ${right}`);
   }
 }
 
