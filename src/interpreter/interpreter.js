@@ -194,7 +194,7 @@ function unpackIterable(names, value, env) {
   let values = [];
   names = names.map((name, i) => {
     if (name.type == "UnaryOperation" && name.operator == "*") {
-      values[i] = iter.slice(i, iter.__length__);
+      values[i] = iter.slice(i, iter.__length__); // need to change this property to .length when creating new List class
       return name.operand;
     } else if (i > names.length - 1) {
       throw new Error(
