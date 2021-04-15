@@ -36,10 +36,10 @@ math.import([
   factory("add", ["typed"], function createDoubleAdd({ typed }) {
     return typed("add", {
       "Double, Double": (a, b) => math.double(a + b),
-      "Double, BigNumber": (a, b) => math.double(b.add(a.valueOf()).toNumber()),
-      "Double, Fraction": (a, b) => math.double(b.add(a.valueOf()).valueOf()),
-      "BigNumber, Double": (a, b) => math.double(a.add(b.valueOf()).toNumber()),
-      "Fraction, Double": (a, b) => math.double(a.add(b.valueOf()).valueOf()),
+      "Double, BigNumber | Fraction": (a, b) =>
+        math.double(math.add(a.valueOf(), b)),
+      "BigNumber | Fraction, Double": (a, b) =>
+        math.double(math.add(a, b.valueOf())),
     });
   }),
 ]);
