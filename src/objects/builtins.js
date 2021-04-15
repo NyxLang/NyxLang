@@ -1,11 +1,11 @@
-const double = require("./Numbers")["Double"];
+const inexact = require("./Numbers")["Inexact"];
 const fraction = require("./Numbers")["Fraction"];
 const complex = require("./Numbers")["Complex"];
 const decimal = require("./Numbers")["Decimal"];
 const range = require("./Range")["Range"];
 
-function Double(num) {
-  return double(num);
+function Inexact(num) {
+  return inexact(num);
 }
 
 function Decimal(num) {

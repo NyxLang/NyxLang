@@ -32,15 +32,15 @@ function numberMixin(destination) {
   return destination;
 }
 
-function double(value) {
-  let d = new math.double(value.valueOf());
-  d.toString = function doubleToString() {
+function inexact(value) {
+  let d = new math.inexact(value.valueOf());
+  d.toString = function inexactToString() {
     if (isNaN(value)) {
       return "NaN";
     } else if (value == Infinity || value == -Infinity) {
       return `${value < 0 ? "-" : ""}Infinity`;
     }
-    return `${d.__proto__.toString.call(d)}d`;
+    return `${d.__proto__.toString.call(d)}i`;
   };
   Object.defineProperty(d, "toString", {
     writable: false,
@@ -85,7 +85,7 @@ function complex(value) {
 
 module.exports = {
   Number: NyxNumber,
-  Double: double,
+  Inexact: inexact,
   Decimal: decimal,
   Fraction: fraction,
   Complex: complex,

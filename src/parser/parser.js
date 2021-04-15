@@ -609,7 +609,7 @@ function parse(input) {
         return tok;
       }
 
-      if (tok && tok.type === "Double") {
+      if (tok && tok.type === "Inexact") {
         next();
         return tok;
       }
