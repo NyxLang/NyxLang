@@ -29,6 +29,7 @@ Nyx is a hybrid functional and object-oriented programming language that basical
 - Add Dictionary object with double splat operator
   - Include **kwargs capability for functions defined in-language
 - Add immutable/persistent Records
+- Add tuples with slicing?
 - Add defining custom object types with composition and inheritance mechanisms
 - Add semantic checking
   - Bindings and functions in namespaces
