@@ -49,8 +49,6 @@ function inexact(value) {
   return numberMixin(d);
 }
 
-console.log(inexact(5)["+"](inexact(6)));
-
 function decimal(value) {
   let d = new math.bignumber(value);
   return numberMixin(d);
