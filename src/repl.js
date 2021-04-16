@@ -6,11 +6,15 @@ function eval(cmd, context, fileName, callback) {
   callback(null, Interpreter(cmd));
 }
 
-repl.start({
-  prompt: "nyx> ",
-  input: process.stdin,
-  output: process.stdout,
-  eval,
-  ignoreUndefined: true,
-  writer: outputString,
-});
+function startRepl() {
+  repl.start({
+    prompt: "nyx> ",
+    input: process.stdin,
+    output: process.stdout,
+    eval,
+    ignoreUndefined: true,
+    writer: outputString,
+  });
+}
+
+module.exports = startRepl;
