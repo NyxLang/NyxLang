@@ -1,5 +1,5 @@
 {
-  "name": "nyx-language",
+  "name": "@nyxlang/nyxlang",
   "version": "0.0.1",
   "description": "A programming language that borrows things I like from other languages",
   "main": "index.js",
@@ -29,5 +29,19 @@
     "uuid": "^8.3.2",
     "voca": "^1.4.0",
     "yargs": "^15.4.1"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nyxlang/nyxlang.git"
+  },
+  "keywords": [
+    "programming-language"
+  ],
+  "bugs": {
+    "url": "https://github.com/nyxlang/nyxlang/issues"
+  },
+  "homepage": "https://github.com/nyxlang/nyxlang#readme"
 }
