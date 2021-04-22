@@ -83,6 +83,9 @@ function evaluate(exp, env = main) {
     case "Double":
       return builtins.Double(exp.value);
 
+    case "Fraction":
+      return builtins.Fraction(exp.value);
+
     case "Boolean":
     case "Nil":
       return exp.value;

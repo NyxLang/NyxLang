@@ -92,6 +92,18 @@ function Lexer(input) {
         }
       }
     }
+    if (peek() == "/") {
+      // Is fraction
+      number += ch;
+      next(); // skip fraction separator
+      number += readWhile((ch) => isDigit(ch));
+      return {
+        type: "Fraction",
+        value: number,
+        line: line,
+        col: col,
+      };
+    }
     if (peek() == "e") {
       number += next();
       if (peek() == "+" || peek() == "-") {

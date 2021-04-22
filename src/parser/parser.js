@@ -614,6 +614,11 @@ function parse(input) {
         return tok;
       }
 
+      if (tok && tok.type === "Fraction") {
+        next();
+        return tok;
+      }
+
       if (tok && tok.type === "String") {
         next();
         return tok;
