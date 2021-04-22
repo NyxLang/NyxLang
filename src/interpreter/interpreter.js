@@ -302,7 +302,7 @@ function evaluateCall(exp, env) {
   } else if (exp.func.object && exp.func.property) {
     name = `${exp.func.object.name}.${exp.func.property.name}`;
   } else {
-    name = `func.__name__`;
+    name = `${func.__name__}`;
   }
 
   if (typeof func != "function") {
