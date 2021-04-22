@@ -23,7 +23,7 @@ function numberReturn(value) {
 
 function numberMixin(destination) {
   for (let key of Object.getOwnPropertyNames(NyxNumber.prototype)) {
-    destination.prototype[key] = Nyx.Number.prototype[key];
+    destination.prototype[key] = NyxNumber.prototype[key];
   }
   return destination;
 }
