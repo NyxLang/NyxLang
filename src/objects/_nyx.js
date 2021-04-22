@@ -1,0 +1,4 @@
+/**
+ * @namespace Nyx
+ */
+module.exports = {};

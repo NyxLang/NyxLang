@@ -1,11 +1,7 @@
 const math = require("./_math");
-const { mixin } = require("../util");
+const Nyx = require("./_nyx");
 
 class NyxNumber {
-  constructor() {
-    throw new Error("Cannot instantiate abstract Number class directly");
-  }
-
   "+"(other) {
     return numberReturn(math.add(this, other));
   }
@@ -13,80 +9,65 @@ class NyxNumber {
 
 function numberReturn(value) {
   if (value instanceof math.Inexact || typeof value == "number") {
-    return inexact(value);
+    return new Nyx.Inexact(value);
   } else if (math.typeOf(value) == "BigNumber") {
-    return decimal(value);
+    return new Nyx.Decimal(value);
   } else if (math.typeOf(value) == "Fraction") {
-    return fraction(value);
+    return new Nyx.Fraction(value);
   } else if (math.typeOf(value) == "Complex") {
-    return complex(value);
+    return new Nyx.Complex(value);
   } else {
     return value;
   }
 }
 
+Nyx.Number = NyxNumber;
+
 function numberMixin(destination) {
   for (let key of Object.getOwnPropertyNames(NyxNumber.prototype)) {
-    destination.__proto__[key] = NyxNumber.prototype[key];
+    destination.prototype[key] = Nyx.Number.prototype[key];
   }
   return destination;
 }
 
-function inexact(value) {
-  let d = new math.inexact(value.valueOf());
-  d.toString = function inexactToString() {
-    if (isNaN(value)) {
+class Inexact extends math.Inexact {
+  toString() {
+    if (isNaN(this)) {
       return "NaN";
-    } else if (value == Infinity || value == -Infinity) {
-      return `${value < 0 ? "-" : ""}Infinity`;
+    } else if (this == Infinity || this == -Infinity) {
+      return `${this < 0 ? "-" : ""}Infinity`;
     }
-    return `${d.__proto__.toString.call(d)}i`;
-  };
-  Object.defineProperty(d, "toString", {
-    writable: false,
-    enumerable: false,
-  });
-  return numberMixin(d);
+    return math.Inexact.prototype.toString.call(this) + "i";
+  }
 }
 
-function decimal(value) {
-  let d = new math.bignumber(value);
-  return numberMixin(d);
-}
+Nyx.Inexact = numberMixin(Inexact);
 
-function fraction(value) {
-  let f = new math.fraction(value);
-  f.toString = function fractionToString() {
-    let str = f.s > -1 ? "" : "-";
-    str += `${f.n}/${f.d}`;
+class Decimal extends math.BigNumber {}
+Decimal = numberMixin(Decimal);
+
+class Fraction extends math.Fraction {
+  toString() {
+    let str = this.s > -1 ? "" : "-";
+    str += `${this.n}/${this.d}`;
     return str;
-  };
-  Object.defineProperty(f, "toString", {
-    writable: false,
-    enumerable: false,
-  });
-  return numberMixin(f);
+  }
 }
+Fraction = numberMixin(Fraction);
 
-function complex(value) {
-  let c = new math.complex(value);
-  c.toString = function complexToString() {
-    let str = c.re.toString();
-    str += c.im < 0 ? "" : "+";
-    str += `${c.im.toString()}i`;
+class Complex extends math.Complex {
+  toString() {
+    let str = this.re.toString();
+    str += this.im < 0 ? "" : "+";
+    str += `${this.im.toString()}i`;
     return str;
-  };
-  Object.defineProperty(c, "toString", {
-    writable: false,
-    enumerable: false,
-  });
-  return numberMixin(c);
+  }
 }
+Complex = numberMixin(Complex);
 
 module.exports = {
-  Number: NyxNumber,
-  Inexact: inexact,
-  Decimal: decimal,
-  Fraction: fraction,
-  Complex: complex,
+  Inexact,
+  Decimal,
+  Fraction,
+  Complex,
 };

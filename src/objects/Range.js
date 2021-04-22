@@ -1,10 +1,10 @@
-const decimal = require("./Numbers")["Decimal"];
+const Decimal = require("./Numbers")["Decimal"];
 
 class Range {
   constructor(start, stop, step) {
-    this.start = BigInt(start.toString());
-    this.stop = BigInt(stop.toString());
-    this.step = BigInt(step.toString());
+    this.start = Number(start.toString());
+    this.stop = Number(stop.toString());
+    this.step = Number(step.toString());
   }
 
   [Symbol.iterator]() {
@@ -13,7 +13,7 @@ class Range {
     let step = this.step;
     let direction = this.start < this.stop ? "ASC" : "DESC";
 
-    if (direction == "DESC" && step > 0n) {
+    if (direction == "DESC" && step > 0) {
       step = -step;
     }
 
@@ -28,7 +28,7 @@ class Range {
           return { done: true };
         }
         current += step;
-        return { value: decimal(val.toString()), done: false };
+        return { value: new Decimal(val.toString()), done: false };
       },
     };
   }
@@ -38,8 +38,4 @@ class Range {
   }
 }
 
-function range(start, stop, step) {
-  return new Range(start, stop, step);
-}
-
-module.exports = { Range: range };
+module.exports = Range;
