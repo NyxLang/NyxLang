@@ -86,6 +86,9 @@ function evaluate(exp, env = main) {
     case "Fraction":
       return builtins.Fraction(exp.value);
 
+    case "Complex":
+      return builtins.Complex(exp.value);
+
     case "Boolean":
     case "Nil":
       return exp.value;

@@ -92,18 +92,6 @@ function Lexer(input) {
         }
       }
     }
-    if (peek() == "/") {
-      // Is fraction
-      number += ch;
-      next(); // skip fraction separator
-      number += readWhile((ch) => isDigit(ch));
-      return {
-        type: "Fraction",
-        value: number,
-        line: line,
-        col: col,
-      };
-    }
     if (peek() == "e") {
       number += next();
       if (peek() == "+" || peek() == "-") {
@@ -118,6 +106,42 @@ function Lexer(input) {
       next(); // advance pointer to char after '#d' in input stream
       return {
         type: "Double",
+        value: number,
+        line: line,
+        col: col,
+      };
+    }
+    if (peek() == "/") {
+      // Is fraction
+      number += ch;
+      next(); // skip fraction separator
+      number += readWhile((ch) => isDigit(ch));
+      return {
+        type: "Fraction",
+        value: number,
+        line: line,
+        col: col,
+      };
+    }
+    if (peek() == "+" || peek() == "-" || peek() == "i") {
+      // Is complex number
+      if (peek() == "i") {
+        number += ch;
+        next(); // skip over i for next iteration through readWhile
+        // Real part is 0
+      } else {
+        number += next();
+        number += readWhile((ch) => isDigit(ch));
+        // console.log(number);
+        if (peek() == "i") {
+          number += peek();
+          next(); // skip i for next iteration
+        } else {
+          croak("Invalid complex number literal");
+        }
+      }
+      return {
+        type: "Complex",
         value: number,
         line: line,
         col: col,
