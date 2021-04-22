@@ -1,4 +1,4 @@
-const Nyx = require("./_nyx");
+const Nyx = require("./Numbers");
 const { Double, Decimal, Fraction, Complex } = require("./Numbers");
 const Range = require("./Range");
 
