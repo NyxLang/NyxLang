@@ -37,9 +37,9 @@ exports.isOctalChar = function (char) {
 };
 
 exports.handleNegativeIndex = function (index, seq) {
-  const i = BigInt(index.toString());
+  const i = parseInt(index.toString());
   if (i < 0n) {
-    const l = BigInt(seq.__length__.toString());
+    const l = parseInt(seq.__length__.toString());
     index = new NyxDecimal((l + i).toString());
   }
   return index;
