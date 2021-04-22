@@ -5,7 +5,7 @@ const hash = require("object-hash");
 const Parser = require("../parser/parser");
 const Environment = require("../environment");
 const { String, List } = require("../stdlib/types");
-const builtins = require("../objects/builtins"); // need to be processed with obj-ids, etc.
+const builtins = require("../objects/builtins")["Types"]; // need to be processed with obj-ids, etc.
 const builtinFunctions = require("../functions/builtins"); // need to be processed with obj-ids, etc.
 const globals = require("../stdlib/globals");
 

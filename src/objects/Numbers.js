@@ -9,13 +9,13 @@ class NyxNumber {
 
 function numberReturn(value) {
   if (value instanceof math.Inexact || typeof value == "number") {
-    return new Nyx.Inexact(value);
+    return new Inexact(value);
   } else if (math.typeOf(value) == "BigNumber") {
-    return new Nyx.Decimal(value);
+    return new Decimal(value);
   } else if (math.typeOf(value) == "Fraction") {
-    return new Nyx.Fraction(value);
+    return new Fraction(value);
   } else if (math.typeOf(value) == "Complex") {
-    return new Nyx.Complex(value);
+    return new Complex(value);
   } else {
     return value;
   }
@@ -38,8 +38,7 @@ class Inexact extends math.Inexact {
     return math.Inexact.prototype.toString.call(this) + "i";
   }
 }
-
-Nyx.Inexact = numberMixin(Inexact);
+Inexact = numberMixin(Inexact);
 
 class Decimal extends math.BigNumber {}
 Decimal = numberMixin(Decimal);
