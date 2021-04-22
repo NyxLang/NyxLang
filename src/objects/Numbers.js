@@ -59,6 +59,10 @@ class Complex extends math.Complex {
     str += `${this.im.toString()}i`;
     return str;
   }
+
+  valueOf() {
+    return this.toString();
+  }
 }
 Complex = numberMixin(Complex);
 
