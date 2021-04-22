@@ -101,10 +101,11 @@ function Lexer(input) {
         croak("Invalid numeric literal");
       }
     }
-    if (peek() == "i") {
-      next(); // advance pointer to next char in input stream
+    if (peek() == "#" && lookahead() == "d") {
+      next();
+      next(); // advance pointer to char after '#d' in input stream
       return {
-        type: "Inexact",
+        type: "Double",
         value: number,
         line: line,
         col: col,

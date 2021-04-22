@@ -1,10 +1,10 @@
 const Nyx = require("./_nyx");
-const { Inexact, Decimal, Fraction, Complex } = require("./Numbers");
+const { Double, Decimal, Fraction, Complex } = require("./Numbers");
 const Range = require("./Range");
 
 // Calling [value].toString() guarantees an in-language literal will still evaluate properly
-function inexact(num) {
-  return new Inexact(num.toString());
+function double(num) {
+  return new Double(num.toString());
 }
 
 function decimal(num) {
@@ -25,7 +25,7 @@ function range(start, stop, step) {
 }
 
 Nyx.Types = {
-  Inexact: inexact,
+  Double: double,
   Decimal: decimal,
   Fraction: fraction,
   Complex: complex,

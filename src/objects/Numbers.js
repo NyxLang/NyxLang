@@ -8,8 +8,8 @@ class NyxNumber {
 }
 
 function numberReturn(value) {
-  if (value instanceof math.Inexact || typeof value == "number") {
-    return new Inexact(value);
+  if (value instanceof math.Double || typeof value == "number") {
+    return new Double(value);
   } else if (math.typeOf(value) == "BigNumber") {
     return new Decimal(value);
   } else if (math.typeOf(value) == "Fraction") {
@@ -28,17 +28,17 @@ function numberMixin(destination) {
   return destination;
 }
 
-class Inexact extends math.Inexact {
+class Double extends math.Double {
   toString() {
     if (isNaN(this)) {
       return "NaN";
     } else if (this == Infinity || this == -Infinity) {
       return `${this < 0 ? "-" : ""}Infinity`;
     }
-    return math.Inexact.prototype.toString.call(this) + "i";
+    return math.Double.prototype.toString.call(this) + "#d";
   }
 }
-Inexact = numberMixin(Inexact);
+Double = numberMixin(Double);
 
 class Decimal extends math.BigNumber {}
 Decimal = numberMixin(Decimal);
@@ -54,8 +54,8 @@ Fraction = numberMixin(Fraction);
 
 class Complex extends math.Complex {
   toString() {
-    let str = this.re.toString();
-    str += this.im < 0 ? "" : "+";
+    let str = this.re ? this.re.toString() : "";
+    str += this.re && this.im > 0 ? "+" : "";
     str += `${this.im.toString()}i`;
     return str;
   }
@@ -63,7 +63,7 @@ class Complex extends math.Complex {
 Complex = numberMixin(Complex);
 
 module.exports = {
-  Inexact,
+  Double,
   Decimal,
   Fraction,
   Complex,

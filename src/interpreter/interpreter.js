@@ -80,8 +80,8 @@ function evaluate(exp, env = main) {
     case "Decimal":
       return builtins.Decimal(exp.value);
 
-    case "Inexact":
-      return builtins.Inexact(exp.value);
+    case "Double":
+      return builtins.Double(exp.value);
 
     case "Boolean":
     case "Nil":
