@@ -21,9 +21,6 @@ function numberReturn(value) {
   }
 }
 
-Nyx.Number = NyxNumber;
-Nyx.Number.numberReturn = numberReturn;
-
 function numberMixin(destination) {
   for (let key of Object.getOwnPropertyNames(NyxNumber.prototype)) {
     destination.prototype[key] = NyxNumber.prototype[key];
@@ -70,7 +67,7 @@ class Complex extends math.Complex {
 Complex = numberMixin(Complex);
 
 module.exports = {
-  Nyx,
+  NyxNumber,
   Double,
   Decimal,
   Fraction,

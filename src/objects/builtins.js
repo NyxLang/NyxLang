@@ -1,22 +1,22 @@
-const Nyx = require("./Numbers");
+const Nyx = require("./_nyx");
 const { Double, Decimal, Fraction, Complex } = require("./Numbers");
 const Range = require("./Range");
 
-// Calling [value].toString() guarantees an in-language literal will still evaluate properly
+// Calling [value].valueOf() guarantees an in-language literal will still evaluate properly
 function double(num) {
-  return new Double(num.toString());
+  return new Double(num.valueOf());
 }
 
 function decimal(num) {
-  return new Decimal(num.toString());
+  return new Decimal(num.valueOf());
 }
 
 function fraction(num) {
-  return new Fraction(num.toString());
+  return new Fraction(num.valueOf());
 }
 
 function complex(num) {
-  return new Complex(num.toString());
+  return new Complex(num.valueOf());
 }
 
 // [value].toString() for args is handled by constructor
