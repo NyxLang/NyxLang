@@ -1,0 +1,36 @@
+{
+  "parser": "@babel/eslint-parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:prettier-recommended"
+  ],
+  "env": {
+    "node": true,
+    "browser": true,
+    "jest": true
+  },
+  "plugins": [
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "indent": [
+      "error",
+      2,
+      {
+        "SwitchCase": 1
+      }
+    ],
+    "brace-style": [
+      "error",
+      "1tbs"
+    ],
+    "no-control-regex": "off",
+    "no-misleading-character-class": "off"
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    "dist/",
+    "docs/"
+  ]
+}
