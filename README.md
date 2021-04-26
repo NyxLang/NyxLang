@@ -17,5 +17,5 @@ Nyx is a hybrid functional and object-oriented programming language that basical
 - Define Nyx code in terms of Nyx data structures (homoiconicity)
 - Traverse Nyx AST for semantic checking operations
 - Interpret Nyx AST
-- Translate Nyx AST to Babel AST
-- Generate JavaScript code from Babel AST
+- Determine best method for code generation
+- Generate JavaScript
