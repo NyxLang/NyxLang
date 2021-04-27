@@ -13,9 +13,4 @@ Nyx is a hybrid functional and object-oriented programming language that basical
 ## Current TODO list
 
 - Create a more well-defined specification
-- Rewrite parser with Chevrotain
-- Define Nyx code in terms of Nyx data structures (homoiconicity)
-- Traverse Nyx AST for semantic checking operations
-- Interpret Nyx AST
-- Determine best method for code generation
-- Generate JavaScript
+- Rebuild everything
